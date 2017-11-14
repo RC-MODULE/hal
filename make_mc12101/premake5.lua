@@ -18,3 +18,23 @@ solution "hal-mc12101"
 		   rebuildcommands {"make -B -f Makefile"}
 		   cleancommands {"make clean"}		   
 		
+		
+		
+	project "hal-mc12101-x86"
+      kind "StaticLib"
+      files { "../src_mc12101_host/*.*","../include/*.h"}
+	  includedirs { "../include","$(MC12101)/include"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG" }
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		
+	 

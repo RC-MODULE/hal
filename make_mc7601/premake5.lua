@@ -1,10 +1,10 @@
 #!lua
 
 -- A solution contains projects, and defines the available configurations
-solution "hal-mc12101"
+solution "hal-mc7601"
    configurations { "Debug", "Release" }
 
-	project "hal-mc12101"
+	project "hal-mc7601"
       kind "Makefile"
       files { "../src_src_1879vya1ya/*.*","../include/*.h", "Makefile" }
 	 
@@ -18,3 +18,23 @@ solution "hal-mc12101"
 		   rebuildcommands {"make -B -f Makefile"}
 		   cleancommands {"make clean"}		   
 		
+		
+		
+	project "hal-mc7601-x86"
+      kind "StaticLib"
+      files { "../src_mc7601_host/*.*","../include/*.h"}
+	  includedirs { "../include","$(MC7601)/include"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG" }
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		
+	 

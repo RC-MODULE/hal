@@ -1,12 +1,12 @@
 #!lua
 
 -- A solution contains projects, and defines the available configurations
-solution "hal-mc12101"
+solution "hal-mb7707"
    configurations { "Debug", "Release" }
 
-	project "hal-mc12101"
+	project "hal-mb7707"
       kind "Makefile"
-      files { "../src_src_1879vya1ya/*.*","../include/*.h", "Makefile" }
+      files { "../src_1879hb1ya/*.*","../include/*.h", "Makefile" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile"}
@@ -18,3 +18,23 @@ solution "hal-mc12101"
 		   rebuildcommands {"make -B -f Makefile"}
 		   cleancommands {"make clean"}		   
 		
+		
+		
+	project "hal-mb7707-x86"
+      kind "StaticLib"
+      files { "../src_mb7707_host/*.*","../include/*.h"}
+	  includedirs { "../include","$(MB7707)/libload"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG" }
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		
+	 

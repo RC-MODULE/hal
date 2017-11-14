@@ -157,6 +157,14 @@
 			Name="include"
 			>
 			<File
+				RelativePath="..\include\cache.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\dma-mb7707.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\dma.h"
 				>
 			</File>
@@ -170,6 +178,14 @@
 			</File>
 			<File
 				RelativePath="..\include\sleep.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\ubc_host.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\ubc_target.h"
 				>
 			</File>
 		</Filter>
@@ -195,6 +211,14 @@
 						CompileAs="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src_x86\ubc-x86host.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src_x86\ubc-x86target.cpp"
+				>
 			</File>
 		</Filter>
 	</Files>
