@@ -9,9 +9,9 @@ solution "mc5103access"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_pc/*.cpp"}
-	  links { "../../../lib/hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
+	  links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
 	  includedirs { "../../../include"}	  
-	  libdirs { "$(MC5103)/libload" }
+	  libdirs { "$(MC5103)/libload","../../../lib" }
 
       configuration "Debug"
          defines { "DEBUG" }

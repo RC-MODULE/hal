@@ -8,20 +8,18 @@ solution "mc7601access"
    project "mc7601-x86"
       kind "ConsoleApp"
       language "C++"
-      files { "**.h", "../src_pc/*.cpp", "../../../src/mc7601/*.cpp" }
-	  libdirs { "$(MC7601)/libload" }
+      files { "**.h", "../src_pc/*.cpp"}
+	  links { "hal-mc7601-x86.lib","mc7601_ll_pc.lib","mc7601-nmc3" } 
+	  includedirs { "../../../include"}	  
+	  libdirs { "$(MC7601)/libload","../../../lib" }
 
       configuration "Debug"
          defines { "DEBUG" }
          symbols  "On" 
-		 includedirs { "$(MC7601)/libload","../../../include"}
-		 links { "mc7601_ll_pc.lib","mc7601-nmc3" }
 
       configuration "Release"
          defines { "NDEBUG" }
          symbols  "Off" 
-		 includedirs { "$(MC7601)/libload","../../../include"}
-		 links { "mc7601_ll_pc.lib","mc7601-nmc3" }
 		 
 		 
 	project "mc7601-nmc3"

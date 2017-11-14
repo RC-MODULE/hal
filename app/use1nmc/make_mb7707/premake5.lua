@@ -9,9 +9,9 @@ solution "mb7707access"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_pc/*.cpp"}
-	  links { "../../../lib/hal-mb7707-x86.lib","mb7707load.lib","mb7707-nmc3" } 
+	  links { "hal-mb7707-x86.lib","mb7707load.lib","mb7707-nmc3" } 
 	  includedirs {"../../../include"}	  
-          libdirs { "$(MB7707)/libload" }
+      libdirs { "$(MB7707)/libload" , "../../../lib"}
 
       configuration "Debug"
          defines { "DEBUG" }
