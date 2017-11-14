@@ -1,0 +1,20 @@
+#!/bin/csh
+
+set TEST_SRC=test
+set OUTPUT=test
+
+set ASM="asm -l -6405"
+set LINKER="linker -a -d0 -cmemory.cfg -m -asm"
+
+rm -rf *.hex *.dmp *.abs *.elf *.map *.lst
+
+$ASM $TEST_SRC.asm
+
+$LINKER $TEST_SRC.elf -start=start -o$OUTPUT.abs
+
+nmdump $OUTPUT.abs > $OUTPUT.dmp
+nmelf2txt $OUTPUT.abs $OUTPUT.hex dummy.hex -n2
+split_hex "$OUTPUT"_0.hex dsp_banks.cfg
+split_hex "$OUTPUT"_1.hex dsp_banks.cfg
+
+rm -rf dummy*.hex

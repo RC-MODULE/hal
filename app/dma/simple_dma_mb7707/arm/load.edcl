@@ -1,0 +1,13 @@
+#!/bin/edcltool
+-- init edcl
+edcl_init();
+-- load sections
+
+print("************************************************");
+print("**                                            **");
+print("**          loading ARM program ......        **");
+print("**                                            **");
+print("************************************************");
+
+
+edcl_upload(0x100100, "test_image.bin");

@@ -1,0 +1,50 @@
+ТЕСТ 8_4: ПРОВЕРКА ПРЕРЫВАНИЙ ОТ ARM К NMC И ОБРАТНО
+test8_4 – тест выполняет проверку формирования запросов на прерывание и контроль их обработки в случае взаимодействия подсистем ARM и NMC. В тесте проверяются следующие виды запросов на прерывание:
+1.	Немаскируемое прерывание от ARM к NMC;
+2.	Низкоприоритетное прерывание от ARM к NMC;
+3.	Высокоприоритетное прерывание от ARM к NMC;
+4.	Низкоприоритетное прерывание от NMC к ARM;
+5.	Высокоприоритетное прерывание от NMC к ARM;
+Формирование запросов на прерывание осуществляется через регистры блока SCTL, которые отображены в память по адресам:
+#define SCTL_Base                0x20020000
+ #define SCTL_HDMI_CONTROL                  (SCTL_Base + 0x00)
+ #define SCTL_NMC3_INT                      (SCTL_Base + 0x04)
+#define SCTL_IRQ_NMC1                      (SCTL_Base + 0x30)
+ #define SCTL_IRQ_NMC0                      (SCTL_Base + 0x34)
+ #define SCTL_IRQ_ARM1                      (SCTL_Base + 0x38)
+ #define SCTL_IRQ_ARM0                      (SCTL_Base + 0x3c)
+Ядра ARM и NMC синхронизируются через внутреннюю память IM2 и в случае успешной обработки прерываний выставляют соответствующие флаги в единицу:
+#define ARM2NMC_NMI_FLAG 0x80100000
+#define ARM2NMC_ARML_FLAG (ARM2NMC_NMI_FLAG + 4)
+#define ARM2NMC_ARMH_FLAG (ARM2NMC_NMI_FLAG + 8)
+#define NMC2ARM_NMCL_FLAG (ARM2NMC_NMI_FLAG + 12)
+#define NMC2ARM_NMCH_FLAG (ARM2NMC_NMI_FLAG + 16)
+Основная тестовая программа работает под управлением ядра ARM и отслеживает значения этих флагов.
+	Программный код для ядра NMC написан на языке ассемблер и размещён в файле ./Test8/test8_4/test.asm. 
+	build –  скрипт-файл для сборки тестового ПО для ядра NMC ;
+	macros640x.mlb – библиотека макросов для работы с NMC.
+	Сборка исполняемых файлов теста осуществляется командой build. Результатом выполнения команды является набор файлов:
+test.abs – абсолютный исполняемый файл теста;
+test.dmp – дизассемблированный машинный код теста;
+а также HEX файлы для загрузки в модель:
+test_0.<имя банка>.hex – LOW часть исполняемого кода;
+test_1.<имя банка>.hex – HIGH часть исполняемого кода,
+где имя банка соответствует имени блока в модели, в который необходимо загрузить HEX файл.
+Для загрузки теста в модель подсистемы DSP необходимо выполнить следующие verilog команды:
+	`define TEST_PATH "../testbench/woronez_test/DSP/Test8/test8_4/"
+	$readmemh({`TEST_PATH, "test_0.NM_RAM_BANK.0.B0.hex"}, theDTSP.theHLB_DSP.theNM_TOP_0.NMU_SMU.NMU0.SYSTEM_INTEGRATOR.NM_RAM_BANK[0].B0_L.Mem);
+   	 $readmemh({`TEST_PATH, "test_1.NM_RAM_BANK.0.B0.hex"}, theDTSP.theHLB_DSP.theNM_TOP_0.NMU_SMU.NMU0.SYSTEM_INTEGRATOR.NM_RAM_BANK[0].B0_H.Mem);
+	Программный код для ядра ARM написан на языке Си и размещён в файле ./soft/src/test_8_4.c. Файл содержит реализацию теста в виде функции с сигнатурой, предназначенной для встраивания в тестовое окружение ядра ARM:
+	int test_8_4(); - где возвращаемое значение описывает результат выполнения теста.
+TEST_OK – успех;
+TEST_ERROR – ошибка.
+	./soft/work_dir/makehex.csh –  скрипт-файл для сборки тестового ПО для ядра ARM;
+Результатом выполнения команды является набор файлов:
+test_image.elf – исполняемый файл теста;
+test_image.dmp – дизассемблированный машинный код теста;
+а также HEX файлы для загрузки в модель:
+test_IM0_0.hex – LOW часть исполняемого кода;
+test_IM0_1.hex – HIGH часть исполняемого кода,
+Для загрузки теста в модель необходимо выполнить следующие verilog команды:
+       $readmemh("../testbench/soft/work_dir/test_IM0_0.hex", theDTSP.theIntMemAxi32kX64.ram_imem_u0.Mem)       $readmemh("../testbench/soft/work_dir/test_IM0_1.hex", theDTSP.theIntMemAxi32kX64.ram_imem_u1.Mem);
+Контроль результата тестовой программы осуществляется по значению, возвращаемому функцией test_8_4.

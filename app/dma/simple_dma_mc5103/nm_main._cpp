@@ -1,0 +1,82 @@
+//test of DMA на плате 5103.  NM part
+// SetCallBack( int vectoraddr, int ProcAddress); Устанавливает
+// обработчик прерываний от окончания любого из каналов DMA.
+// vectoraddr=58h для локальной шины и 60h для глобальной шины.
+// return value является функцией, которая возвращает 0 если к
+// этому времени DMA закончила пересылку. Если приоритет у DMA
+// то она всегда возвращает ноль, т.к. не может получить управление
+// до окончания пересылки.
+
+// Здесь один обработчик на обе шины, но он только отмечает время.
+// cnt_func dmainit( int dmahigh,  int *dstptr,  int *srcptr, int n );
+// Даёт старт тому каналу DMA, который соответствует адресам чтения
+//и записи. dstptr и srcptr должны быть на одной шине.
+// Если dmahigh=1 то приоритет у DMA, если 0 то у ЦПУ.
+// N количество 64р слов. Расход времени 1.5 такта на 64р слово
+// если приоритет у DMA. Файл функций dma.asm
+//==============================================================
+#include "buffers.h"
+#include "hal.h"
+#include "dma.h"
+#include "time.h"
+#include "stdio.h"
+
+// if dmahigh=1 then dma имеет высший приоритет else it has cpu
+clock_t t0,t1;
+int DMA_Finished=false;
+
+void BellFromDma()// Обработчик DMA прерывания (вектор 58h)
+{ 
+	t1=clock();
+	DMA_Finished=true;
+}
+
+int main()
+{ 
+	//t1=10000000; 
+	//t0=10;
+	//int tt1=(t1-t0)/SIZE_POOL0;
+	//int tt2=(t1-t0);
+	//tt2/=SIZE_POOL0;
+	//printf("tt1=%d tt2=%d \n",tt1,tt2);
+
+	unsigned SrcCrc=0; 
+	unsigned DstCrc=0;
+	
+	HAL_Rand64(pool0,SIZE_POOL0/2);
+	HAL_Fill32(pool4,0, SIZE_POOL0);
+	HAL_Crc32( pool0,SIZE_POOL0,SrcCrc);
+	
+	
+	SetCallBack(0x58, (int)BellFromDma);
+	SetCallBack(0x60, (int)BellFromDma);
+
+	t0=clock();
+	//fd=(cnt_func)dmainit( 0, (int*)pool4, (int*)pool0, SIZE_POOL0);
+	cnt_func fd=(cnt_func)dmainit( 0, (int*)pool4, (int*)pool0, SIZE_POOL0);
+	
+	
+	
+	while(!DMA_Finished){	
+		printf("DMA_Finished=%d\n",DMA_Finished);
+	}
+	printf("DMA_Finished=%d\n",DMA_Finished);
+	
+	while (fd()){	
+		printf(".");
+	}
+
+	HAL_Crc32( pool4,SIZE_POOL0,DstCrc);	
+	
+	printf("Src[%08X] Crc=%X \n",pool0,SrcCrc);
+	printf("Dst[%08X] Crc=%X \n",pool4,DstCrc);
+	
+	int tt=(t1-t0);
+	tt/=SIZE_POOL0;
+	//printf("Src=>Dst: %d words transferd at %d clocks , %d ticks/per 32-bit word\n",SIZE_POOL0,t1-t0,tt1-t0)/SIZE_POOL0);
+	printf("Src=>Dst: %d words transferd at %d clocks , %d ticks/per 32-bit word\n",SIZE_POOL0,t1-t0,tt);
+	
+	return SrcCrc-DstCrc;
+	
+	
+} 

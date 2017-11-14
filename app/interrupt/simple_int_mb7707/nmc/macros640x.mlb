@@ -1,0 +1,209 @@
+// Make universal shells for simple system operations with different implementations for NM6403 and NM6405
+
+//	Register windows 
+
+macro REG_WINDOW0()
+.if .nm64revision == 5;
+	pswr clear 0000_0000_0000_0000_0000_0010_0000_0000b;
+.endif;
+end REG_WINDOW0;
+
+macro REG_WINDOW1()
+.if .nm64revision == 5;
+	pswr set 0000_0000_0000_0000_0000_0010_0000_0000b;
+.endif;
+end REG_WINDOW1;
+
+//	Hardware top of  stack
+
+macro HW_STACK_ENABLE()
+.if .nm64revision == 5;
+	pswr set 0000_0000_0000_0000_0001_0000_0000_0000b;
+.endif;
+end HW_STACK_ENABLE;
+
+macro HW_STACK_DISABLE()
+.if .nm64revision == 5;
+	pswr clear 0000_0000_0000_0000_0001_0000_0000_0000b;
+.endif;
+end HW_STACK_DISABLE;
+
+//	Cache control
+
+macro CACHE_ENABLE()
+.if .nm64revision == 5;
+	pswr set 0000_0000_0000_0000_0000_0000_1000_0000b;
+.endif;
+end CACHE_ENABLE;
+
+macro CACHE_DISABLE()
+.if .nm64revision == 5;
+	pswr clear 0000_0000_0000_0000_0000_0000_1000_0000b;
+.endif;
+end CACHE_DISABLE;
+
+macro GIPERTAG_WR_ENABLE()
+.if .nm64revision == 5;
+	pswr clear 0000_0000_0000_0000_0000_0001_0000_0000b;
+.endif;
+end GIPERTAG_WR_ENABLE;
+
+macro GIPERTAG_WR_DISABLE()
+.if .nm64revision == 5;
+	pswr set 0000_0000_0000_0000_0000_0001_0000_0000b;
+.endif;
+end GIPERTAG_WR_DISABLE;
+
+macro CACHE_CLEAR()
+.if .nm64revision == 5;
+	pswr set 0000_0000_0000_0000_0000_0010_0000_0000b;
+	pswr clear 0000_0000_0000_0000_0000_0010_0000_0000b;	
+.endif;
+end CACHE_CLEAR;
+
+//	PERIPHERALS
+//	Timers
+macro START_TIMER1( CONTINUOUS )
+.if CONTINUOUS==0;
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 0001_0000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0D000_0000h;
+.endif;
+.endif;
+.if CONTINUOUS!=0;
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 0003_0000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0F000_0000h;
+.endif;
+.endif;
+end START_TIMER1;
+
+macro START_TIMER0( CONTINUOUS /* 0 OR 1! */ )
+.if CONTINUOUS==0;
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 0004_0000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0D00_0000h;
+.endif;
+.endif;
+.if CONTINUOUS!=0;
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 000c_0000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0F00_0000h;
+.endif;
+.endif;
+end START_TIMER0;
+
+macro STOP_TIMER1()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr clear 0003_0000h;
+.endif;
+.if .nm64revision == 5;
+	pcr clear 3000_0000h;
+.endif;
+end STOP_TIMER1;
+
+macro STOP_TIMER0()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr clear 00c0_000h;
+.endif;
+.if .nm64revision == 5;
+	pcr clear 300_000h;
+.endif;
+end STOP_TIMER0;
+
+//  Macros for communication ports
+
+//	Set communication ports to input mode
+
+macro COM0_IN_ENABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr clear 00200000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0000_0000_0000_0000_0100_0000_0000_0000b;
+.endif;
+end COM0_IN_ENABLE;
+
+macro COM0_IN_DISABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 00200000h;
+.endif;
+.if .nm64revision == 5;
+	pcr clear 0000_0000_0000_0000_0100_0000_0000_0000b;
+.endif;
+end COM0_IN_DISABLE;
+
+macro COM1_IN_ENABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr clear 01000000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0000_0000_0000_0010_0000_0000_0000_0000b;
+.endif;
+end COM1_IN_ENABLE;
+
+macro COM1_IN_DISABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 01000000h;
+.endif;
+.if .nm64revision == 5;
+	pcr clear 0000_0000_0000_0010_0000_0000_0000_0000b;
+.endif;
+end COM1_IN_DISABLE;
+
+//	Set communication ports to output mode
+
+macro COM0_OUT_ENABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr clear 00100000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0000_0000_0000_0000_0010_0000_0000_0000b;
+.endif;
+end COM0_OUT_ENABLE;
+
+macro COM0_OUT_DISABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 00100000h;
+.endif;
+.if .nm64revision == 5;
+	pcr clear 0000_0000_0000_0000_0010_0000_0000_0000b;
+.endif;
+end COM0_OUT_DISABLE;
+
+macro COM1_OUT_ENABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr clear 00800000h;
+.endif;
+.if .nm64revision == 5;
+	pcr set 0000_0000_0000_0001_0000_0000_0000_0000b;
+.endif;
+end COM1_OUT_ENABLE;
+
+macro COM1_OUT_DISABLE()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 00800000h;
+.endif;
+.if .nm64revision == 5;
+	pcr clear 0000_0000_0000_0001_0000_0000_0000_0000b;
+.endif;
+end COM1_OUT_DISABLE;
+
+//	Interrupts
+
+//	Vector unit
+
+macro RESET_VPU()
+.if (.nm64revision == 3) or (.nm64revision == 4); 
+	pswr set 0000c000h;
+	pswr clear 0000c000h;
+.endif;
+end RESET_VPU;

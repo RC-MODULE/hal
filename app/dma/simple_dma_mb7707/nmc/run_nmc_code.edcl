@@ -1,0 +1,6 @@
+nmc = require("easynmc");
+edcl_init();
+nmc.load_init_code(os.getenv("NEURO").."/bin/initmb7707.abs");
+
+entry = nmc.upload("dma.abs");
+nmc.run(entry);

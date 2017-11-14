@@ -1,0 +1,6 @@
+Author    : 
+Project   : DMA implementation on MB7707
+Component : ARM part
+Platform  : MB7707
+Execute	  : make run
+
