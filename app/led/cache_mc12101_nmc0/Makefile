@@ -12,9 +12,6 @@ ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
-ifndef NMPP
-$(error *** ERROR: 'NMPP' environment variable is not defined!  )
-endif 
 
 ROOT     = ../../..
 PROJECT  =main

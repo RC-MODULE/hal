@@ -2,7 +2,7 @@ ROOT=../../..
 include $(ROOT)/global.mk
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  
-# Rule 'run' executes the application on MC5103 board and stores return code in ".exitcode"  file
+# Rule 'run' executes the application on MC12101 board 
 
 .SUFFIXES:
 
@@ -12,9 +12,7 @@ ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
-ifndef NMPP
-$(error *** ERROR: 'NMPP' environment variable is not defined!  )
-endif 
+
 
 ROOT     = ../../..
 PROJECT  =main

@@ -38,3 +38,20 @@ solution "hal-mc12101"
 		 targetdir ("../lib")
 		
 	 
+    project "hal-mc12101io-x86"
+      kind "StaticLib"
+      files { "../src_mc12101_host_io/*.*","../src_io/*.*","../include/*.h"}
+	  includedirs { "../include","$(MC12101)/include","../src_mc12101_host_io","../src_io"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG","NM6405"}
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG","NM6405" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		

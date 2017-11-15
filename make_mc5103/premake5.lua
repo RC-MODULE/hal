@@ -38,3 +38,20 @@ solution "hal-mc5103"
 		 targetdir ("../lib")
 		
 	 
+	project "hal-mc5103io-x86"
+      kind "StaticLib"
+      files { "../src_mc5103_host_io/*.*","../src_io/*.*","../include/*.h"}
+	  includedirs { "../include","$(MC5103)/libload","../src_mc5103_host_io","../src_io"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG","NM6405"}
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG","NM6405" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		

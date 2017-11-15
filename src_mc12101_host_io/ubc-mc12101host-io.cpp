@@ -1,7 +1,10 @@
 #include "mc12101load.h"
 #include <stdio.h>
+#include "nm_io_host.h"
 static PL_Board *board=0;
 static PL_Access *access[2]={0,0};
+static PL_Access* access_io[2]={0,0};
+static NM_IO_Service *nmservice[2]={0,0};
 #define TRACE(str) printf("%s", str)
 
 static unsigned result[2];
@@ -80,7 +83,16 @@ int ubcOpen(char* absfile=0,...){
 				TRACE( ": : ERROR: Can't load program into board.\n");
 				return  (1);
 			}
-		}
+	
+			if (PL_GetAccess(board, proc, &access_io[proc])){
+				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
+				return  (1);
+			}
+
+			nmservice[proc]=new NM_IO_Service(abs[proc],access_io[proc]);		
+			if (nmservice==0)
+				return (1);
+		
 			if (first_enter){
 				sharedBuffer=ubcSync(0x8086,proc);
 				sharedSize32=ubcSync(0x8086,proc);
@@ -123,6 +135,10 @@ int ubcClose(){
 		PL_CloseAccess(access[0]);
 	if (access[1])
 		PL_CloseAccess(access[1]);
+	if (nmservice[0])
+		delete nmservice[0];
+	if (nmservice[1])
+		delete nmservice[1];
 	return PL_CloseBoardDesc(board);
 }
 
