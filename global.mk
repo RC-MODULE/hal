@@ -39,8 +39,8 @@ $(PATH);
    OS_CAT   = cat
   
 #  OS_MV    = rename
-   OS_RM    = del /Q
-   RM       = rm -f -r
+#  OS_RM    = del /Q
+   OS_RM    = rm -f -r
    OS_RD    = rd /Q /S 
 #  OS_CP    = $(call BACKSLASH,$(GNUWIN32)/cp)
    OS_CP    = cp
