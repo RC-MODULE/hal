@@ -64,7 +64,6 @@ NM_IO_Service::~NM_IO_Service()
 {
 	if ( valid ){
 		letsShutDown= true;
-        freeze = 0;
 		while ( letsShutDown )
 			Sleep(100);   //  ∆дем завершени€ nmServiceDispatcher
 		delete[] bsStatus;
@@ -183,7 +182,7 @@ unsigned int __stdcall nmServiceDispatcher( void* v_nms )
     return nms.dispatch();
 }
 
-#pragma pack(4) //  int alignment
+#pragma pack(4); //  int alignment
 
 struct _stat64i32_sparse {
         _dev_t     st_dev;
@@ -214,9 +213,7 @@ struct _stat64i32_sparse {
         }
 };
 
-#pragma pack() //  default
-
-int NM_IO_Service::freeze = 1;
+#pragma pack(); //  default
 
 unsigned int 
 NM_IO_Service::dispatch()
@@ -228,9 +225,7 @@ NM_IO_Service::dispatch()
     set<int> isTextMode;
     while ( proceed )
     {
-        while ( freeze == 1 )
-	        Sleep(100);
-        freeze = 2;
+	    Sleep(10);
         proceed= !letsShutDown;
         int* bsStatus= readStatus();
         //  модифицируютс€ только с платы+ (sended - bssSecAddr)
@@ -278,7 +273,7 @@ NM_IO_Service::dispatch()
             if ( r!= PL_OK )
                 throw "error reading block from board";
             //  сколько всего, дл€ проверки
-            words+= (int)(hostBuf- bsBuf);
+            words+= hostBuf- bsBuf;
             sendConfirmed= sended;
 
             volatile int* sendedHere= bsBuf;
@@ -441,7 +436,7 @@ NM_IO_Service::dispatch()
                     assert( strlen( varName )+1 ==pSize );
                     char* val= getenv( varName );
                     bufferToBoard[0]= errno;
-                    int valLen= (int)strlen( val );
+                    int valLen= strlen( val );
                     charToSparse( bufferToBoard+1, val, valLen+1 );
                     backBufferReady= valLen+2;
                     break;
@@ -490,9 +485,6 @@ NM_IO_Service::dispatch()
                 throw "_read data writing to board failure";
 
         writeBackStatus();
-
-        freeze = 0;
-        Sleep(100);
     }
 #if NM_SERV_DBG
     cerr << "===fin===";

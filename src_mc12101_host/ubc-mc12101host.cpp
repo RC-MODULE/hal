@@ -18,7 +18,7 @@ int ubcSync(int val,int processor=0){
 	PL_Sync(access[processor],val,&ret);
 #endif
 	return ret;
-}
+};
 
 static unsigned sharedBuffer;
 static unsigned sharedSize32;
@@ -80,7 +80,7 @@ int ubcOpen(char* absfile=0,...){
 				TRACE( ": : ERROR: Can't load program into board.\n");
 				return  (1);
 			}
-		}
+		
 			if (first_enter){
 				sharedBuffer=ubcSync(0x8086,proc);
 				sharedSize32=ubcSync(0x8086,proc);
@@ -95,8 +95,7 @@ int ubcOpen(char* absfile=0,...){
 	}
 #endif
 	
-	
-	TRACE ("OK!\n");
+
 	return 0;
 }
 	

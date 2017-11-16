@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "windows.h"
 
+
 int main(){
 
 	printf("Openning...\n");
@@ -26,6 +27,7 @@ int main(){
 	#endif	
 
 	printf("Return value:%X\n",sync);
+	::Sleep(10000);
 	ubcClose();								// close board, disconect from shared memory
 	::Sleep(5000);
 	return 0;

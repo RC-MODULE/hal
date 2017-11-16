@@ -18,8 +18,10 @@
 int main()
 {
 	ubcConnect(0);
-	for(int i=0; i<10; i++)
-		printf("Hello from NMC 0\n");	
+	for(int i=0; i<100; i++){
+		printf("Hello %d from NMC[0]\n",i);	
+		halSleep(100);
+	}
 	
 	
 	return 0x600D;
