@@ -5,12 +5,15 @@
 int main(){
 
 	printf("Openning...\n");
-	#ifdef NMPU1
-	if (ubcOpen("","main.abs",NULL)){			// Load executable file to board, connect to shared memory
-	#else 	
-	if (ubcOpen("main.abs",NULL)){			// Load executable file to board, connect to shared memory
+	#if defined (NMPU0) && defined (NMPU1)
+	if (ubcOpen("main0.abs","main1.abs",NULL))
+	#elif  defined (NMPU1)
+	if (ubcOpen("","main1.abs",NULL))		// Load executable file to board, connect to shared memory
+	#else  	
+	if (ubcOpen("main0.abs",NULL))			// Load executable file to board, connect to shared memory
 	#endif	
-	::Sleep(10000);
+	{	
+		::Sleep(10000);
 		return -1;
 	}
 	

@@ -13,39 +13,29 @@ ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
-
-
 BOARD    = mc12101
 HOST     = $(BOARD)-x86
 
+TARGET0  = main0.abs
+TARGET1  = main1.abs
 
-TARGET   = main1.abs
-INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include"
-LIB_DIRS = -L"$(MC12101)/lib" -L$(NM_IO)/lib -L$(ROOT)/lib
-LIBS     = nm_io4.lib mc12101lib_nm.lib libc4.lib hal-mc12101.lib
-CFG      = mc12101brd-nmc1.cfg
-SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm1))
-SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm1))
+ALL: $(TARGET0) $(TARGET1) $(HOST)
 
-HEAP     = -heap=0 -heap1=0 -heap2=0 -heap3=0
+$(TARGET0):
+	$(MAKE) -f Makefile0
 
-ALL: $(TARGET) $(HOST)
-$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile
-	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG)  $(HEAP)
+$(TARGET1):
+	$(MAKE) -f Makefile1
+	
 $(HOST): $(HOST).vcproj
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(BOARD)-x86.vcproj
 
 
-
 PATH:=$(MC12101)/bin;$(PATH)
 
-
-
-run: $(TARGET) $(HOST)
+run: $(TARGET0) $(TARGET1) $(HOST)
 	bin\debug\$(HOST)
 	
-
-
 clean:
 	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters
 	-$(OS_RD) bin obj
@@ -53,6 +43,8 @@ clean:
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj 
 	
-$(HOST).vcproj  vs2005:	premake5.lua 
+vs2005:	premake5.lua $(HOST).vcproj
+
+$(HOST).vcproj:
 	premake5 vs2005
 	

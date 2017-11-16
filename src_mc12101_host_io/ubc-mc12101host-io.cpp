@@ -84,15 +84,8 @@ int ubcOpen(char* absfile=0,...){
 				return  (1);
 			}
 	
-			if (PL_GetAccess(board, proc, &access_io[proc])){
-				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
-				return  (1);
-			}
 
-			nmservice[proc]=new NM_IO_Service(abs[proc],access_io[proc]);		
-			if (nmservice==0)
-				return (1);
-		
+			
 			if (first_enter){
 				sharedBuffer=ubcSync(0x8086,proc);
 				sharedSize32=ubcSync(0x8086,proc);
@@ -102,7 +95,27 @@ int ubcOpen(char* absfile=0,...){
 				ok=ubcSync(sharedBuffer,proc);
 				ok=ubcSync(sharedSize32,proc);
 			}
+		}
+	}
+	for (int proc=0; abs[proc]!=0 ;proc++){
+		if (strlen(abs[proc])){
+			// io initialization
+			if (PL_GetAccess(board, proc, &access_io[proc])){
+				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
+				return  (1);
+			}
 
+			nmservice[proc]=new NM_IO_Service(abs[proc],access_io[proc]);		
+			if (nmservice[proc]==0)
+				return (1);
+			if (nmservice[proc]->invalid()){
+				PL_CloseAccess(access_io[proc]);
+				delete nmservice[proc];
+				nmservice[proc]=0;
+				access_io[proc]=0;
+			}
+			else 
+				break;
 		}
 	}
 #endif
@@ -131,14 +144,15 @@ int ubcWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned
 
 
 int ubcClose(){
-	if (access[0])
-		PL_CloseAccess(access[0]);
-	if (access[1])
-		PL_CloseAccess(access[1]);
 	if (nmservice[0])
 		delete nmservice[0];
 	if (nmservice[1])
 		delete nmservice[1];
+	if (access[0])
+		PL_CloseAccess(access[0]);
+	if (access[1])
+		PL_CloseAccess(access[1]);
+	
 	return PL_CloseBoardDesc(board);
 }
 

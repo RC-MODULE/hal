@@ -26,7 +26,7 @@ solution "mc12101-printf"
 		 
 	project "mc12101-nmc4-1"
       kind "Makefile"
-      files { "../src_nm/*.cpp" }
+      files { "../src_nm1/*.cpp" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y"}
