@@ -13,6 +13,8 @@ TCHAR sSharedMemName[]=TEXT("Global\\SharedFileMappingObject");
 
 HANDLE hMapFile;
 HANDLE hMapFileSharedMem;
+
+// 
 struct SyncBuf {
 	int counter0;
 	int counter1;
@@ -50,7 +52,7 @@ int ubcOpen(char* absfile,...){
 	absFile[1] = va_arg(args, char*);
 	va_end(args);
 
-	//-------------- create sync memory ---------------
+	//-------------- create sync-memory buffer ---------------
 	hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,    // use paging file
 		NULL,                    // default security

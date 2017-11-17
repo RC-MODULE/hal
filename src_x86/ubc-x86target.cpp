@@ -12,12 +12,16 @@
 #define SYNC_BUF_SIZE 64*1024
 TCHAR sSyncName[]=TEXT("Global\\SyncFileMappingObject");
 
+#define SYNC_BUF_SIZE 64*1024
+TCHAR sSharedRegestryName[]=TEXT("Global\\SharedRegistryFileMappingObject");
+
+//char sSharedMemName[]="Global\\SharedFileMappingObject" STR(PROCESSOR_ID);
+TCHAR sSharedMemName[]=TEXT("Global\\SharedFileMappingObject");
+
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-//char sSharedMemName[]="Global\\SharedFileMappingObject" STR(PROCESSOR_ID);
-TCHAR sSharedMemName[]=TEXT("Global\\SharedFileMappingObject");
 
 static  HANDLE hMapFile;
 static  HANDLE hMapFileSharedMem;
@@ -31,7 +35,38 @@ struct SyncBuf {
 	int counter1;
 	int sync0;
 	int sync1;
-} *pSyncBuf;
+} *pSyncBuf=0;
+
+// Возвращает указатель на буфер синхронизации
+SyncBuf* getSyncBuffer(){
+	if (pSyncBuf==0){
+		hMapFile = OpenFileMapping(
+			FILE_MAP_ALL_ACCESS,   // read/write access
+			FALSE,                 // do not inherit the name
+			sSyncName);               // name of mapping object
+
+		if (hMapFile == NULL){
+			_tprintf(TEXT("Could not open file mapping object (%d).\n"),GetLastError());
+			return 0;
+		}
+
+		pSyncBuf = (SyncBuf*) MapViewOfFile(
+			hMapFile, // handle to map object
+			FILE_MAP_ALL_ACCESS,  // read/write permission
+			0,
+			0,
+			SYNC_BUF_SIZE);
+
+		if (pSyncBuf == NULL){
+			_tprintf(TEXT("Could not map view of file (%d).\n"),GetLastError());
+			CloseHandle(hMapFile);
+			return 0;
+		}
+	}
+	return pSyncBuf;
+}
+
+
 /*
 const struct SyncBuf  syncBuf[10];
 
@@ -310,6 +345,20 @@ int ubcConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuff
 	
 }
 
+int ubcHostSyncArray(
+					 int value,        // Sync value
+					 void *outAddress, // Sended array address (can be NULL)
+					 size_t outLen,    // Sended array length (can be 0)
+					 void **inAddress, // Received array address pointer (can be NULL)
+					 size_t *inLen)   // Received array size pointer (can be NULL)
+{
+	//int extBuffer=ubcHostSync((int)masterSharedBuffer);
+	//int extSize32=ubcHostSync((int)masterSharedSize32);
+	//if (extBuffer && extSize32){
+
+	//}
+	return 1;
+}
 
 
 //void ubcFree(){
