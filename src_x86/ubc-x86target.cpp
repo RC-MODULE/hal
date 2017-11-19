@@ -59,19 +59,55 @@ extern "C"{
 		return procNo;
 	}
 
+	int turn=1;
 	
 	int ncl_hostSync(int val){
 		//findBuffer();
 		if (pSyncBuf==0)
 			pSyncBuf=getSyncBuffer();
-		int procNo=ncl_getProcessorNo();
-		printf ("TARGET[%d]:Sync[%d] (%Xh)...",procNo,pSyncBuf[procNo].counter1,val);
+		//int procNo=ncl_getProcessorNo();
+		//printf ("TARGET[%d]:Sync[%d] (%Xh)...",procNo,pSyncBuf[procNo].counter1,val);
+
+SyncBuf& syncro = pSyncBuf[procNo];
+
+			
+	while(syncro.writeCounter[1]>syncro.readCounter[1])
+	{}
+	syncro.sync1=val;						
+	syncro.writeCounter[1]++;
+	
+	while(syncro.readCounter[0]==syncro.writeCounter[0])		
+	{}									
+	int sync=syncro.sync0;								
+	syncro.readCounter[0]++;
+
+	return sync;
+
+
+
+/*
+		if (turn==1)
+		pSyncBuf[procNo].locked0=true;
 		pSyncBuf[procNo].sync1=val;
 		pSyncBuf[procNo].counter1++;
-		while (pSyncBuf[procNo].counter0!=pSyncBuf[procNo].counter1);
+		
+		while (pSyncBuf[procNo].counter0!=pSyncBuf[procNo].counter1){
+			::Sleep(100);
+		}
+		int sync=pSyncBuf[procNo].sync0;
+		pSyncBuf[procNo].locked0=false;
+		while ((pSyncBuf[procNo].locked1)){
+			::Sleep(100);
+		}
 		printf("=%Xh\n",pSyncBuf[procNo].sync0);
-		return pSyncBuf[procNo].sync0;
+		return sync;
 	}
+	*/
+		//SyncBuf& syncro = pSyncBuf[procNo];
+
+
+	}
+
 };
 
 BufferRegistry* createBufferRegistry(){

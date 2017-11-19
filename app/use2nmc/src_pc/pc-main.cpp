@@ -28,7 +28,7 @@ int main(){
 	sync        =ubcSync(0x6000DBA1,0); 	// wait ready to read status , send/receive last sync (G000dBuy)
 	
 	ubcGetResult(&sync,0);					// get return value
-	for(int i=0; i<128;i++) printf("dst[%i]=%d\n",i,dstHostArray[i]);
+	for(int i=0; i<128;i++) printf("src[%i]=%d\n",i,srcHostArray[i]);
 	printf("Processor[0] Return value:%X\n",sync);
 	//--------- processor #1 communication ----------------------------------------
 	sync        =ubcSync(0x8086,1);			// receive handshake (0x6406)

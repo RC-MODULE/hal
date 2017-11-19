@@ -12,10 +12,19 @@
 
 TCHAR* createName(TCHAR* baseName, int index0, int index2);
 struct SyncBuf {
-	int counter0;
-	int counter1;
-	int sync0;
-	int sync1;
+	//int		counter0;
+	//int		counter1;
+	int		sync0;
+	int		sync1;
+	//bool	locked0;
+	//bool	locked1;
+	//bool    flag[2];
+	//bool	turn;
+	//int		readFrom[2];
+	//int		writtenFrom[2];
+	//int     counter;
+	int		readCounter[2];
+	int		writeCounter[2];
 };
 
 struct MappedBuffer {

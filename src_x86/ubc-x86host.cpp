@@ -31,12 +31,35 @@ extern int procNo=0;
 extern "C"{
 
 int ubcSync(int val,int processor=0){
-	printf ("HOST[%d]:Sync[%d] (%8xh)...",processor,pSyncBuf[processor].counter0,val);
+	//printf ("HOST[%d]:Sync[%d] (%8xh)...",processor,pSyncBuf[processor].counter0,val);
+
+	/*
+	pSyncBuf[processor].locked1=true;
 	pSyncBuf[processor].sync0=val;
 	pSyncBuf[processor].counter0++;
-	while (pSyncBuf[processor].counter0!=pSyncBuf[processor].counter1);
-	printf("=%xh\n",pSyncBuf[processor].sync1);
-	return pSyncBuf[processor].sync1;
+	while (pSyncBuf[processor].counter0!=pSyncBuf[processor].counter1)
+		::Sleep(100);
+	int sync=pSyncBuf[processor].sync1;
+	pSyncBuf[processor].locked1=false;
+	while (pSyncBuf[processor].locked0)
+		::Sleep(100);
+		*/
+	SyncBuf& syncro = pSyncBuf[processor];
+
+	
+	while(syncro.writeCounter[0]>syncro.readCounter[0])
+	{}
+	syncro.sync0=val;						
+	syncro.writeCounter[0]++;
+	
+	while(syncro.readCounter[1]==syncro.writeCounter[1])		
+	{}									
+	int sync=syncro.sync1;								
+	syncro.readCounter[1]++;
+
+	return sync;
+	
+	
 }
 
 //static int* sharedBuffer[MAX_COUNT_PROCESSORS]={0,0,0,0,0,0,0,0};
@@ -84,7 +107,7 @@ int ubcOpen(char* absfile,...){
 		printf("ERROR:Shared memory allocation error on host \n");
 		return 1;
 	}
-	SyncBuf SB={-1,-1,-1,-1};
+	SyncBuf SB={0,0,0,0,0,0};
 	CopyMemory((PVOID)&pSyncBuf[0], &SB, sizeof(SB));
 	CopyMemory((PVOID)&pSyncBuf[1], &SB, sizeof(SB));
 
@@ -282,3 +305,64 @@ int ubcGetResult(unsigned long* returnCode, int processor=0){
 }
 
 };
+
+/*
+
+
+		syncro.flag[1] = true;
+		while (syncro.flag[0]) {
+			if( !syncro.turn ){
+				 syncro.flag[1] = false;
+				 while (!syncro.turn) {
+					 
+				 }
+				 syncro.flag[1] = true;
+			 }
+		 }
+	 
+		//критическая секция
+		//...
+		syncro.sync1=val;
+		syncro.counter--;
+		int counter=syncro.counter;
+		syncro.turn = false;
+		syncro.flag[1] = false;
+		// конец критической секции
+		//...
+		while (counter!=0 || syncro.counter!=0){
+			::Sleep(100);
+		}
+		//int  sync=syncro.sync0;
+		return sync;
+		
+
+return sync;
+
+
+	syncro.flag[0] = true;
+    while (syncro.flag[1]) {
+        if( syncro.turn ){
+             syncro.flag[0] = false;
+             while (syncro.turn) {
+				 
+             }
+             syncro.flag[0] = true;
+         }
+     }
+ 
+    //критическая секция
+    //...
+	syncro.sync0=val;
+	int counter=syncro.counter++;
+    syncro.turn = true;
+    syncro.flag[0] = false;
+    // конец критической секции
+    //...
+	while (syncro.counter!=0){
+		::Sleep(100);
+	}
+	sync=syncro.sync1;
+
+	return sync;
+
+*/
