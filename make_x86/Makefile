@@ -1,5 +1,5 @@
 ROOT = ..
-#include $(ROOT)/global.mk
+include $(ROOT)/global.mk
 #-include ../local.mk
 HEAP ?= -heap=6384 -heap1=16384 -heap2=16384 -heap3=16384
 # BUILD AND RUN MAKEFILE
@@ -24,9 +24,7 @@ clean:
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj
 	
-vs2005:	$(HOST).vcproj
 
-
-$(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj   vs2015:	
+$(HOST).vcproj vs2005:	
 	premake5 vs2005
 

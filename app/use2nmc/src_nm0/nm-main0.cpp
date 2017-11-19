@@ -18,6 +18,7 @@
 //!
 //------------------------------------------------------------------------
 #include "ubc_target.h"
+#include "stdio.h"
 //#pragma data_section ".data_shared.bss"
 //	long srcBuff[1024/2];
 //	long dstBuff[1024/2];
@@ -30,22 +31,28 @@
 
 	int procNo=ubcGetProcessorNo();					// Get processor number 
 	int  sharedSize32=2048;							// Set shared buffer size
-	int* sharedBuffer=ubcMalloc32(sharedSize32);	// Allocates shared memory (in 32-bit words) 
-	int ok=ubcConnect(sharedBuffer,sharedSize32);	// Connect and share buffer to host
-	if (sharedBuffer==0) 
+	int* sharedBuffer0=ubcMalloc32(sharedSize32);	// Allocates shared memory (in 32-bit words) 
+	int* sharedBuffer1=ubcMalloc32(sharedSize32);	// Allocates shared memory (in 32-bit words) 
+	if (sharedBuffer0==0 || sharedBuffer1==0) 
 		return -1;
-	unsigned* src=(unsigned*)sharedBuffer;
-	unsigned* dst=(unsigned*)sharedBuffer+1024;
-	unsigned  sync,size,incr;
-	sync=ubcHostSync(0x00006407+(procNo<<31));		// Handshake
-	size=ubcHostSync((unsigned)src);				// Gets array size, sends input buffer address
-	incr=ubcHostSync((unsigned)dst);				// Gets increment (123), sends output buffer address
-	// Host >>>>>> Shared memory 					// Here host writes data to shared memory
+	for(int i=0;i<sharedSize32;i++){ 				// init 
+		sharedBuffer0[i]=i;
+		sharedBuffer1[i]=0;
+	}
+
+	unsigned  sync;
+	sync=ubcHostSync(0x00006407);					// Handshake
+	sync=ubcHostSync((unsigned)sharedSize32);		// Send array size,
+	sync=ubcHostSync((unsigned)sharedBuffer0);		// Sends input buffer address
+	sync=ubcHostSync((unsigned)sharedBuffer1);		// sends output buffer address
+	// Host <<<<<< Shared0 memory 					// Here host reads data from shared memory
 	sync=ubcHostSync(0x4321);						// Gets ready status (0x600DB00F)
-	for(int i=0;i<size;i++) 						// Calcualates output array 
-		dst[i]=src[i]+incr;
-	ubcHostSync(0x600DBEEF);						// Sends signal that array is modified and ready for reading
-	// Host <<<<<< Shared memory 					// Here host reads data from shared memory
-	ubcDisconnect(sharedBuffer);					// Final sync, dealocates sharedBuffer and disconnects from host
+	// Host >>>>>> Shared1 memory 					// Here host writes data to shared memory
+	sync=ubcHostSync(0x4321);						// Gets ready status (0x600DB00F)
+	for(int i=0;i<128;i++){ 						// Calcualates output array 
+		printf("sharedBuffer1[%d]=%d\n",i,sharedBuffer1[i]);
+	}
+	
+	ubcDisconnect(0);					// Final sync, dealocates sharedBuffer and disconnects from host
 	return 0x600D;
 }

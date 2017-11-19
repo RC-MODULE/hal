@@ -1,15 +1,56 @@
+
+//TCHAR sMallocRegestryName[]=TEXT(REGISTRY_BUFFER_MAPPNING_NAME);
+//TCHAR sSharedMemName[]     =TEXT(SYNC_BUFFER_MAPPING_NAME);
+
+#define CONST_BUFFER_MAPPING_NAME "Global\\FileMappingObject" 
+#define BUFFER_REGISTRY_MAPPNING_NAME "Global\\RegistryFileMappingObject" 
+#define CONST_REGISTRY_MAPPING_NAME "Global\\RegistryFileMappingObject_" 
+#define BUFFER_REGISTRY_MAX_SIZE 100
+#define SYNC_BUFFER_MAPPING_NAME "Global\\SyncFileMappingObject"
 #define SYNC_BUF_SIZE 64*1024
-TCHAR sSyncName[]=TEXT("Global\\SyncFileMappingObject");
+#define MAX_COUNT_PROCESSORS 8
 
-#define SYNC_BUF_SIZE 64*1024
-TCHAR sMallocRegestryName[]=TEXT("Global\\RegistryFileMappingObject");
-
-
-TCHAR sSharedMemName[]=TEXT("Global\\SharedFileMappingObject");
+TCHAR* createName(TCHAR* baseName, int index0, int index2);
+struct SyncBuf {
+	int counter0;
+	int counter1;
+	int sync0;
+	int sync1;
+};
 
 struct MappedBuffer {
-	unsigned ownerCore;
-	unsigned ownerAddress;
+	int*     address;
 	unsigned size32;
-	unsigned locked;
+	int		 owner;
+	HANDLE   handle;
+};   
+
+struct BufferRegistry {
+	int count;
+	int numProcessors;
+	int isLocked;
+	MappedBuffer buffer[BUFFER_REGISTRY_MAX_SIZE];
 };
+
+struct MirrorBuffer {
+	int*     address;
+	unsigned size32;
+//	int		 owner;
+	int*	 mirror;
+	int		 diff;
+	HANDLE   handle;
+};   
+
+struct MirrorRegistry{
+	BufferRegistry* pBufferRegistry;
+	HANDLE          hBufferRegistry;
+	int				count;
+	MirrorBuffer	buffer[BUFFER_REGISTRY_MAX_SIZE];
+};
+
+
+#define SYNC_BUF_SIZE 64*1024
+
+
+#define REGISTRY_BUF_SIZE 64*1024
+

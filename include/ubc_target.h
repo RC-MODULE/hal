@@ -49,6 +49,7 @@ extern "C"
 	#define ubcGetProcessorNo() PROCESSOR_ID
 #endif
 
+void ubcSetProcessorNo(int number); 
 // Barrier sync with host PC
 #define ubcHostSync(value) ncl_hostSync(value)
 
@@ -108,7 +109,7 @@ void ubcFree(int* );
 	//extern void*    ubcSharedBuffer;
 	//extern unsigned ubcSharedSize;
 	#include <string.h>
-	inline int* ubcMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32);}
+	inline int* ubcMalloc32(int sharedSize32,int buuferID) {return (int*)malloc(sharedSize32);}
 	inline void ubcFree(int* shared) { free(shared);}
 #endif
 

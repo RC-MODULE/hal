@@ -1,6 +1,6 @@
 #include <string.h>
 void dma_init(int N, unsigned src, unsigned dst)
-{	int i;
+{	
 	memcpy((void*)dst,(void*)src,N*8);
 	//for(i = 0; i < N; i++) {
 	//	dst[i] = srs[i];

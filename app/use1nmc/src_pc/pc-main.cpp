@@ -29,7 +29,9 @@ int main(){
 	for(int i=0; i<SIZE32;i++) printf("%d\n",dstHostArray[i]);
 	
 	//sync        =ubcSync(0x6000DA1); 	// wait ready to read status , send/receive last sync (G000dBuy)
-
+	dstBoardAddr  =ubcSync(0x1); 		// Receive second array address to read from board 
+	ubcReadMemBlock (dstHostArray,dstBoardAddr,SIZE32); // read data from board
+	
 	ubcGetResult(&sync);					// get return value (0x600D)
 	printf("Return value:%X\n",sync);
 	ubcClose();								// close board, disconect from shared memory
