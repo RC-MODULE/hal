@@ -339,16 +339,21 @@ int ubcSyncArray(
 					 void *outAddress, // Sended array address (can be NULL)
 					 size_t outLen,    // Sended array length (can be 0)
 					 void **inAddress, // Received array address pointer (can be NULL)
-					 size_t *inLen)   // Received array size pointer (can be NULL)
+					 size_t *inLen,   // Received array size pointer (can be NULL)
+					 int  procNo)
 {
-	//ubcSync()
-	//findBuffer()
-	//int extBuffer=ubcHostSync((int)masterSharedBuffer);
-	//int extSize32=ubcHostSync((int)masterSharedSize32);
-	//if (extBuffer && extSize32){
+	int sync=ubcSync(value,procNo);
+	*inAddress=(void*)ubcSync((int)outAddress);
+	*inLen=ubcSync(outLen);
 
-	//}
-	return 1;
+	MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(*inAddress),procNo);
+	if (mirrorBuffer==0){
+		*inAddress=0;
+		*inLen=0;
+		return sync;
+	}
+	*inAddress=(void*)((int*)(*inAddress)+mirrorBuffer->diff);
+	return sync;
 }
 
 

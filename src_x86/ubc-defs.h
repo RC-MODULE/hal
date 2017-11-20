@@ -58,6 +58,9 @@ struct MirrorRegistry{
 	MirrorBuffer	buffer[BUFFER_REGISTRY_MAX_SIZE];
 };
 
+extern "C"{
+	MirrorBuffer* findBuffer(unsigned boardAddr,int processorNo);
+};
 
 #define SYNC_BUF_SIZE 64*1024
 
