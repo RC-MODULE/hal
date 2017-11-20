@@ -80,7 +80,7 @@ int ubcOpen(char* absfile=0,...){
 				TRACE( ": : ERROR: Can't load program into board.\n");
 				return  (1);
 			}
-		
+		/*
 			if (first_enter){
 				sharedBuffer=ubcSync(0x8086,proc);
 				sharedSize32=ubcSync(0x8086,proc);
@@ -90,7 +90,7 @@ int ubcOpen(char* absfile=0,...){
 				ok=ubcSync(sharedBuffer,proc);
 				ok=ubcSync(sharedSize32,proc);
 			}
-
+*/
 		}
 	}
 #endif

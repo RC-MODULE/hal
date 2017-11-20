@@ -17,6 +17,10 @@ int main(){
 	
 	//--------- processor #0 communication ----------------------------------------
 	sync        =ubcSync(0x8086,0);			// receive handshake (0x6406)
+	sync        =ubcSync(0x8086,1);			// receive handshake (0x6406)
+	sync        =ubcSync(0x8086,0);			// receive proc1-proc0 sync // 101
+	sync        =ubcSync(0x8086,1);			// receive proc0-proc1 sync // 100
+
 	size		=ubcSync(101,0);			// receive address to write  on board  
 	srcBrdAddr0 =ubcSync(102,0);			// receive address to write  on board   
 	dstBrdAddr0 =ubcSync(103,0);			// receive address to read from board   
@@ -31,7 +35,7 @@ int main(){
 	for(int i=0; i<128;i++) printf("src[%i]=%d\n",i,srcHostArray[i]);
 	printf("Processor[0] Return value:%X\n",sync);
 	//--------- processor #1 communication ----------------------------------------
-	sync        =ubcSync(0x8086,1);			// receive handshake (0x6406)
+	
 	size        =ubcSync(srcBrdAddr0,1);	// send shared addr of proc-0
 	size        =ubcSync(dstBrdAddr0,1);	// send shared addr of proc-0
 	srcBrdAddr1 =ubcSync(0,1);				// get shared addr of proc-1

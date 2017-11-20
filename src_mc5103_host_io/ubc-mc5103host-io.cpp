@@ -75,8 +75,8 @@ int ubcOpen(char* absfile=0,...){
 	}
 
 		
-	unsigned sharedBuffer=ubcSync(0x8086);
-	unsigned sharedSize32=ubcSync(0x8086);
+	//unsigned sharedBuffer=ubcSync(0x8086);
+	//unsigned sharedSize32=ubcSync(0x8086);
 
 	TRACE ("OK!\n");
 	return 0;

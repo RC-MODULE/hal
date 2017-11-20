@@ -16,8 +16,8 @@ endif
 BOARD    = mc12101
 HOST     = $(BOARD)-x86
 
-TARGET0  = main0.abs
-TARGET1  = main1.abs
+TARGET0  = main0_.abs
+TARGET1  = main1_.abs
 
 ALL: $(TARGET0) $(TARGET1) $(HOST)
 

@@ -19,23 +19,32 @@
 //------------------------------------------------------------------------
 #include "ubc_target.h"
 #include "stdio.h"
+#include "led.h"
+#include "sleep.h"
 //#pragma data_section ".data_shared.bss"
 //	long srcBuff[1024/2];
 //	long dstBuff[1024/2];
 	
 
 
+
+
+
  int main()
 {
-	
+
+	halLedOn(1);
 	ubcSetProcessorNo(1);
 	
 	unsigned  sync,incr;
 
-	sync=ubcSync(101,1);							// sync with proc 0
+	
 
 	int  sharedSize32=2048;							// Set shared buffer size
 	sync=ubcHostSync(0x10006407);					// Handshake
+	sync=ubcSync(101,0);							// sync with proc 0
+	sync=ubcHostSync(sync);							// Send reply from proc 0
+
 	int* sharedBuffer0=(int*)ubcHostSync(0);			// Read shared0 memory address 
 	int* sharedBuffer1=(int*)ubcHostSync(1);			// Read shared1 memory address
 	int* sharedBuffer2=(int*)ubcMalloc32(sharedSize32);	// Allocates shared2 memory (in 32-bit words)  Send array size,
@@ -60,4 +69,5 @@
 	for(int i=0;i<128;i++){ 						// Calcualates output array 
 		printf("sharedBuffer1[%d]=%d\n",i,sharedBuffer3[i]);
 	}
+	while(1);
 }

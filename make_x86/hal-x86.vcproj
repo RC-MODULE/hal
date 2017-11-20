@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\src_x86"
+				AdditionalIncludeDirectories="..\include"
 				PreprocessorDefinitions="DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -58,7 +58,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="DEBUG"
-				AdditionalIncludeDirectories="..\include;..\src_x86"
+				AdditionalIncludeDirectories="..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -108,7 +108,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\src_x86"
+				AdditionalIncludeDirectories="..\include"
 				PreprocessorDefinitions="NDEBUG"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -124,7 +124,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				AdditionalIncludeDirectories="..\include;..\src_x86"
+				AdditionalIncludeDirectories="..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -211,6 +211,10 @@
 						CompileAs="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\src_x86\led.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\src_x86\ubc-defs.h"

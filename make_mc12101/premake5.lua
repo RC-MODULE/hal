@@ -6,7 +6,7 @@ solution "hal-mc12101"
 
 	project "hal-mc12101"
       kind "Makefile"
-      files { "../src_src_1879vya1ya/*.*","../include/*.h", "Makefile" }
+      files { "../src_1879vm6ya/*.*","../include/*.h", "Makefile" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile"}

@@ -15,11 +15,12 @@ extern  SyncBuf  *pSyncBuf;
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
+extern "C"{
 
-void ubcSetProcessorNo(int number){
-	procNo=number;
-}
-
+	void ubcSetProcessorNo(int number){
+		procNo=number;
+	}
+};
 // Возвращает указатель на буфер синхронизации
 SyncBuf* getSyncBuffer(){
 	if (pSyncBuf==0){

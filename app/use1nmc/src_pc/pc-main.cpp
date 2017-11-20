@@ -7,7 +7,8 @@ unsigned int dstHostArray[SIZE32];
 
 int main(){
 
-	for(int i=0;i<SIZE32;i++)	srcHostArray[i]=i;
+	for(int i=0;i<SIZE32;i++)	
+		srcHostArray[i]=i;
 	
 	unsigned srcBoardAddr;
 	unsigned dstBoardAddr;

@@ -25,7 +25,7 @@ solution "mc12101access"
 		 
 	project "mc12101-nmc4-0"
       kind "Makefile"
-      files { "../../../*.h","../src_nm0/*.cpp" }
+      files { "../../../include/*.h","../src_nm0/*.cpp" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y"}
@@ -39,7 +39,7 @@ solution "mc12101access"
 		   
 	project "mc12101-nmc4-1"
       kind "Makefile"
-      files { "../../../*.h","../src_nm1/*.cpp" }
+      files { "../../../include/*.h","../src_nm1/*.cpp" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y"}
