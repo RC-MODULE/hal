@@ -13,24 +13,24 @@
 //TCHAR sSharedMemName[]=TEXT("Global\\SharedFileMappingObject");
 
 HANDLE hMapFile;
-HANDLE hMapFileSharedMem;
+//HANDLE hMapFileSharedMem;
 
 // 
 SyncBuf  *pSyncBuf=0;
 
 
 //const int MAX_SHARED
-static int* pSharedMem;//[MAX_SHARED];
-static int  sharedDiff[MAX_COUNT_PROCESSORS];
+//static int* pSharedMem;//[MAX_SHARED];
+//static int  sharedDiff[MAX_COUNT_PROCESSORS];
 
-int             bufferRegistryCount=0;
+//int             bufferRegistryCount=0;
 
 MirrorRegistry mirrorRegistry[MAX_COUNT_PROCESSORS];
 
 extern int procNo=0;
 extern "C"{
 
-int ubcSync(int val,int processor=0){
+int ubcSync(int val,int processor){
 	//printf ("HOST[%d]:Sync[%d] (%8xh)...",processor,pSyncBuf[processor].counter0,val);
 
 	/*
@@ -44,18 +44,51 @@ int ubcSync(int val,int processor=0){
 	while (pSyncBuf[processor].locked0)
 		::Sleep(100);
 		*/
-	SyncBuf& syncro = pSyncBuf[processor];
+	if (pSyncBuf==0)
+			pSyncBuf=getSyncBuffer();
+		
+	int sync;
+	if (procNo==-1){
+		SyncBuf& syncro= pSyncBuf[processor];
 
-	
-	while(syncro.writeCounter[0]>syncro.readCounter[0])
-	{}
-	syncro.sync0=val;						
-	syncro.writeCounter[0]++;
-	
-	while(syncro.readCounter[1]==syncro.writeCounter[1])		
-	{}									
-	int sync=syncro.sync1;								
-	syncro.readCounter[1]++;
+		
+		while(syncro.writeCounter[0]>syncro.readCounter[0])
+		{::Sleep(100);}
+		syncro.sync0=val;						
+		syncro.writeCounter[0]++;
+		
+		while(syncro.readCounter[1]==syncro.writeCounter[1])		
+		{::Sleep(100);}									
+		sync=syncro.sync1;								
+		syncro.readCounter[1]++;
+	}
+	else if (procNo==0){
+		SyncBuf& syncro= pSyncBuf[2];
+
+		while(syncro.writeCounter[0]>syncro.readCounter[0])
+		{::Sleep(100);}
+		syncro.sync0=val;						
+		syncro.writeCounter[0]++;
+		
+		while(syncro.readCounter[1]==syncro.writeCounter[1])		
+		{::Sleep(100);}									
+		sync=syncro.sync1;								
+		syncro.readCounter[1]++;
+	}
+	else if (procNo==1){
+		SyncBuf& syncro= pSyncBuf[2];
+
+		while(syncro.writeCounter[1]>syncro.readCounter[1])
+		{}
+		syncro.sync1=val;						
+		syncro.writeCounter[1]++;
+		
+		while(syncro.readCounter[0]==syncro.writeCounter[0])		
+		{}									
+		sync=syncro.sync0;								
+		syncro.readCounter[0]++;
+
+	}
 
 	return sync;
 	
@@ -286,13 +319,13 @@ int ubcClose(){
 	ubcSync((int)0x600DBA100);
 	if (pSyncBuf)
 		UnmapViewOfFile(pSyncBuf);
-	if (pSharedMem)
-		UnmapViewOfFile(pSharedMem);
+	//if (pSharedMem)
+	//	UnmapViewOfFile(pSharedMem);
 
-	if (hMapFile)
-		CloseHandle(hMapFile);
-	if (hMapFileSharedMem)
-		CloseHandle(hMapFileSharedMem);
+	//if (hMapFile)
+	//	CloseHandle(hMapFile);
+	//if (hMapFileSharedMem)
+	//	CloseHandle(hMapFileSharedMem);
 	
 
 	return 1;

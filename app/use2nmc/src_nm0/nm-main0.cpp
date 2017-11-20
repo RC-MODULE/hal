@@ -28,8 +28,9 @@
  int main()
 {
 	
-
-	int procNo=ubcGetProcessorNo();					// Get processor number 
+	unsigned  sync;
+	ubcSetProcessorNo(0);							// Set processor number 
+	sync= ubcSync(100,1);							// sync with proc 1
 	int  sharedSize32=2048;							// Set shared buffer size
 	int* sharedBuffer0=ubcMalloc32(sharedSize32);	// Allocates shared memory (in 32-bit words) 
 	int* sharedBuffer1=ubcMalloc32(sharedSize32);	// Allocates shared memory (in 32-bit words) 
@@ -40,7 +41,7 @@
 		sharedBuffer1[i]=0;
 	}
 
-	unsigned  sync;
+	
 	sync=ubcHostSync(0x00006407);					// Handshake
 	sync=ubcHostSync((unsigned)sharedSize32);		// Send array size,
 	sync=ubcHostSync((unsigned)sharedBuffer0);		// Sends input buffer address

@@ -11,6 +11,7 @@
 #define MAX_COUNT_PROCESSORS 8
 
 TCHAR* createName(TCHAR* baseName, int index0, int index2);
+
 struct SyncBuf {
 	//int		counter0;
 	//int		counter1;
@@ -26,7 +27,7 @@ struct SyncBuf {
 	int		readCounter[2];
 	int		writeCounter[2];
 };
-
+SyncBuf* getSyncBuffer();
 struct MappedBuffer {
 	int*     address;
 	unsigned size32;

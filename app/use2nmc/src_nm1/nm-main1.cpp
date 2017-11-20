@@ -29,7 +29,11 @@
 {
 	
 	ubcSetProcessorNo(1);
+	
 	unsigned  sync,incr;
+
+	sync=ubcSync(101,1);							// sync with proc 0
+
 	int  sharedSize32=2048;							// Set shared buffer size
 	sync=ubcHostSync(0x10006407);					// Handshake
 	int* sharedBuffer0=(int*)ubcHostSync(0);			// Read shared0 memory address 

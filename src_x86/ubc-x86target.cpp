@@ -333,6 +333,23 @@ int ubcHostSyncArray(
 	return 1;
 }
 
+int ubcSyncArray(
+					 int value,        // Sync value
+					 void *outAddress, // Sended array address (can be NULL)
+					 size_t outLen,    // Sended array length (can be 0)
+					 void **inAddress, // Received array address pointer (can be NULL)
+					 size_t *inLen)   // Received array size pointer (can be NULL)
+{
+	//ubcSync()
+	//findBuffer()
+	//int extBuffer=ubcHostSync((int)masterSharedBuffer);
+	//int extSize32=ubcHostSync((int)masterSharedSize32);
+	//if (extBuffer && extSize32){
+
+	//}
+	return 1;
+}
+
 
 //void ubcFree(){
 //	

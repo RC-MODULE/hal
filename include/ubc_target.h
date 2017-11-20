@@ -21,6 +21,8 @@
 
 extern "C"
 {
+	int ubcSync(int val,int processor=0);
+
 	// Return processor number on board
 	int ncl_getProcessorNo(void);
 
