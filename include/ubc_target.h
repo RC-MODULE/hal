@@ -21,6 +21,17 @@
 
 extern "C"
 {
+	void setActiveHeap(int heapNo);
+
+
+	int ubcSyncArray(
+					 int value,        // Sync value
+					 void *outAddress, // Sended array address (can be NULL)
+					 size_t outLen,    // Sended array length (can be 0)
+					 void **inAddress, // Received array address pointer (can be NULL)
+					 size_t *inLen,   // Received array size pointer (can be NULL)
+					 int  procNo);
+
 	int ubcSync(int val,int processor=0);
 
 	// Return processor number on board

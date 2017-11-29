@@ -290,7 +290,7 @@ MirrorBuffer* findBuffer(unsigned boardAddr,int processorNo){
 int ubcReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
 	MirrorBuffer* pMirrorBuffer=findBuffer(srcBoardAddr,processor);
 	if (pMirrorBuffer){
-		CopyMemory((PVOID)dstHostAddr, (char*)((int*)pMirrorBuffer->address + pMirrorBuffer->diff), size32*4);
+		CopyMemory((PVOID)dstHostAddr, (char*)(((int*)srcBoardAddr) + pMirrorBuffer->diff), size32*4);
 		return 1;
 	}
 	return 0;
@@ -301,7 +301,7 @@ int ubcReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, u
 int ubcWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
 	MirrorBuffer* pMirrorBuffer=findBuffer(dstBoardAddr,processor);
 	if (pMirrorBuffer){
-		CopyMemory((char*)((unsigned*)dstBoardAddr + pMirrorBuffer->diff), (PVOID)srcHostAddr,  size32 * 4);
+		CopyMemory((char*)(((unsigned*)dstBoardAddr) + pMirrorBuffer->diff), (PVOID)srcHostAddr,  size32 * 4);
 		return 1;
 	}
 	return 0;

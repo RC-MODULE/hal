@@ -71,5 +71,19 @@ int ubcSync(int val,int processor){
 	
 	
 }
+int ubcSyncArray(
+					 int value,        // Sync value
+					 void *outAddress, // Sended array address (can be NULL)
+					 size_t outLen,    // Sended array length (can be 0)
+					 void **inAddress, // Received array address pointer (can be NULL)
+					 size_t *inLen,   // Received array size pointer (can be NULL)
+					 int  procNo)
+{
+	int sync=ubcSync(value,procNo);
+	*inAddress=(void*)ubcSync((int)outAddress);
+	*inLen=ubcSync(outLen);
+	return sync;
+}
+
 
 };
