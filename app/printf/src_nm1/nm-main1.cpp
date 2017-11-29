@@ -17,7 +17,6 @@
 #include "sleep.h"
 int main()
 {
-	ubcConnect(0);
 	for(int i=0; i<100; i++){
 		printf("Hello %d from NMC[1]\n",i);	
 		halSleep(100);

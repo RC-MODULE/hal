@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="hal-x86"
-	ProjectGUID="{2DBA6933-9999-E8CE-A2B1-73A50E104F30}"
-	RootNamespace="hal-x86"
+	Name="hal-virtual-x86"
+	ProjectGUID="{C1180E9F-2DA4-7B63-36B5-FE57A2BFD763}"
+	RootNamespace="hal-virtual-x86"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="0"
 	>
@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\hal-x86.lib"
+				OutputFile="$(OutDir)\hal-virtual-x86.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -131,7 +131,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\hal-x86.lib"
+				OutputFile="$(OutDir)\hal-virtual-x86.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -190,10 +190,10 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="src_x86"
+			Name="src_virtual"
 			>
 			<File
-				RelativePath="..\src_x86\dma-x86.c"
+				RelativePath="..\src_virtual\dma-x86.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -213,19 +213,19 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src_x86\led.cpp"
+				RelativePath="..\src_virtual\led.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\src_x86\ubc-defs.h"
+				RelativePath="..\src_virtual\ubc-defs.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src_x86\ubc-x86host.cpp"
+				RelativePath="..\src_virtual\ubc-x86host.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\src_x86\ubc-x86target.cpp"
+				RelativePath="..\src_virtual\ubc-x86target.cpp"
 				>
 			</File>
 		</Filter>

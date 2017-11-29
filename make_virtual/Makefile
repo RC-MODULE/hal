@@ -1,15 +1,11 @@
 ROOT = ..
 include $(ROOT)/global.mk
 #-include ../local.mk
-HEAP ?= -heap=6384 -heap1=16384 -heap2=16384 -heap3=16384
-# BUILD AND RUN MAKEFILE
-# This makefile builds simple nmc-application containing single cpp-file  
-# Rule 'run' executes the application on MC5103 board and stores return code in ".exitcode"  file
 
 .SUFFIXES:
 
 
-HOST      = hal-x86
+HOST      = hal-virtual-x86
 
 ALL:  $(HOST)
 	

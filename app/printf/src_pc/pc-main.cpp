@@ -19,17 +19,18 @@ int main(){
 	}
 	
 	
-	unsigned sync;
+	unsigned sync=-1;
 	#ifdef NMPU1
 	ubcGetResult(&sync,1);					// get return value (0x600D)
 	#else 	
 	ubcGetResult(&sync);					// get return value (0x600D)
 	#endif	
 
-	printf("Return value:%X\n",sync);
+	
 	::Sleep(10000);
 	ubcClose();								// close board, disconect from shared memory
 	::Sleep(5000);
+	printf("Return value:%X\n",sync);
 	return 0;
 
 }

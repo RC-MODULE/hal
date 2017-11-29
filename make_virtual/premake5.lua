@@ -1,12 +1,12 @@
 #!lua
 
 -- A solution contains projects, and defines the available configurations
-solution "hal-x86"
+solution "hal-virtual-x86"
    configurations { "Debug", "Release" }
 
-	project "hal-x86"
+	project "hal-virtual-x86"
       kind "StaticLib"
-      files { "../src_x86/*.*","../include/*.h"}
+      files { "../src_virtual/*.*","../include/*.h"}
 	  includedirs { "../include"}
 	  targetdir ("../lib")
 	  

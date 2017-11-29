@@ -4,6 +4,8 @@ ROOT = ..
 
 .SUFFIXES:
 PROJECT  = hal-mb7707
+LIB_X86   = $(PROJECT)-x86
+LIBIO_X86 = $(PROJECT)io-x86
 INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload"
 LIB_DIRS = 
 SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all
@@ -27,7 +29,7 @@ BUILDER_FLAGS    =-s $(TARGET)
 TMP_DIR          =Release
 #--------------  DEBUG config -------------------------
 ifdef DEBUG      
-TARGET           =$(OUT_DIR)/$(PROJECT)d.lib
+TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -Tc99
 LIBS            :=
@@ -45,6 +47,10 @@ OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM
 
 VPATH    = $(SRC_DIRS)
 
+
+all: $(TARGET) $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib
+
+#--------------- nmc build --------------------------------	
 $(TARGET): $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
 
@@ -66,15 +72,24 @@ $(TMP_DIR)/%.asmx: %.cpp
 $(TMP_DIR)/%.asmx: %.c
 	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
 
+#--------------- X86 build --------------------------------	
 	
+$(OUT_DIR)/$(LIB_X86).lib: $(LIB_X86).vcproj
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIB_X86).vcproj
+
+$(OUT_DIR)/$(LIBIO_X86).lib: $(LIBIO_X86).vcproj
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIBIO_X86).vcproj
+	
+$(LIB_X86).vcproj $(LIBIO_X86).vcproj  vs2005:	premake5.lua 
+	premake5 vs2005
+	
+#--------------- cleanup  --------------------------------	
 
 clean:
-	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters
+	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib $(OUT_DIR)/$(PROJECT).lib $(OUT_DIR)/$(PROJECT)d.lib
 	-$(OS_RD) bin obj Release Debug
 	
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj
 	
-$(HOST).vcproj  vs2005:	premake5.lua 
-	premake5 vs2005
 	

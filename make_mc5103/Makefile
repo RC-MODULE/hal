@@ -30,7 +30,7 @@ BUILDER_FLAGS    =-s $(TARGET)
 TMP_DIR          =Release
 #--------------  DEBUG config -------------------------
 ifdef DEBUG      
-TARGET           =$(OUT_DIR)/$(PROJECT)d.lib
+TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -Tc99
 LIBS            :=

@@ -38,3 +38,20 @@ solution "hal-mb7707"
 		 targetdir ("../lib")
 		
 	 
+	project "hal-mb7707io-x86"
+      kind "StaticLib"
+      files { "../src_mb7707_host_io/*.*","../src_io/*.*","../include/*.h"}
+	  includedirs { "../include","$(MB7707)/libload","../src_mb7707_host_io","../src_io"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG","NM6405"}
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG","NM6405" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		
