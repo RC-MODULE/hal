@@ -33,9 +33,11 @@ int main(){
 	dstBoardAddr  =ubcSync(0x1); 		// Receive second array address to read from board 
 	ubcReadMemBlock (dstHostArray,dstBoardAddr,SIZE32); // read data from board
 	
+											
 	ubcGetResult(&sync);					// get return value (0x600D)
 	printf("Return value:%X\n",sync);
 	ubcClose();								// close board, disconect from shared memory
+	printf("Sleep 5 sec...\n",sync);
 	::Sleep(5000);
 	return sync;
 

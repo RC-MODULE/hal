@@ -41,6 +41,6 @@ int main()
 	// Host <<<<<< Shared memory 		// Here host reads data from shared memory
 	
 
-	ubcDisconnect(sharedBuffer);		// Final sync, dealocates sharedBuffer and disconnects from host
+	ubcFree(sharedBuffer);					// dealocates sharedBuffer
 	return 0x600D+(ubcGetProcessorNo()<<28);
 }

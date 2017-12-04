@@ -1,0 +1,39 @@
+
+	
+macro HAL_LED(led_mask)
+	push ar0,gr0;
+	led_mask= not led_mask;
+	gr0 = led_mask << 5;
+	nmscu = gr0;
+	pop ar0,gr0;
+end HAL_LED;
+
+
+
+macro HAL_LED_ON(ledIndx)
+	push ar0,gr0;
+	push ar1,gr1;
+	ar1 = ledBit;
+	gr1 = ledIndx;
+	gr1 = [ar1+=gr1];
+	gr1 = gr1 <<5;
+	gr0 = nmscu;
+	gr1 = gr0 and not gr1;
+	nmscu   = gr1; 
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED_ON;
+
+macro HAL_LED_OFF(ledIndx)
+	push ar0,gr0;
+	push ar1,gr1;
+	ar1 = ledBit;
+	gr1 = ledIndx;
+	gr1 = [ar1+=gr1];
+	gr1 = gr1<<5;
+	gr0 = nmscu;
+	gr1 = gr0 or gr1;
+	nmscu   =  gr1;
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED_OFF;

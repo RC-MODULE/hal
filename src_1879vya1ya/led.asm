@@ -2,12 +2,9 @@ import from led.mlb;
 import from rtmacro.mlb;
 
 
-
 begin ".text"
 
 ledBit: word[8]=(1,2,4,8,16,32,64,128);
-
-
 
 global _halLed:label;
 <_halLed>
@@ -29,10 +26,10 @@ global _halLedOff:label;
 	gr7 = [--ar5];
 	HAL_LED_OFF(gr7);
 	return;
-	
+
 global _halLedCount:label;
 <_halLedCount>
-	gr7 = 8;
+	gr7 = 4;
 	return;
 	
 end ".text";

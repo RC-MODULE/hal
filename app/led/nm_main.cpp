@@ -4,31 +4,35 @@
 #include "malloc.h"
 
 
+void blink(int led, int count, int ms){
+	for(int i=0; i<count; i++){
+		halLedOn(led);
+		halSleep(ms);
+		halLedOff(led);
+		halSleep(ms);
+	}
+}
 int main()
 { 
 	
 	printf("Starting led test...\n");
-	
-	printf("switch on all leds\n");
-	halLed(0xFF);
-	halSleep(1000);
-	
 	printf("switch off all leds\n");
-	halLed(0x00);
+	halLed(0x0);
 	halSleep(1000);
 	
-	for(int led=0; led<8; led++){
+	for(int led=0; led<halLedCount(); led++){
 		halLedOn(led);
-		halSleep(100);
+		halSleep(200);
 	}
 	
-	for(int led=0; led<8; led++){
+	for(int led=0; led<halLedCount(); led++){
 		halLedOff(led);
-		halSleep(100);
+		halSleep(200);
 	}
 	
-	
-	
+	for(int led=0; led<halLedCount(); led++){
+		blink(led,50,20);
+	}
 	
 	return 0;
 	

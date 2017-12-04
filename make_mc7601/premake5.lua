@@ -38,3 +38,20 @@ solution "hal-mc7601"
 		 targetdir ("../lib")
 		
 	 
+	project "hal-mc7601io-x86"
+      kind "StaticLib"
+      files { "../src_mc7601_host_io/*.*","../include/*.h"}
+	  includedirs { "../include","$(MC7601)/include","../src_mc7601_host_io","../src_io"}
+	  
+	  
+	  configuration "Debug"
+         defines { "DEBUG" }
+         symbols  "On" 
+		 targetdir ("../lib")
+		 
+
+      configuration "Release"
+         defines { "NDEBUG" }
+         symbols  "Off" 
+		 targetdir ("../lib")
+		
