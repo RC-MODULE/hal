@@ -11,7 +11,7 @@ solution "board-host"
       language "C++"
       files { "**.h", "../src_pc/*.cpp" }
 	  libdirs { "../../../lib" }
-	  links { "hal-x86.lib" }
+	  links { "hal-virtual-x86.lib" }
 
       configuration "Debug"
          defines { "DEBUG" }
@@ -36,7 +36,7 @@ solution "board-target0"
       language "C++"
       files { "**.h", "../src_nm0/*.cpp" }
 	  libdirs { "../../../lib" }
-	  links { "hal-x86.lib" }
+	  links { "hal-virtual-x86.lib" }
 
 
       configuration "Debug"
@@ -62,7 +62,7 @@ solution "board-target1"
       language "C++"
       files { "**.h", "../src_nm1/*.cpp" }
 	  libdirs { "../../../lib" }
-	  links { "hal-x86.lib" }
+	  links { "hal-virtual-x86.lib" }
 
 
       configuration "Debug"

@@ -356,10 +356,17 @@ int ubcSyncArray(
 	return sync;
 }
 
-
-//void ubcFree(){
-//	
-//}
+extern "C" {
+void ubcFree(int* ){
+	/*
+	ubcHostSync((int)0x600DBA1+ubcGetProcessorNo());
+	UnmapViewOfFile(shared);
+	CloseHandle(hMapFileSharedMem);	
+	UnmapViewOfFile(pSyncBuf);
+	CloseHandle(hMapFile);
+	*/
+}
+};
 
 int ubcDisconnect(int* shared){
 	ubcHostSync((int)0x600DBA1+ubcGetProcessorNo());

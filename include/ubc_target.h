@@ -49,6 +49,17 @@ extern "C"
 		size_t *inLen);   // Received array size pointer (can be NULL)
 	void ubcSetProcessorNo(int number);
 
+	#ifndef __NM__
+	int* ubcMalloc32(int sharedSize32);
+	void ubcFree(int* );
+	#else 
+		//extern void*    ubcSharedBuffer;
+		//extern unsigned ubcSharedSize;
+		//#include <string.h>
+		inline int* ubcMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32);}
+		inline void ubcFree(int* shared) { free(shared);}
+	#endif
+
 };
 
 //int ubcSetProcessorNo(int);
@@ -116,16 +127,6 @@ int ubcInterConnect(int* shared);
 #endif 
 
 
-#ifndef __NM__
-int* ubcMalloc32(int sharedSize32);
-void ubcFree(int* );
-#else 
-	//extern void*    ubcSharedBuffer;
-	//extern unsigned ubcSharedSize;
-	#include <string.h>
-	inline int* ubcMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32);}
-	inline void ubcFree(int* shared) { free(shared);}
-#endif
 
 
 #endif  // _UBC_TARGET_H

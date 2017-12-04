@@ -10,7 +10,7 @@ solution "board-host"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_pc/*.cpp" }
-      links { "../../../lib/hal-x86.lib"} 
+      links { "../../../lib/hal-virtual-x86.lib"} 
       includedirs { "../../../include"}
 
       configuration "Debug"
@@ -34,7 +34,7 @@ solution "board-target"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_nm/*.cpp" }
-      links { "../../../lib/hal-x86.lib"} 
+      links { "../../../lib/hal-virtual-x86.lib"} 
       includedirs { "../../../include"}
 
 
