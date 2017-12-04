@@ -31,7 +31,7 @@ output section     address         size           flags/input sections
                      0x00028000      0x00000332   nm_main.elf
                      0x00028332      0x00000040   MC12101_STARTUP.ELF, d:/git/dev-kit/mc12101sdk/lib/mc12101lib_nm.lib
                      0x00028372      0x0000000e   CLOCK.O, ../../../lib/hal-mc12101.lib
-                     0x00028380      0x00000246   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/nm_io4.lib
+                     0x00028380      0x00000246   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/
                      0x000285c6      0x00000016   I32TOF.ELF, d:/git/dev-kit/nmsdk/lib/libc4.lib
                      0x000285dc      0x0000000e   U32TOF.ELF, d:/git/dev-kit/nmsdk/lib/libc4f.lib
                      0x000285ea      0x0000001e   FDIV.ELF, d:/git/dev-kit/nmsdk/lib/libc4f.lib
@@ -78,7 +78,7 @@ output section     address         size           flags/input sections
  .data             0x00030000      0x00000126     
                      0x00030000      0x00000001   nm_main.elf
                                      0x00000001     --- HOLE ---
-                     0x00030002      0x0000007a   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/nm_io4.lib
+                     0x00030002      0x0000007a   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/
                      0x0003007c      0x00000002   U32TOF.ELF, d:/git/dev-kit/nmsdk/lib/libc4f.lib
                      0x0003007e      0x00000002   FDIV.ELF, d:/git/dev-kit/nmsdk/lib/libc4f.lib
                      0x00030080      0x00000004   TRYCATCH.ELF, d:/git/dev-kit/nmsdk/lib/cppnew4.lib
@@ -148,14 +148,14 @@ output section     address         size           flags/input sections
  .data_ext         0x20000000      0x000000d8     
                      0x20000000      0x000000d8   nm_main.elf
  .rpc_services     0x200000d8      0x00000008     
-                     0x200000d8      0x00000008   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/nm_io4.lib
+                     0x200000d8      0x00000008   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/
  .data_ext.bss     0x200000e0      0x00007d02         NOT INITIALIZED
                      0x200000e0      0x00007d02   nm_main.elf
  .heap             0x20007de2      0x00000000         NOT INITIALIZED
                      0x20007de2      0x00000000   MEMORY.ELF, d:/git/dev-kit/nmsdk/lib/libc4.lib
  .data_shared.bs   0x20007de2      0x00000000         NOT INITIALIZED
  .rpc_services.b   0x20007de2      0x00028000         NOT INITIALIZED
-                     0x20007de2      0x00028000   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/nm_io4.lib
+                     0x20007de2      0x00028000   PRINTF.ELF, d:/git/dev-kit/nm_io/lib/
 
 ===============================================================================
 GLOBAL SYMBOLS:

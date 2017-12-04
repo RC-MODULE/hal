@@ -173,19 +173,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\hal_host.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\hal_target.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\led.h"
 				>
 			</File>
 			<File
 				RelativePath="..\include\sleep.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\ubc_host.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\ubc_target.h"
 				>
 			</File>
 		</Filter>
@@ -213,19 +213,19 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\src_virtual\hal-defs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src_virtual\hal-x86host.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src_virtual\hal-x86target.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src_virtual\led.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src_virtual\ubc-defs.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src_virtual\ubc-x86host.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src_virtual\ubc-x86target.cpp"
 				>
 			</File>
 		</Filter>

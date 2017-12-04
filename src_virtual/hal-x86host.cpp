@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include <tchar.h>
-#include "ubc-defs.h"
-#include "ubc_target.h"
+#include "hal-defs.h"
+#include "hal_target.h"
 #define TRACE(str) printf("%s", str)
 
 #define SHARED_MEM_SIZE 1024
@@ -30,7 +30,10 @@ MirrorRegistry mirrorRegistry[MAX_COUNT_PROCESSORS];
 extern int procNo=0;
 extern "C"{
 
-int ubcSync(int val,int processor){
+void halSetActiveHeap(){
+	
+}
+int halSync(int val,int processor){
 	//printf ("HOST[%d]:Sync[%d] (%8xh)...",processor,pSyncBuf[processor].counter0,val);
 
 	/*
@@ -98,7 +101,7 @@ int ubcSync(int val,int processor){
 //static int* sharedBuffer[MAX_COUNT_PROCESSORS]={0,0,0,0,0,0,0,0};
 static char* absFile[MAX_COUNT_PROCESSORS]={0,0,0,0,0,0,0,0};
 
-int ubcOpen(char* absfile,...){
+int halOpen(char* absfile,...){
 	procNo=-1;
 	
 	//unsigned sharedSize32;
@@ -135,7 +138,7 @@ int ubcOpen(char* absfile,...){
 		return 1;
 	}
 	
-	//pSyncBuf=(SyncBuf*)ubcMalloc32(sizeof(SyncBuf)*2*4,SYNCRO_BUFFER);
+	//pSyncBuf=(SyncBuf*)halMalloc32(sizeof(SyncBuf)*2*4,SYNCRO_BUFFER);
 	if (pSyncBuf==0){
 		printf("ERROR:Shared memory allocation error on host \n");
 		return 1;
@@ -149,11 +152,11 @@ int ubcOpen(char* absfile,...){
 	int ok;
 	unsigned sharedSize32;
 	for(int processor=0; absFile[processor]; processor++){
-		ok=ubcSync(0x8086,processor);
+		ok=halSync(0x8086,processor);
 		
 	
 		if (processor==0){
-			sharedSize32 = ubcSync(0,processor);
+			sharedSize32 = halSync(0,processor);
 			if (sharedBuffer==0){
 				printf("Shared memory allocation error on target \n");
 				return 1;
@@ -186,13 +189,13 @@ int ubcOpen(char* absfile,...){
 				CloseHandle(hMapFileSharedMem);
 				return -1;
 			}
-			sharedBuffer[processor] = (int*)ubcSync(0, processor);	
+			sharedBuffer[processor] = (int*)halSync(0, processor);	
 			printf("HOST:Shared: %x %x\n",sharedBuffer[processor] ,sharedSize32*4);
 			sharedDiff[processor] = pSharedMem - sharedBuffer[processor];
 		}
 		else {
-			ok = ubcSync(sharedSize32, processor);	
-			sharedBuffer[processor] = (int*)ubcSync(0, processor);	
+			ok = halSync(sharedSize32, processor);	
+			sharedBuffer[processor] = (int*)halSync(0, processor);	
 			printf("HOST:Shared: %x %x\n",sharedBuffer[processor] ,sharedSize32*4);
 			sharedDiff[processor] = pSharedMem - sharedBuffer[processor];
 		}
@@ -287,7 +290,7 @@ MirrorBuffer* findBuffer(unsigned boardAddr,int processorNo){
 	return 0;
 }
 
-int ubcReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
+int halReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
 	MirrorBuffer* pMirrorBuffer=findBuffer(srcBoardAddr,processor);
 	if (pMirrorBuffer){
 		CopyMemory((PVOID)dstHostAddr, (char*)(((int*)srcBoardAddr) + pMirrorBuffer->diff), size32*4);
@@ -298,7 +301,7 @@ int ubcReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, u
 	
 }
 
-int ubcWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
+int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
 	MirrorBuffer* pMirrorBuffer=findBuffer(dstBoardAddr,processor);
 	if (pMirrorBuffer){
 		CopyMemory((char*)(((unsigned*)dstBoardAddr) + pMirrorBuffer->diff), (PVOID)srcHostAddr,  size32 * 4);
@@ -312,11 +315,11 @@ int ubcWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned
 }
 
 
-int ubcClose(){
+int halClose(){
 	for(int processor=1; absFile[processor]; processor++){  
-		ubcSync(0x600DBA10+processor,processor);
+		halSync(0x600DBA10+processor,processor);
 	}
-	ubcSync((int)0x600DBA100);
+	halSync((int)0x600DBA100);
 	if (pSyncBuf)
 		UnmapViewOfFile(pSyncBuf);
 	//if (pSharedMem)
@@ -332,7 +335,7 @@ int ubcClose(){
 }
 
 
-int ubcGetResult(unsigned long* returnCode, int processor=0){
+int halGetResult(unsigned long* returnCode, int processor=0){
 	return 1;
 	
 }

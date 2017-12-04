@@ -1,6 +1,6 @@
 
 #include "sleep.h"
-#include "ubc_target.h"
+#include "hal_target.h"
 #include "led.h"
 #pragma data_section ".data_hal_syncro"
 struct SyncBuf {
@@ -18,18 +18,18 @@ struct SyncBuf {
 	int		sync0;
 	int		sync1;
 
-} ubcSyncro={0,0,0,0,0,0};
+} halSyncro={0,0,0,0,0,0};
 
 #pragma data_section ".data"
 extern "C"{
 	int procNo=-1;
-	void ubcSetProcessorNo(int number){
+	void halSetProcessorNo(int number){
 		procNo=number;
 	}; 
 
 
 	
-int ubcSync(int val,int processor){
+int halSync(int val,int processor){
 	
 	if (procNo==-1)
 		procNo=ncl_getProcessorNo();
@@ -37,7 +37,7 @@ int ubcSync(int val,int processor){
 
 	
 	int sync;
-	SyncBuf& syncro= ubcSyncro;	
+	SyncBuf& syncro= halSyncro;	
 	if (procNo==0){
 		while(syncro.writeCounter[0]>syncro.readCounter[0]){
 			halSleep(1);
@@ -71,7 +71,7 @@ int ubcSync(int val,int processor){
 	
 	
 }
-int ubcSyncArray(
+int halSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
 					 size_t outLen,    // Sended array length (can be 0)
@@ -79,9 +79,9 @@ int ubcSyncArray(
 					 size_t *inLen,   // Received array size pointer (can be NULL)
 					 int  procNo)
 {
-	int sync=ubcSync(value,procNo);
-	*inAddress=(void*)ubcSync((int)outAddress);
-	*inLen=ubcSync(outLen);
+	int sync=halSync(value,procNo);
+	*inAddress=(void*)halSync((int)outAddress);
+	*inLen=halSync(outLen);
 	return sync;
 }
 

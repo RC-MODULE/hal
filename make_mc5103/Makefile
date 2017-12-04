@@ -9,7 +9,7 @@ LIBIO_X86 = $(PROJECT)io-x86
 
 INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include" 
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vm5ya ../src_mc5103  ../src_nmc_all
+SRC_DIRS = ../src_1879vm5ya ../src_mc5103  ../src_nmc_all ../src_nm_io
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))

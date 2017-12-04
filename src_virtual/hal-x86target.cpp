@@ -1,4 +1,4 @@
-#include "ubc_target.h"
+#include "hal_target.h"
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>
@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #pragma comment(lib, "user32.lib")
 
-#include "ubc-defs.h"
+#include "hal-defs.h"
 HANDLE hBufferRegistry=0;
 BufferRegistry* pBufferRegistry=0;
 extern int procNo;
@@ -17,7 +17,7 @@ extern  SyncBuf  *pSyncBuf;
 
 extern "C"{
 
-	void ubcSetProcessorNo(int number){
+	void halSetProcessorNo(int number){
 		procNo=number;
 	}
 };
@@ -161,7 +161,7 @@ BufferRegistry* createBufferRegistry(){
 
 // а если повтор ???
 /*
-int* ubcGetBuffer(int bufferID){
+int* halGetBuffer(int bufferID){
 	if (cropenBufferRegistry()==0)
 		return 0;
 	for(int i=0;i<pBufferRegistry->size;i++){
@@ -211,7 +211,7 @@ TCHAR* createName(TCHAR* baseName, int index0, int index2){
 	wcscat_s(bufferName,bufferSuffix);
 	return bufferName;
 }
-int* ubcMalloc32(int bufferSize32){
+int* halMalloc32(int bufferSize32){
 	if (createBufferRegistry()==0)
 		return 0;
 	MappedBuffer mappedBuffer;
@@ -252,7 +252,7 @@ int* ubcMalloc32(int bufferSize32){
 	return mappedBuffer.address;
 }
 /*
-int ubcConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuffer, int* sharedSize32){
+int halConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuffer, int* sharedSize32){
 
 	hMapFile = OpenFileMapping(
 		FILE_MAP_ALL_ACCESS,   // read/write access
@@ -278,12 +278,12 @@ int ubcConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuff
 	}
 
 
-	int ok=ubcHostSync(0x64060000+ubcGetProcessorNo());
+	int ok=halHostSync(0x64060000+halGetProcessorNo());
 	//------------------------------
 	//LPVOID sharedBuffer = 0;
 	//LPVOID sharedBuffer = 0;
 	if (masterSharedBuffer==0 && masterSharedSize32==0){
-		*sharedSize32=ubcHostSync(0);
+		*sharedSize32=halHostSync(0);
 		hMapFileSharedMem = OpenFileMapping(
 			FILE_MAP_ALL_ACCESS,   // read/write access
 			FALSE,                 // do not inherit the name
@@ -306,11 +306,11 @@ int ubcConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuff
 			_tprintf(TEXT("Could not map view of file (%d) \n"),GetLastError());
 			return 0;
 		}
-		ubcHostSync((int)*sharedBuffer);
+		halHostSync((int)*sharedBuffer);
 	}
 	else {
-		ubcHostSync((int)masterSharedSize32);
-		ubcHostSync((int)masterSharedBuffer);
+		halHostSync((int)masterSharedSize32);
+		halHostSync((int)masterSharedBuffer);
 		
 	}
 
@@ -319,22 +319,22 @@ int ubcConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuff
 	
 }
 */
-int ubcHostSyncArray(
+int halHostSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
 					 size_t outLen,    // Sended array length (can be 0)
 					 void **inAddress, // Received array address pointer (can be NULL)
 					 size_t *inLen)   // Received array size pointer (can be NULL)
 {
-	//int extBuffer=ubcHostSync((int)masterSharedBuffer);
-	//int extSize32=ubcHostSync((int)masterSharedSize32);
+	//int extBuffer=halHostSync((int)masterSharedBuffer);
+	//int extSize32=halHostSync((int)masterSharedSize32);
 	//if (extBuffer && extSize32){
 
 	//}
 	return 1;
 }
 
-int ubcSyncArray(
+int halSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
 					 size_t outLen,    // Sended array length (can be 0)
@@ -342,9 +342,9 @@ int ubcSyncArray(
 					 size_t *inLen,   // Received array size pointer (can be NULL)
 					 int  procNo)
 {
-	int sync=ubcSync(value,procNo);
-	*inAddress=(void*)ubcSync((int)outAddress);
-	*inLen=ubcSync(outLen);
+	int sync=halSync(value,procNo);
+	*inAddress=(void*)halSync((int)outAddress);
+	*inLen=halSync(outLen);
 
 	MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(*inAddress),procNo);
 	if (mirrorBuffer==0){
@@ -357,9 +357,9 @@ int ubcSyncArray(
 }
 
 extern "C" {
-void ubcFree(int* ){
+void halFree(int* ){
 	/*
-	ubcHostSync((int)0x600DBA1+ubcGetProcessorNo());
+	halHostSync((int)0x600DBA1+halGetProcessorNo());
 	UnmapViewOfFile(shared);
 	CloseHandle(hMapFileSharedMem);	
 	UnmapViewOfFile(pSyncBuf);
@@ -368,8 +368,8 @@ void ubcFree(int* ){
 }
 };
 
-int ubcDisconnect(int* shared){
-	ubcHostSync((int)0x600DBA1+ubcGetProcessorNo());
+int halDisconnect(int* shared){
+	halHostSync((int)0x600DBA1+halGetProcessorNo());
 	//for()
 	//UnmapViewOfFile(shared);
 	//CloseHandle(hMapFileSharedMem);	

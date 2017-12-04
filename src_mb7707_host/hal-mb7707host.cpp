@@ -71,14 +71,14 @@ extern "C" {
 	void INIT_DDR_EMX(unsigned DMCX_APB_Based);
 
 
-int ubcSync(int val){
+int halSync(int val){
 	PL_Word ret;
 	PL_Sync(access,val,&ret);
 	
 	return ret;
 }
 
-int ubcOpen(char* absfile=0,...){
+int halOpen(char* absfile=0,...){
 	int boardCount;
 	PL_Word Length = 0;
 	
@@ -144,8 +144,8 @@ int ubcOpen(char* absfile=0,...){
 		return  (1);
 	}
 
-	unsigned sharedBuffer=ubcSync(0x8086);
-	unsigned sharedSize32=ubcSync(0x8086);
+	unsigned sharedBuffer=halSync(0x8086);
+	unsigned sharedSize32=halSync(0x8086);
 
 
 	TRACE ("OK!\n");
@@ -153,11 +153,11 @@ int ubcOpen(char* absfile=0,...){
 }
 	
 
-int ubcReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
+int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
 	return PL_ReadMemBlock(access, (PL_Word*)dstHostAddr, srcBoardAddr, size32);
 }
 
-int ubcWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
+int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
 	return PL_WriteMemBlock(access, (PL_Word*)srcHostAddr, dstBoardAddr, size32);
 }
 
@@ -167,12 +167,12 @@ void boardSleep()	//virtual int memcpy(unsigned* dst_addr, unsigned* src_addr, i
 		::Sleep(msecs);
 	}
 */	
-int ubcClose(){
+int halClose(){
 	PL_CloseAccess(access);
 	return PL_CloseBoardDesc(board);
 }
 
-int ubcGetResult(unsigned* result){
+int halGetResult(unsigned* result){
 	return PL_GetResult(access,(PL_Word*)result);
 }
 

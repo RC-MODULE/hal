@@ -45,6 +45,8 @@ PATH:=$(MC7601)/bin;$(PATH)
 run: $(TARGET) $(HOST)
 	bin\debug\$(HOST)
 	
+mcrun: $(TARGET) $(HOST)
+	mc7601run $(TARGET)
 
 
 clean:

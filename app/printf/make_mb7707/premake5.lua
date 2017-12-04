@@ -24,7 +24,7 @@ solution "mb7707-printf"
 		 
 	project "mb7707-nmc3"
       kind "Makefile"
-      files { "../src_nm/*.cpp" }
+      files { "../src_nm0/*.cpp" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y"}

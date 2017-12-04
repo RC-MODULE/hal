@@ -2,8 +2,8 @@ ROOT     = ../../..
 PROJECT  =simple_dma_mc5103
 TARGET   =$(PROJECT).abs
 INC_DIRS = -I"$(NEURO)/include" -I$(ROOT)/include 
-LIB_DIRS = -L"$(NEURO)/lib" -L$(ROOT)/libHAL/lib  -L$(NM_IO)/lib -L$(ROOT)/lib -L$(MC5103)/lib
-LIBS     = nm_io.lib hal-mc5103.lib libint05.lib mc5103lib.lib libc05.lib cppnew05.lib
+LIB_DIRS = -L"$(NEURO)/lib" -L$(ROOT)/lib -L$(MC5103)/lib
+LIBS     = hal-mc5103.lib libint05.lib mc5103lib.lib libc05.lib cppnew05.lib
 CFG      = mc5103brd.cfg
 ALL_CPP  = ../nm_main.cpp 
 HEAP     = -heap=0 -heap1=0 -heap2=0 -heap3=0

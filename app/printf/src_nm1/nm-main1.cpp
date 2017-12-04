@@ -13,11 +13,15 @@
 //------------------------------------------------------------------------
 
 #include <stdio.h>
-#include "ubc_target.h"
+#include "hal_target.h"
 #include "sleep.h"
+#include "hal.h"
+
+//DISABLE_PRINTF();
+
 int main()
 {
-	for(int i=0; i<100; i++){
+	for(int i=0; i<10; i++){
 		printf("Hello %d from NMC[1]\n",i);	
 		halSleep(100);
 	}

@@ -21,7 +21,7 @@
 		} 
 	}
 	
-	int* ubcMalloc32(int sharedSize32) {
+	int* halMalloc32(int sharedSize32) {
 		return (int*)pMallocFunc(sharedSize32);
 	}	 
  };

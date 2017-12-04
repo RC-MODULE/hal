@@ -11,13 +11,13 @@ const int IP_ADDRESS = 0x0201A8C0; // 192.168.1.2
 
 extern "C"{
 
-int ubcSync(int val, unsigned processor=0){
+int halSync(int val, unsigned processor=0){
 	WR_Word ret;
 	WR_Sync(access[processor],0xFFFFFFFF,val,&ret);
 	return ret;
 }
 
-int ubcOpen(char* absfile,...){
+int halOpen(char* absfile,...){
 	
 	system ("taskkill /F /IM LLC_MULTI_TASK_DAEMON.exe >nul");
 	//tasklist /FI "IMAGENAME eq LLC1*
@@ -35,7 +35,7 @@ int ubcOpen(char* absfile,...){
 		TRACE("Warning: Environment variable MC7601 is not defined: 192.168.1.2 will be used as default\n");
 	}
 	else {
-		TRACE("Current MC7601IP is,%s\n",ipStrAddress);
+		printf("Current MC7601IP is,%s\n",ipStrAddress);
 		//....
 	}
   
@@ -79,11 +79,11 @@ int ubcOpen(char* absfile,...){
 
 
 
-int ubcReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
+int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
 	return WR_ReadMemBlock(access[processor], (WR_Word*)dstHostAddr, srcBoardAddr, size32);
 }
 
-int ubcWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
+int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
 	return WR_WriteMemBlock(access[processor], (WR_Word*)srcHostAddr, dstBoardAddr, size32);
 }
 
@@ -93,7 +93,7 @@ void boardSleep()	//virtual int memcpy(unsigned* dst_addr, unsigned* src_addr, i
 		::Sleep(msecs);
 	}
 */	
-int ubcClose(){
+int halClose(){
 	if (access[0]){
 		if (isFinished[0]==false){
 			WR_WaitEndProgram(access[0], &result[0], 0xFFFFFFFF) ;
@@ -111,7 +111,7 @@ int ubcClose(){
 	return WR_CloseBoardDesc(board);
 }
 
-int ubcGetResult(unsigned* returnCode, int processor=0){
+int halGetResult(unsigned* returnCode, int processor=0){
 	if (isFinished[processor]){
 		*returnCode=result[processor];
 		return WR_OK;

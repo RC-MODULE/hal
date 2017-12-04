@@ -40,8 +40,8 @@ solution "hal-mb7707"
 	 
 	project "hal-mb7707io-x86"
       kind "StaticLib"
-      files { "../src_mb7707_host_io/*.*","../src_io/*.*","../include/*.h"}
-	  includedirs { "../include","$(MB7707)/libload","../src_mb7707_host_io","../src_io"}
+      files { "../src_mb7707_host_io/*.*","../src_host_io/*.*","../include/*.h"}
+	  includedirs { "../include","$(MB7707)/libload","../src_mb7707_host_io","../src_host_io"}
 	  
 	  
 	  configuration "Debug"

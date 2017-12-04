@@ -2,7 +2,9 @@
 #include "sleep.h"
 #include "stdio.h"
 #include "malloc.h"
+#include "hal.h"
 
+DISABLE_PRINTF();
 
 void blink(int led, int count, int ms){
 	for(int i=0; i<count; i++){

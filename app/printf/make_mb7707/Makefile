@@ -20,8 +20,8 @@ HOST     = $(BOARD)-x86
 
 TARGET   = main0.abs
 INC_DIRS = -I"$(MB7707)/include" -I$(ROOT)/include -I"$(NEURO)/include"
-LIB_DIRS = -L"$(MB7707)/lib" -L$(NM_IO)/lib -L$(ROOT)/lib
-LIBS     = nm_io.lib mb7707lib.lib hal-mb7707.lib
+LIB_DIRS = -L"$(MB7707)/lib" -L$(ROOT)/lib
+LIBS     = hal-mb7707.lib mb7707lib.lib 
 CFG      = mb7707brd.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))

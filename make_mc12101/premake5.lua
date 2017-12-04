@@ -40,8 +40,8 @@ solution "hal-mc12101"
 	 
     project "hal-mc12101io-x86"
       kind "StaticLib"
-      files { "../src_mc12101_host_io/*.*","../src_io/*.*","../include/*.h"}
-	  includedirs { "../include","$(MC12101)/include","../src_mc12101_host_io","../src_io"}
+      files { "../src_mc12101_host_io/*.*","../src_host_io/*.*","../include/*.h"}
+	  includedirs { "../include","$(MC12101)/include","../src_mc12101_host_io","../src_host_io"}
 	  
 	  
 	  configuration "Debug"

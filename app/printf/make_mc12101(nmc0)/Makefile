@@ -22,8 +22,8 @@ HOST     = $(BOARD)-x86
 
 TARGET   = main0.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include"
-LIB_DIRS = -L"$(MC12101)/lib" -L$(NM_IO)/lib -L$(ROOT)/lib
-LIBS     = nm_io4.lib mc12101lib_nm.lib libc4f.lib libc4.lib hal-mc12101.lib
+LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib
+LIBS     = hal-mc12101.lib mc12101lib_nm.lib libc4f.lib libc4.lib 
 CFG      = mc12101brd-nmc0.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
@@ -44,6 +44,8 @@ PATH:=$(MC12101)/bin;$(PATH)
 run: $(TARGET) $(HOST)
 	bin\debug\$(HOST)
 	
+mcrun: $(TARGET) 
+	mc12101run $(TARGET)
 
 
 clean:

@@ -21,10 +21,10 @@
 
 extern "C"
 {
-	void setActiveHeap(int heapNo);
 
 
-	int ubcSyncArray(
+
+	int halSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
 					 size_t outLen,    // Sended array length (can be 0)
@@ -32,7 +32,7 @@ extern "C"
 					 size_t *inLen,   // Received array size pointer (can be NULL)
 					 int  procNo);
 
-	int ubcSync(int val,int processor=0);
+	int halSync(int val,int processor=0);
 
 	// Return processor number on board
 	int ncl_getProcessorNo(void);
@@ -47,63 +47,63 @@ extern "C"
 		size_t outLen,    // Sended array length (can be 0)
 		void **inAddress, // Received array address pointer (can be NULL)
 		size_t *inLen);   // Received array size pointer (can be NULL)
-	void ubcSetProcessorNo(int number);
+	void halSetProcessorNo(int number);
 
 	#ifndef __NM__
-	int* ubcMalloc32(int sharedSize32);
-	void ubcFree(int* );
+	int* halMalloc32(int sharedSize32);
+	void halFree(int* );
 	#else 
-		//extern void*    ubcSharedBuffer;
-		//extern unsigned ubcSharedSize;
+		//extern void*    halSharedBuffer;
+		//extern unsigned halSharedSize;
 		//#include <string.h>
-		inline int* ubcMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32);}
-		inline void ubcFree(int* shared) { free(shared);}
+		inline int* halMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32);}
+		inline void halFree(int* shared) { free(shared);}
 	#endif
 
 };
 
-//int ubcSetProcessorNo(int);
+//int halSetProcessorNo(int);
 #ifndef PROCESSOR_ID
 	#ifdef __NM__
-	#define ubcGetProcessorNo() ncl_getProcessorNo()
+	#define halGetProcessorNo() ncl_getProcessorNo()
 
 	#else 
 	#define PROCESSOR_ID 0
-	#define ubcGetProcessorNo() PROCESSOR_ID
+	#define halGetProcessorNo() PROCESSOR_ID
 	#endif
 #else 
-	#define ubcGetProcessorNo() PROCESSOR_ID
+	#define halGetProcessorNo() PROCESSOR_ID
 #endif
 
 // Barrier sync with host PC
-#define ubcHostSync(value) ncl_hostSync(value)
+#define halHostSync(value) ncl_hostSync(value)
 
 
 #ifdef __NM__
-//int ubcConnect(int* masterSharedBuffer,int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0){
+//int halConnect(int* masterSharedBuffer,int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0){
 //	if (sharedSize32==0){
-//		ubcHostSync((int)masterSharedBuffer);
-//		ubcHostSync((int)masterSharedSize32);
+//		halHostSync((int)masterSharedBuffer);
+//		halHostSync((int)masterSharedSize32);
 //	}
 //	else {
-//		*sharedBuffer=(int*)ubcHostSync(111);
-//		*sharedSize32=ubcHostSync(222);
+//		*sharedBuffer=(int*)halHostSync(111);
+//		*sharedSize32=halHostSync(222);
 //	}
 //	return 1;
 //}
 /*
-int ubcHostConnect(){
+int halHostConnect(){
 	if (sharedSize32==0){
-		ubcHostSync((int)masterSharedBuffer);
-		ubcHostSync((int)masterSharedSize32);
+		halHostSync((int)masterSharedBuffer);
+		halHostSync((int)masterSharedSize32);
 	}
 	else {
-		*sharedBuffer=(int*)ubcHostSync(111);
-		*sharedSize32=ubcHostSync(222);
+		*sharedBuffer=(int*)halHostSync(111);
+		*sharedSize32=halHostSync(222);
 	}
 	return 1;
 }*/
-int ubcHostSyncArray(
+int halHostSyncArray(
 		int value,        // Sync value
 		void *outAddress, // Sended array address (can be NULL)
 		size_t outLen,    // Sended array length (can be 0)
@@ -111,7 +111,7 @@ int ubcHostSyncArray(
 		size_t *inLen);   // Received array size pointer (can be NULL)
 
 
-int ubcHostSyncMemory(
+int halHostSyncMemory(
 		int value,        // Sync value
 		void *outAddress, // Sended array address (can be NULL)
 		size_t outLen,    // Sended array length (can be 0)
@@ -119,11 +119,11 @@ int ubcHostSyncMemory(
 		size_t *inLen);   // Received array size pointer (can be NULL)
 
 		
-//int ubcDisconnect(int* sharedBuffer=0) {if (sharedBuffer) free(sharedBuffer); return 1;} 
-int ubcInterConnect(int* shared);
+//int halDisconnect(int* sharedBuffer=0) {if (sharedBuffer) free(sharedBuffer); return 1;} 
+int halInterConnect(int* shared);
 #else 
-//int ubcConnect(int* masterSharedBuffer=0, int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0);
-//int ubcDisconnect(int* sharedBuffer=0);
+//int halConnect(int* masterSharedBuffer=0, int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0);
+//int halDisconnect(int* sharedBuffer=0);
 #endif 
 
 
