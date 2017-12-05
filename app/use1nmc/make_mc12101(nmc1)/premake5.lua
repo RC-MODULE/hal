@@ -14,11 +14,11 @@ solution "mc12101access"
 	  includedirs { "$(MC12101)/include","../../../include"}
 
       configuration "Debug"
-         defines { "DEBUG,DEFAULT_PROCESSOR=1" }
+         defines { "DEBUG,NMPU0" }
          symbols  "On" 
 
       configuration "Release"
-         defines { "RELEASE,DEFAULT_PROCESSOR=1" }
+         defines { "RELEASE,NMPU0" }
          symbols  "Off" 
 		 
 		 
