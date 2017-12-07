@@ -6,7 +6,9 @@ solution "hal-virtual-x86"
 
 	project "hal-virtual-x86"
       kind "StaticLib"
-      files { "../src_virtual/*.*","../include/*.h"}
+      files { 	"../src_virtual/*.*",
+				"../src_x86/*.*",
+				"../include/*.h"}
 	  includedirs { "../include"}
 	  targetdir ("../lib")
 	  

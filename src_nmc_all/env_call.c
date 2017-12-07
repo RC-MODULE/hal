@@ -11,6 +11,7 @@
 //                      (c) RC Module Inc., Moscow, Russia              //
 //                                                                      //
 //----------------------------------------------------------------------//
+#pragma code_section ".text_hal_libc"
 #include <cassert>
 #include "string.h"
 #include "host_duties.h"

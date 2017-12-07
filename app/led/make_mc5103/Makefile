@@ -28,10 +28,8 @@ SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
 
 
 ALL: $(TARGET) $(HOST)
-
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile
 	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc3 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) -heap=16384 -heap1=16384 -heap2=16384 -heap3=16384
-	
 $(HOST): $(HOST).vcproj
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(BOARD)-x86.vcproj
 
@@ -44,9 +42,9 @@ PATH:=$(MC5103)/bin;$(PATH)
 run: $(TARGET) $(HOST)
 	bin\debug\$(HOST)
 	
-mcrun: $(TARGET) 
-	mc5103run $(HOST)
-	
+mcrun: $(TARGET) $(HOST)
+	mc5103run $(TARGET)
+
 clean:
 	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters
 	-$(OS_RD) bin obj

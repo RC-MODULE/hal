@@ -12,7 +12,7 @@
 // $Revision:: 2    $      $Date:: 25.06.13 19:20    $                  //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
-
+#pragma code_section ".text_hal_libc"
 #include "host_duties.h"
 #include <stddef.h>
 #include <stdio.h>

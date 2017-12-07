@@ -22,7 +22,9 @@ solution "hal-mc5103"
 		
 	project "hal-mc5103-x86"
       kind "StaticLib"
-      files { "../src_mc5103_host/*.*","../include/*.h"}
+      files { 	"../src_mc5103_host/*.*",
+				"../src_x86/*.*",
+				"../include/*.h"}
 	  includedirs { "../include","$(MC5103)/libload"}
 	  
 	  
@@ -40,7 +42,10 @@ solution "hal-mc5103"
 	 
 	project "hal-mc5103io-x86"
       kind "StaticLib"
-      files { "../src_mc5103_host_io/*.*","../src_host_io/*.*","../include/*.h"}
+      files { 	"../src_mc5103_host_io/*.*",
+				"../src_x86/*.*",
+				"../src_host_io/*.*",
+				"../include/*.h"}
 	  includedirs { "../include","$(MC5103)/libload","../src_mc5103_host_io","../src_host_io"}
 	  
 	  

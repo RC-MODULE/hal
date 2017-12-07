@@ -1,4 +1,4 @@
-
+#pragma code_section ".text_hal_libc"
 #include "isc_lib\include\stdio.h"
 
 #include <cassert>

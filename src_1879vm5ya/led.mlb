@@ -1,0 +1,13 @@
+
+	
+macro HAL_LED(led_mask)
+end HAL_LED;
+
+
+macro HAL_LED_ON(ledIndx)
+	pcr_6405 clear 0_0400_0000h; // Green LED on
+end HAL_LED_ON;
+
+macro HAL_LED_OFF(ledIndx)
+	pcr_6405 set 0_0400_0000h; // Green LED off
+end HAL_LED_OFF;

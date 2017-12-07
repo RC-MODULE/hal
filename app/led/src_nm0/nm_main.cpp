@@ -33,9 +33,10 @@ int main()
 	}
 	
 	for(int led=0; led<halLedCount(); led++){
-		blink(led,50,20);
+		halLedBlink(led,20,2);
 	}
 	
+	halLedSOS(0,3);
 	return 0;
 	
 	

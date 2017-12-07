@@ -1,5 +1,4 @@
 #include "hal_host.h"
-#include "sleep.h"
 #include "stdio.h"
 #include "windows.h"
 
@@ -15,13 +14,13 @@ int main(){
 	if (halOpen("main0.abs",NULL))			// Load executable file to board, connect to shared memory
 	#endif	
 	{	
-		halSleep(10000);
+		::Sleep(10000);
 		return -1;
 	}
 	
 	
 	unsigned sync=-1;
-/*
+
 	while (sync==-1){
 		#ifdef NMPU1
 		halGetResult(&sync,1);					// get return value (0x600D)
@@ -30,13 +29,10 @@ int main(){
 		#endif	
 		::Sleep(100);
 	}
-*/
-	halSleep(10000);
-	halGetResult(&sync);					// get return value (0x600D)
 	printf("Return value:%X\n",sync);
 	halClose();								// close board, disconect from shared memory
 	
-	halSleep(5000);
+	::Sleep(5000);
 	
 	return 0;
 
