@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "nm_io_host.h"
+#include "sleep.h"
 static PL_Board *board=0;
 static PL_Access *access=0;
 static PL_Access* access_io=0;
@@ -182,10 +183,14 @@ int halClose(){
 	return PL_CloseBoardDesc(board);
 }
 
-int halGetResult(unsigned* result){
+int halGetResult(unsigned* result,  unsigned processor=0){
+	PL_Word status=0;
+	while ((PROGRAM_FINISHED&status)==0){
+		PL_GetStatus(access,&status);
+		halSleep(500);
+	}
 	return PL_GetResult(access,(PL_Word*)result);
 }
-
 
 void Init_DDR_EM0(){
 

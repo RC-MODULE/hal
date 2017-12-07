@@ -21,19 +21,13 @@ int main(){
 	
 	unsigned sync=-1;
 
-	while (sync==-1){
-		#ifdef NMPU1
-		halGetResult(&sync,1);					// get return value (0x600D)
-		#else 	
-		halGetResult(&sync);					// get return value (0x600D)
-		#endif	
-		::Sleep(100);
-	}
+	#ifdef NMPU1
+	halGetResult(&sync,1);					// get return value (0x600D)
+	#else 	
+	halGetResult(&sync);					// get return value (0x600D)
+	#endif	
 	printf("Return value:%X\n",sync);
 	halClose();								// close board, disconect from shared memory
-	
-	::Sleep(5000);
-	
 	return 0;
 
 }

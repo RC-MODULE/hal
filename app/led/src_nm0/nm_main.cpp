@@ -37,7 +37,7 @@ int main()
 	}
 	
 	halLedSOS(0,3);
-	return 0;
+	return 0x600D;
 	
 	
 } 

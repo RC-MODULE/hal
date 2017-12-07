@@ -49,7 +49,7 @@ run: $(TARGET) $(HOST)
 	
 	
 #mvrun: $(TARGET) $(HOST)
-		mc7601run ./$(TARGET) 
+#		mc7601run ./$(TARGET) 
 	
 
 

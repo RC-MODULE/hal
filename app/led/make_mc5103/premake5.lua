@@ -24,7 +24,7 @@ solution "mc5103-printf"
 		 
 	project "mc5103-nmc3"
       kind "Makefile"
-      files { "../src_nm/*.cpp" }
+      files { "../src_nm0/*.cpp","Makefile","*.cfg" }
 	 
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y"}
