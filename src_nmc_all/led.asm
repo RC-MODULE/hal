@@ -4,7 +4,7 @@ import from rtmacro.mlb;
 
 begin ".text"
 
-ledBit: word[8]=(1,2,4,8,16,32,64,128);
+global ledBit: word[8]=(1,2,4,8,16,32,64,128);
 
 global _halLed:label;
 <_halLed>
