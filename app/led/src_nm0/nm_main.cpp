@@ -24,19 +24,20 @@ int main()
 	
 	for(int led=0; led<halLedCount(); led++){
 		halLedOn(led);
-		halSleep(200);
+		halSleep(100);
 	}
+	
 	
 	for(int led=0; led<halLedCount(); led++){
 		halLedOff(led);
-		halSleep(200);
+		halSleep(100);
 	}
-	
+	halSleep(1000);
 	for(int led=0; led<halLedCount(); led++){
-		halLedBlink(led,20,2);
+		halLedBlink(led,20,1000);
 	}
 	
-	halLedSOS(0,3);
+	halLedSOS(0,4);
 	return 0x600D;
 	
 	

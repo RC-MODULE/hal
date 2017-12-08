@@ -1,47 +1,50 @@
 
-macro HAL_LED_DECLARE()
-	const GPIO_BASE = 010030C00h;
-	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
-end HAL_LED_DECLARE;
+//macro HAL_LED_DECLARE()
+//	const GPIO_BASE = 010030C00h;
+//	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
+//end HAL_LED_DECLARE;
 
 macro HAL_LED(led_mask)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
 	push ar0,gr0;
 	gr0 = 0FFh;
-	[GPIO_BASE+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
 	
 	gr0 = led_mask;
-	[GPIO_BASE] = gr0;	 // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	[010030C00h] = gr0;	 // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
 	pop ar0,gr0;
 end HAL_LED;
 
 
 
 macro HAL_LED_ON(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
 	push ar0,gr0;
 	push ar1,gr1;
 	ar1 = ledBit;
 	gr1 = ledIndx;
 	gr1 = [ar1+=gr1];
 	gr0 = 0FFh;
-	[GPIO_BASE+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
-	gr0 =[GPIO_BASE];
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h];
 	gr1 = gr1 or gr0;
-	[GPIO_BASE]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
 	pop ar1,gr1;
 	pop ar0,gr0;
 end HAL_LED_ON;
 
 macro HAL_LED_OFF(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
 	push ar0,gr0;
 	push ar1,gr1;
 	ar1 = ledBit;
 	gr1 = ledIndx;
 	gr1 = [ar1+=gr1];
 	gr0 = 0FFh;
-	[GPIO_BASE+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
-	gr0 =[GPIO_BASE];
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h];
 	gr1 = gr0 and not gr1;
-	[GPIO_BASE]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
 	pop ar1,gr1;
 	pop ar0,gr0;
 end HAL_LED_OFF;
