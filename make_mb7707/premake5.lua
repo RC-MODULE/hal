@@ -22,7 +22,9 @@ solution "hal-mb7707"
 		
 	project "hal-mb7707-x86"
       kind "StaticLib"
-      files { "../src_mb7707_host/*.*","../include/*.h"}
+      files { 	"../src_mb7707_host/*.*",
+				"../src_x86/*.*",
+				"../include/*.h"}
 	  includedirs { "../include","$(MB7707)/libload"}
 	  
 	  
@@ -40,7 +42,10 @@ solution "hal-mb7707"
 	 
 	project "hal-mb7707io-x86"
       kind "StaticLib"
-      files { "../src_mb7707_host_io/*.*","../src_host_io/*.*","../include/*.h"}
+      files { 	"../src_mb7707_host_io/*.*",
+				"../src_x86/*.*",
+				"../src_host_io/*.*",
+				"../include/*.h"}
 	  includedirs { "../include","$(MB7707)/libload","../src_mb7707_host_io","../src_host_io"}
 	  
 	  

@@ -16,15 +16,22 @@
 #include "hal_target.h"
 #include "sleep.h"
 #include "hal.h"
+#include "led.h"
 
 //DISABLE_PRINTF();
 int main()
 {
+	halLedOn(0);
+	halSleep(500);
+	halLedOff(0);
+	
 	for(int i=0; i<10; i++){
 		printf("Hello %d from NMC[0]\n",i);	
-		halSleep(500);
+		halSleep(100);
 	}
 	
-	halSleep(10000);
+	//halLedOff(1);
+	halSleep(500);
+	//halSleep(10000);
 	return 0x600D;
 }

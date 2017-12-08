@@ -1,0 +1,11 @@
+
+	
+macro HAL_LED(led_mask)
+end HAL_LED;
+
+
+macro HAL_LED_ON(ledIndx)
+end HAL_LED_ON;
+
+macro HAL_LED_OFF(ledIndx)
+end HAL_LED_OFF;

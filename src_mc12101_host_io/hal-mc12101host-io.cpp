@@ -1,6 +1,7 @@
 #include "mc12101load.h"
 #include <stdio.h>
 #include "nm_io_host.h"
+#include "sleep.h"
 static PL_Board *board=0;
 static PL_Access *access[2]={0,0};
 static PL_Access* access_io[2]={0,0};
@@ -146,6 +147,12 @@ int halClose(){
 
 
 int halGetResult(unsigned long* returnCode, int processor=0){
+	PL_Word status=0;
+	while ((PROGRAM_FINISHED&status)==0){
+		PL_GetStatus(access[processor],&status);
+		halSleep(500);
+	}
+
 #ifdef DEFAULT_PROCESSOR 
 	return PL_GetResult(access[DEFAULT_PROCESSOR], returnCode);
 #else

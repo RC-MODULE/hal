@@ -8,6 +8,8 @@
 void halLed(unsigned ledMask);    
 void halLedOn (unsigned ledIndx);    
 void halLedOff(unsigned ledIndx);    
+void halLedSOS(unsigned ledIndx, int count=0);    
+void halLedBlink(unsigned ledIndex, int freq, int ms);
 int  halLedCount();    
 	
 #ifdef __cplusplus
