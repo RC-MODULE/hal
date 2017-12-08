@@ -1,7 +1,10 @@
 
-	
-macro HAL_LED(led_mask)
+macro HAL_LED_DECLARE()
 	const GPIO_BASE = 010030C00h;
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
+end HAL_LED_DECLARE;
+
+macro HAL_LED(led_mask)
 	push ar0,gr0;
 	gr0 = 0FFh;
 	[GPIO_BASE+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
@@ -14,7 +17,6 @@ end HAL_LED;
 
 
 macro HAL_LED_ON(ledIndx)
-	//const GPIO_BASE = 010030C00h;
 	push ar0,gr0;
 	push ar1,gr1;
 	ar1 = ledBit;
@@ -30,7 +32,6 @@ macro HAL_LED_ON(ledIndx)
 end HAL_LED_ON;
 
 macro HAL_LED_OFF(ledIndx)
-	//const GPIO_BASE = 010030C00h;
 	push ar0,gr0;
 	push ar1,gr1;
 	ar1 = ledBit;
