@@ -4,7 +4,7 @@
  extern "C"{
 	typedef void* (Malloc32Func)(unsigned int);	
 	Malloc32Func* pMallocFunc;	
-	void setActiveHeap(int heapNo){
+	void halSetActiveHeap(int heapNo){
 		switch(heapNo){
 			case(0):
 				pMallocFunc=malloc;
