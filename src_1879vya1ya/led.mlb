@@ -11,6 +11,7 @@ end HAL_LED;
 
 
 macro HAL_LED_ON(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
 	push ar0,gr0;
 	push ar1,gr1;
 	ar1 = ledBit;
@@ -25,6 +26,7 @@ macro HAL_LED_ON(ledIndx)
 end HAL_LED_ON;
 
 macro HAL_LED_OFF(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
 	push ar0,gr0;
 	push ar1,gr1;
 	ar1 = ledBit;

@@ -2,7 +2,7 @@
 //                                                                      //
 // mc5103_load.h -                                                      //
 //                                                                      //
-//      Header file for synchronization and exchange library for MC5103 //
+//      Header file for synchronization and exchange library            //
 //                                                                      //
 // Copyright (c) 2003 RC Module                                         //
 //      If this code works, it was written by Alex Ruzavin              //
@@ -12,8 +12,8 @@
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-#ifndef _UBC_TARGET_H
-#define _UBC_TARGET_H
+#ifndef _HAL_TARGET_H
+#define _HAL_TARGET_H
 
 #include <stdlib.h>
 
@@ -80,29 +80,7 @@ extern "C"
 
 
 #ifdef __NM__
-//int halConnect(int* masterSharedBuffer,int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0){
-//	if (sharedSize32==0){
-//		halHostSync((int)masterSharedBuffer);
-//		halHostSync((int)masterSharedSize32);
-//	}
-//	else {
-//		*sharedBuffer=(int*)halHostSync(111);
-//		*sharedSize32=halHostSync(222);
-//	}
-//	return 1;
-//}
-/*
-int halHostConnect(){
-	if (sharedSize32==0){
-		halHostSync((int)masterSharedBuffer);
-		halHostSync((int)masterSharedSize32);
-	}
-	else {
-		*sharedBuffer=(int*)halHostSync(111);
-		*sharedSize32=halHostSync(222);
-	}
-	return 1;
-}*/
+
 int halHostSyncArray(
 		int value,        // Sync value
 		void *outAddress, // Sended array address (can be NULL)
