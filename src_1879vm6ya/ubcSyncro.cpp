@@ -80,8 +80,14 @@ int halSyncArray(
 					 int  procNo)
 {
 	int sync=halSync(value,procNo);
-	*inAddress=(void*)halSync((int)outAddress);
-	*inLen=halSync(outLen);
+	if (inAddress)
+		*inAddress=(void*)halSync((int)outAddress);
+	else 
+		halSync((int)outAddress);
+	if (inLen)
+		*inLen=halSync(outLen);
+	else 
+		halSync(outLen);
 	return sync;
 }
 

@@ -8,7 +8,7 @@ global halSleep:label;
 	push ar0,gr0;
 	push ar1,gr1 with gr1=gr0;
 	push ar2,gr2;
-    gr2 = 55000; 
+    gr2 = 70500; 
 	MULT32(gr0,gr1,gr2);
 	//sleep_loop:label;
 	<sleep_loop>
