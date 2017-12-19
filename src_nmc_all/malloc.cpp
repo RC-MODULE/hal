@@ -3,7 +3,7 @@
  
  extern "C"{
 	typedef void* (Malloc32Func)(unsigned int);	
-	Malloc32Func* pMallocFunc;	
+	Malloc32Func* pMallocFunc=malloc;	
 	void halSetActiveHeap(int heapNo){
 		switch(heapNo){
 			case(0):

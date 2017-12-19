@@ -33,7 +33,7 @@ extern "C"
 					 int  procNo);
 
 	int halSync(int val,int processor=0);
-
+	void* halSyncAddr(void* sendAddr,int processor);
 	// Return processor number on board
 	int ncl_getProcessorNo(void);
 

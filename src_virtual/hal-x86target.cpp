@@ -343,18 +343,40 @@ int halSyncArray(
 					 int  procNo)
 {
 	int sync=halSync(value,procNo);
-	*inAddress=(void*)halSync((int)outAddress);
-	*inLen=halSync(outLen);
-
-	MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(*inAddress),procNo);
-	if (mirrorBuffer==0){
-		*inAddress=0;
-		*inLen=0;
-		return sync;
+	if (inAddress){
+		*inAddress=(void*)halSync((int)outAddress);
+		MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(*inAddress),procNo);
+		if (mirrorBuffer==0){
+			*inAddress=0;
+			*inLen=0;
+			return sync;
+		}
+		*inAddress=(void*)((int*)(*inAddress)+mirrorBuffer->diff);
 	}
-	*inAddress=(void*)((int*)(*inAddress)+mirrorBuffer->diff);
+	else 
+		halSync((int)outAddress);
+	if (inLen)
+		*inLen=halSync(outLen);
+	else 
+		halSync(outLen);
+
+	
 	return sync;
 }
+
+void* halSyncAddr(
+					 void *outAddress, // Sended array address (can be NULL)
+					 int  procNo)
+{
+	void *inAddress=(void*)halSync((int)outAddress,procNo);
+	MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(inAddress),procNo);
+	if (mirrorBuffer==0){
+		return 0;
+	}
+	inAddress=(void*)((int*)(inAddress)+mirrorBuffer->diff);
+	return inAddress;
+}
+
 
 extern "C" {
 void halFree(int* ){
