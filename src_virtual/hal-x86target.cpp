@@ -364,6 +364,20 @@ int halSyncArray(
 	return sync;
 }
 
+void* halSyncAddr(
+					 void *outAddress, // Sended array address (can be NULL)
+					 int  procNo)
+{
+	void *inAddress=(void*)halSync((int)outAddress,procNo);
+	MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(inAddress),procNo);
+	if (mirrorBuffer==0){
+		return 0;
+	}
+	inAddress=(void*)((int*)(inAddress)+mirrorBuffer->diff);
+	return inAddress;
+}
+
+
 extern "C" {
 void halFree(int* ){
 	/*

@@ -71,6 +71,9 @@ int halSync(int val,int processor){
 	
 	
 }
+void* halSyncAddr(void* addr,int processor){
+	return (void*)halSync((int)addr,processor);
+}
 int halSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
