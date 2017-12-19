@@ -27,7 +27,7 @@ CFG      = mc12101brd-nmc1.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm1))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm1))
 
-HEAP     = -heap=0 -heap1=0 -heap2=0 -heap3=0
+HEAP     = -heap=6384 -heap1=6384 -heap2=16384 -heap3=16384
 
 ALL: $(TARGET) $(HOST)
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile
