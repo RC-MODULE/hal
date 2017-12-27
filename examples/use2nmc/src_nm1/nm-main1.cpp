@@ -84,6 +84,6 @@ DISABLE_PRINTF();
 	for(int i=0;i<16;i++){ 						// Calcualates output array 
 		printf("sharedBuffer1B[%d]=%X\n",i,sharedBuffer1B[i]);
 	}
-	while(1);
+	//while(1);
 	return 0x600D;
 }
