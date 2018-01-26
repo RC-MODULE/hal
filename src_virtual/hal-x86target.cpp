@@ -369,11 +369,13 @@ void* halSyncAddr(
 					 int  procNo)
 {
 	void *inAddress=(void*)halSync((int)outAddress,procNo);
-	MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(inAddress),procNo);
-	if (mirrorBuffer==0){
-		return 0;
+	if (inAddress){
+		MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(inAddress),procNo);
+		if (mirrorBuffer==0){
+			return 0;
+		}
+		inAddress=(void*)((int*)(inAddress)+mirrorBuffer->diff);
 	}
-	inAddress=(void*)((int*)(inAddress)+mirrorBuffer->diff);
 	return inAddress;
 }
 

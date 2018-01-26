@@ -80,6 +80,6 @@
 	for(int i=0;i<16;i++)
 		printf("sharedBuffer0B[%d]=%X\n",i,sharedBuffer0B[i]);
 	
-	while(1);
+	//while(1);
 	return 0x600D;
 }
