@@ -19,8 +19,8 @@ static int own_callback(){
 		halInitSingleDMA(src_loc,dst_loc,size32_loc);
 		return 0;
 	}
-	src_loc += stride_src_loc + size32_loc;
-	dst_loc += stride_dst_loc + size32_loc;
+	src_loc += stride_src_loc;
+	dst_loc += stride_dst_loc;
 	return 0;
 }
 
@@ -45,8 +45,8 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 			///wrt param for nex call back
 			size32_loc = width;
 			height_loc = height - 1;
-			src_loc = (int*)((int)src + srcStride32 + width);
-			dst_loc = (int*)((int)dst + dstStride32 + width);
+			src_loc = (int*)((int)src + srcStride32);
+			dst_loc = (int*)((int)dst + dstStride32);
 			stride_src_loc = srcStride32;
 			stride_dst_loc = dstStride32;
 			halInitSingleDMA(src,dst,width);

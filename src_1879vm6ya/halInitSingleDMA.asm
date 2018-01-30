@@ -64,5 +64,6 @@ begin "text"
 <END>
 	pop ar1,gr1;
 	pop ar0,gr0;
-	return;
+	delayed return;
+	gr7 = false;
 end "text";

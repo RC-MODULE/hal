@@ -2,6 +2,7 @@ global _halSetCallbackDMA : label;
 global _readCallback      : label;
 global _halInitDMA        : label;
 global _halStatusDMA      : label;
+global _haltest					: label;
 nobits "nobits"
  GR7:word;
  AR5:word;
@@ -81,14 +82,11 @@ begin "text"
 
 <_halStatusDMA>
 	push ar0,gr0;
-	gr7 = [4000181Ah];//read control register of DMA
+	gr7 = [10010010h];//read counter
 	gr0 = [_flag_of_pack_DMA];
-	gr7 = gr7 and gr0;
-	gr0 = 2;
-	gr7 = gr0 and gr7;
-	gr7 = gr7 >> 1; 
+	gr7 = gr0 or gr7;
 	pop ar0,gr0;
-	return;		
+	return;
 end "text";	
 
 	

@@ -13,9 +13,12 @@ begin "text"
 	gr0 = [--ar5];//load width
 	ar1 = [--ar5];//load height
 	gr1 = [--ar5];//load srcstride
+	gr1 = gr1 - gr0;
+	if < delayed goto END;
 	ar2 = [--ar5];//load dst
 	gr2 = [--ar5];//load dststride
-
+	gr2 = gr2 - gr0;
+	if < delayed goto END;
 ///////////////////////////////////////////////////////////	//init dma
 	gr7 = ar1;
   with gr3 = gr0 *: gr7;
@@ -61,11 +64,11 @@ begin "text"
 	gr7 = 1;
 	[1001000Ah] = gr7;
 	[1001001Ah] = gr7;
-	gr7 = false;
 <END>
 	pop ar3,gr3;	
 	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;
-	return;
+	delayed return;
+	gr7 = false;
 end "text";
