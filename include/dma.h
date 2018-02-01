@@ -4,9 +4,11 @@
 #define DMA_OK    0 
 
 
-extern "C"
-{
-	typedef int(*DmaCallBack)();
+#ifdef __cplusplus
+		extern "C" {
+#endif
+
+	typedef int(*DmaCallback)();
 	/**
 	 *  \brief Brief
 	 *  
@@ -30,18 +32,28 @@ extern "C"
 	
 	
 	int dmaCheck(void* src, void* dst, int size32);
-	int dmaInit (void* src, void* dst, int size32, DmaCallBack* func);
+	int dmaInit (void* src, void* dst, int size32, DmaCallback func);
 	//void dmaInitBias(int n, unsigned src, unsigned dstq, int row2read, int bias2read, int row2wrt, int bias2wrt);
 	void dmaMatrixInit(void* src, int width, int height, int srcStride,  void* dst, int dstStride );
 	int  dmaStatus();
 
 	//---------------------------------
-	int  halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallBack* func, int channel=0);
-	int  halInitPacketDMA(void** src,  void** dst,  int* size32,  DmaCallBack* func, int channel=0);
-	int  halInitDoubleDMA(void*  src0, void*  src1, int* dst0,   int* dst1, int intSize0, int intSize1, DmaCallBack* func, int channel=0);
-	int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32, DmaCallBack* func, int channel=0);
+	//int  halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallback* func, int channel=0);
+	//int  halInitPacketDMA(void** src,  void** dst,  int* size32,  DmaCallback* func, int channel=0);
+	//int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1, DmaCallback func, int channel=0);
+	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32, DmaCallback func, int channel=0);
+	//int  halStatusDMA();
+	
+	int  halInitSingleDMA(void*  src,  void*  dst,  int  size32);
+	int  halInitPacketDMA(void** src,  void** dst,  int* size32);
+	int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
+	int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
+	void halSetCallbackDMA(DmaCallback user_callback);
+	void halInitDMA();
 	int  halStatusDMA();
 
-};
 
+#ifdef __cplusplus
+		};
+#endif
 
