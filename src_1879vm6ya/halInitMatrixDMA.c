@@ -41,7 +41,7 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 			halInitSingleDMA(src,dst,width);
 		}else{
 			user_callback_loc = readCallback();
-			halSetCallbackDMA(own_callback);
+			halSetCallbackDMA((DmaCallback)own_callback);
 			///wrt param for nex call back
 			size32_loc = width;
 			height_loc = height - 1;
