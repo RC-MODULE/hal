@@ -26,7 +26,7 @@ int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32){
 	pDst  = pdst;
 	pSize = psize32;
 	userCallback = readCallback();
-	halSetCallbackDMA(ownCallback);
+	halSetCallbackDMA((DmaCallback)ownCallback);
 	halInitSingleDMA(*pSrc,*pDst,*pSize);
 	return 0;
 }
