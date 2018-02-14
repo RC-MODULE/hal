@@ -7,9 +7,11 @@ static int stride_src_loc;
 static int stride_dst_loc;
 static DmaCallback user_callback_loc;
 
-
-void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
-DmaCallback readCallback();	
+extern "C"{
+	void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
+	DmaCallback readCallback();	
+};
+	
 
 static int own_callback(){
 	if(--height_loc){

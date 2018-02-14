@@ -5,7 +5,9 @@ static int*   pSize;
 static DmaCallback userCallback;
 extern int flag_of_pack_DMA;
 
-DmaCallback readCallback();
+extern "C"{
+	DmaCallback readCallback();
+};
 
 static int ownCallback(){
 	pSrc++;
