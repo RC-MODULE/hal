@@ -1,5 +1,5 @@
 #include "hal.h"
-#include <stdio.h>
+//#include <stdio.h>
 #ifdef __cplusplus
 		extern "C" {
 #endif
@@ -38,7 +38,7 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
 		}else {
-			printf("CHECK\n");
+			//printf("CHECK\n");
 			halInitMatrixDMA_asm(src,width,height,srcStride32,dst,dstStride32);
 		}
 		return 0;
