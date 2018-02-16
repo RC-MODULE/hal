@@ -1,4 +1,9 @@
 #include "hal.h"
+#include <stdio.h>
+#ifdef __cplusplus
+		extern "C" {
+#endif
+
 static int size32_loc;
 static int height_loc;
 static int* src_loc;
@@ -6,11 +11,11 @@ static int* dst_loc;
 static int stride_src_loc;
 static int stride_dst_loc;
 static DmaCallback user_callback_loc;
+extern int flag_of_pack_DMA;
 
-extern "C"{
 	void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	DmaCallback readCallback();	
-};
+
 	
 
 static int own_callback(){
@@ -19,6 +24,7 @@ static int own_callback(){
 	}else{
 		halSetCallbackDMA(user_callback_loc);	
 		halInitSingleDMA(src_loc,dst_loc,size32_loc);
+		flag_of_pack_DMA = 0;
 		return 0;
 	}
 	src_loc += stride_src_loc;
@@ -26,8 +32,17 @@ static int own_callback(){
 	return 0;
 }
 
-
 int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+	flag_of_pack_DMA = 0;
+	if(width < 16){
+		if(height == 1){
+			halInitSingleDMA(src,dst,width);
+		}else {
+			printf("CHECK\n");
+			halInitMatrixDMA_asm(src,width,height,srcStride32,dst,dstStride32);
+		}
+		return 0;
+	}
 	int test_src         = (int)src;
 	int test_width       = (int)width;
 	int test_srcStride32 = (int)srcStride32;
@@ -35,13 +50,18 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 	int test_dst         = (int)dst;
 	int check = test_src | test_width | test_srcStride32 | test_dstStride32 | test_dst; 
 	if(check<<28){
+		//printf("CASE PACKET\n");
 		if(height == 0 || width ==0){
+			//printf("height == 0 || width ==0\n");
 			halInitSingleDMA(src,dst,0);
 			return 0;
 		}
 		if(height == 1){
+			//printf("height == 1\n");
 			halInitSingleDMA(src,dst,width);
 		}else{
+			//printf("PACKET\n");
+			flag_of_pack_DMA = 0xffffffff;
 			user_callback_loc = readCallback();
 			halSetCallbackDMA((DmaCallback)own_callback);
 			///wrt param for nex call back
@@ -54,6 +74,7 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 			halInitSingleDMA(src,dst,width);
 		}
 	}else{
+		//printf("CASE REAL\n");
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
 		}else {
@@ -62,3 +83,6 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 	}
 	return 0;
 }
+#ifdef __cplusplus
+		};
+#endif
