@@ -95,20 +95,21 @@ int main(){
 	buff_loc<<= 4;
 	int* pntr2mem = (int*)buff_loc;
 	printf("pntr2mem = %x\n",pntr2mem);
+	printf("buff = %x\n",buff);
 	int coutn =0;
 	index =0;
 	status = 0;
-
+	printf("statge 1 \n");
 	for(j=0;j<100;j++){
 		for(i=0;i<100;i+=4){
 			coutn++;
 			status =0;
-			//printf("i = %d j = %d\n",i,j);
+			printf("st1 i = %d j = %d\n",i,j);
 			halInitMatrixDMA((arr2read + MEM_OFFSET),i,j, i,buff,i);
 			while(1){
 				if(status){
 					ref_matrix_dma(int(arr2read + MEM_OFFSET),i,j, i,(int)buff_ref,i);
-					int res = cmp(SIZE_DDR,pntr2mem,buff_ref);
+					int res = cmp(SIZE_DDR,buff,buff_ref);
 					if(res){
 						printf("Mismatch at %d \n",res);
 						goto END;
@@ -122,24 +123,33 @@ int main(){
 			}
 		}
 	}
-	/*halInitMatrixDMA((arr2read + MEM_OFFSET),44,2,44,pntr2mem,44);
-	coutn++;
-	while(1){
-		if(status){
-			ref_matrix_dma(int(arr2read + MEM_OFFSET),44,2,44,(int)buff_ref,44);
-			int res = cmp(SIZE_DDR,pntr2mem,buff_ref);
-			if(res){
-				printf("Mismatch at %d \n",res);
-				goto END;
+	coutn  = 0;
+	index  = 0;
+	status = 0;
+	printf("statge 1 with dma status\n");
+	for(j=0;j<100;j++){
+		for(i=0;i<100;i+=4){
+			coutn++;
+			status =0;
+			printf("st1 i = %d j = %d\n",i,j);
+			halInitMatrixDMA((arr2read + MEM_OFFSET),i,j, i,buff,i);
+			while(1){
+				if(halStatusDMA() == 0){
+					ref_matrix_dma(int(arr2read + MEM_OFFSET),i,j, i,(int)buff_ref,i);
+					int res = cmp(SIZE_DDR,buff,buff_ref);
+					if(res){
+						printf("Mismatch at %d \n",res);
+						goto END;
+					}
+					if(coutn != index){
+						printf("call has not been called\n");
+						goto END;
+					}
+					break;
+				}
 			}
-			if(coutn != index){
-				printf("call has not been called\n");
-				goto END;
-			}
-			break;
 		}
-	}*/
-
+	}
 	
 	printf("satage 2\n");
 
@@ -147,7 +157,7 @@ int main(){
 		for(i=0;i<100;i+=4){
 			coutn++;
 			status =0;
-			//printf("i = %d j = %d\n",i,j);
+			printf("st2 i = %d j = %d\n",i,j);
 			halInitMatrixDMA((arr2read + MEM_OFFSET),i,j, i,pntr2mem,i);
 			while(1){
 				if(status){
