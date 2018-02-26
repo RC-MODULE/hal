@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\ringbuffer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\sleep.h"
 				>
 			</File>
@@ -226,6 +230,14 @@
 			</File>
 			<File
 				RelativePath="..\src_virtual\led.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="src_x86"
+			>
+			<File
+				RelativePath="..\src_x86\sleep.cpp"
 				>
 			</File>
 		</Filter>

@@ -30,7 +30,7 @@ SyncBuf* getSyncBuffer(){
 			TEXT(SYNC_BUFFER_MAPPING_NAME));               // name of mapping object
 
 		if (hMapFile == NULL){
-			_tprintf(TEXT("Could not open file mapping object (%d).\n"),GetLastError());
+			printf("Could not open file mapping object (%d).\n",GetLastError());
 			return 0;
 		}
 
@@ -42,7 +42,7 @@ SyncBuf* getSyncBuffer(){
 			SYNC_BUF_SIZE);
 
 		if (pSyncBuf == NULL){
-			_tprintf(TEXT("Could not map view of file (%d).\n"),GetLastError());
+			printf("Could not map view of file (%d).\n",GetLastError());
 			CloseHandle(hMapFile);
 			return 0;
 		}
@@ -139,7 +139,7 @@ BufferRegistry* createBufferRegistry(){
 		registryName);         // name of mapping object
 
 	if (hBufferRegistry == NULL) {
-		_tprintf(TEXT("ERROR:Could not create registry file mapping object (%d).\n"),GetLastError());
+		printf("ERROR:Could not create registry file mapping object (%d).\n",GetLastError());
 		return 0;
 	}
 	
@@ -151,7 +151,7 @@ BufferRegistry* createBufferRegistry(){
 		sizeof(BufferRegistry));
 
 	if (pBufferRegistry == NULL) {
-		_tprintf(TEXT("ERROR:Could not map registry view of file (%d) \n"),GetLastError());
+		printf("ERROR:Could not map registry view of file (%d) \n",GetLastError());
 		return 0;
 	}
 
@@ -230,7 +230,7 @@ int* halMalloc32(int bufferSize32){
 		createName(TEXT(CONST_BUFFER_MAPPING_NAME),mappedBuffer.owner,pBufferRegistry->count));			 // name of mapping object
 
 	if (mappedBuffer.handle == NULL) {
-		_tprintf(TEXT("ERROR:Could not open file mapping object (%d).\n"),GetLastError());
+		printf("ERROR:Could not open file mapping object (%d).\n",GetLastError());
 		return 0;
 	}
 	// получаем указатель
@@ -242,7 +242,7 @@ int* halMalloc32(int bufferSize32){
 		mappedBuffer.size32*4);
 
 	if (mappedBuffer.address == NULL) {
-		_tprintf(TEXT("ERROR:Could not map view of file (%d) \n"),GetLastError());
+		printf("ERROR:Could not map view of file (%d) \n",GetLastError());
 		return 0;
 	}
 
@@ -381,7 +381,7 @@ void* halSyncAddr(
 
 
 extern "C" {
-void halFree(int* ){
+void halFree(void* ){
 	/*
 	halHostSync((int)0x600DBA1+halGetProcessorNo());
 	UnmapViewOfFile(shared);

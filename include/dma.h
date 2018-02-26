@@ -3,6 +3,7 @@
 #define DMA_READY 0 
 #define DMA_OK    0 
 
+typedef int(*DmaCallback2)();
 
 #ifdef __cplusplus
 		extern "C" {

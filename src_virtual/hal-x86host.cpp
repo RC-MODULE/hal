@@ -122,7 +122,7 @@ int halOpen(char* absfile,...){
 		TEXT(SYNC_BUFFER_MAPPING_NAME));              // name of mapping object
 
 	if (hMapFile == NULL){
-		_tprintf(TEXT("Could not create file sync mapping object (%d).\n"),GetLastError());
+		printf("Could not create file sync mapping object (%d).\n",GetLastError());
 		return 1;
 	}
 
@@ -133,7 +133,7 @@ int halOpen(char* absfile,...){
 		SYNC_BUF_SIZE);
 
 	if (pSyncBuf == NULL){
-		_tprintf(TEXT("Could not map view of sync file (%d).\n"),GetLastError());
+		printf("Could not map view of sync file (%d).\n",GetLastError());
 		CloseHandle(hMapFile);
 		return 1;
 	}
@@ -168,12 +168,12 @@ int halOpen(char* absfile,...){
 				sSharedMemName);		// name of mapping object
 
 			if (hMapFileSharedMem == NULL){
-				_tprintf(TEXT("Could-not open file mapping shared object (%d).\n"),GetLastError());
+				printf(TEXT("Could-not open file mapping shared object (%d).\n"),GetLastError());
 				continue;//return -1;
 			}
 		
 			if (hMapFileSharedMem == NULL){
-				_tprintf(TEXT("Could not open file mapping shared object (%d).\n"),GetLastError());
+				printf(TEXT("Could not open file mapping shared object (%d).\n"),GetLastError());
 				return -1;
 			}
 
@@ -185,7 +185,7 @@ int halOpen(char* absfile,...){
 				sharedSize32*4);
 
 			if (pSharedMem == NULL){
-				_tprintf(TEXT("Could not map view of shared file (%d).\n"),GetLastError());
+				printf(TEXT("Could not map view of shared file (%d).\n"),GetLastError());
 				CloseHandle(hMapFileSharedMem);
 				return -1;
 			}
@@ -217,7 +217,7 @@ int updateMirrorRegistry(int processorNo){
 			createName(TEXT(CONST_REGISTRY_MAPPING_NAME),processorNo,processorNo));               // name of mapping object
 
 		if (hMapFile == NULL){
-			_tprintf(TEXT("ERROR:Could not open file mapping object (%d).\n"),GetLastError());
+			printf("ERROR:Could not open file mapping object (%d).\n",GetLastError());
 			return 0;
 		}
 
@@ -229,7 +229,7 @@ int updateMirrorRegistry(int processorNo){
 			sizeof(BufferRegistry));
 
 		if (buffer== NULL){
-			_tprintf(TEXT("Could not map view of file (%d).\n"),GetLastError());
+			printf("Could not map view of file (%d).\n",GetLastError());
 			CloseHandle(hMapFile);
 			return 0;
 		}
@@ -245,7 +245,7 @@ int updateMirrorRegistry(int processorNo){
 			createName(TEXT(CONST_BUFFER_MAPPING_NAME),processorNo,i));               // name of mapping object
 
 		if (hMapFile == NULL){
-			_tprintf(TEXT("ERROR:Could not open file mapping object (%d).\n"),GetLastError());
+			printf("ERROR:Could not open file mapping object (%d).\n",GetLastError());
 			return 0;
 		}
 
@@ -257,7 +257,7 @@ int updateMirrorRegistry(int processorNo){
 			mirrorRegistry[processorNo].pBufferRegistry->buffer[i].size32*4);
 
 		if (buffer== NULL){
-			_tprintf(TEXT("Could not map view of file (%d).\n"),GetLastError());
+			printf("Could not map view of file (%d).\n",GetLastError());
 			CloseHandle(hMapFile);
 			return 0;
 		}
