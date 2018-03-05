@@ -11,7 +11,7 @@ begin "text"
 	ar0 = [--ar5];//srs address
 	gr0 = [--ar5];//dst address
 	gr2 = [--ar5];//row 2 read
-	gr1 = [--ar5];//bias of transvered array
+	gr1 = [--ar5];//bias of transfered array
 	ar2 = [--ar5];//row 2 wrt
 	ar1 = [--ar5];//bias of loading location
 	//counters
