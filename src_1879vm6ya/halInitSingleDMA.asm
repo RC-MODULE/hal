@@ -17,7 +17,7 @@ begin "text"
 	gr7 = gr7 or gr0;
 	gr7 = gr7 << 28;
 
-	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;// double demention mode was set up to prevent user from hardwaer bug in MDMA bocoze of erro in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 otherwise mode is double demention with bias = 2 rowcounter 1 to emulate sigle demention mode use double demention mode
+	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;// double demention mode was set up to prevent user from hardwaer bug in MDMA becoze of erro in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 otherwise mode is double demention with bias = 2 rowcounter 1 to emulate sigle demention mode use double demention mode
 	//address mode is double demention
 	ar1 = 1 with gr7 = true;
 	[10010008h] = gr7;//double dimention mode

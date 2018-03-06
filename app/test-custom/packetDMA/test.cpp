@@ -27,7 +27,7 @@ int main()
 
 	for (int srcBank = 0; srcBank < 1; srcBank++) {
 		for (int dstBank = 0; dstBank < 3; dstBank++) {
-			nmppsMallocSetRoute16(0xF00 | (dstBank<<4) | drcBank);
+			nmppsMallocSetRoute16(0xF00 | (dstBank<<4) | dstBank);
 			//nm32s* src = (nm32s*)0x00040000; // (MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 			//nm32s* dst = (nm32s*)0x00048000; // (MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 			//nmppsMallocSetRoute16(0xF00);

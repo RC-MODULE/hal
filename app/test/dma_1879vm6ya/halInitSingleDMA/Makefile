@@ -11,7 +11,7 @@ endif
 
 
 TARGET   = main.abs
-CFG      = my_mc12101brd1.cfg
+CFG      = my_mc12101brd_core1.cfg
 
 ASM_prog 	   = halInitSingleDMA
 C_test 		   = test_$(ASM_prog)
@@ -19,7 +19,8 @@ ASM_callback = halSetCallbackDMA
 PATH2SRC   = ../../../../src_1879vm6ya/
 
 LIB_DIRS = -l"$(MC12101)/lib"  -l"$(NEURO)/lib" -l$(ROOT)/lib -l$(HAL)/lib  -l.
-LIBS     = mc12101lib_nm.lib libc4f.lib libc4.lib  hal-mc12101.lib cppnew4.lib libint_6407.lib
+LIBSf     = mc12101lib_nm.lib libc4f.lib libc4.lib  hal-mc12101.lib cppnew4.lib libint_6407.lib
+LIBS     = mc12101lib_nm.lib libc4.lib  hal-mc12101.lib cppnew4.lib libint_6407.lib
 INC 	   = -I"$(MC12101)/include" -I$(HAL)/include -I"$(NEURO)/include"
 ifeq ($(NMCC),y)
 $(TARGET):  $(C_test).c $(PATH2SRC)$(ASM_prog).asm $(PATH2SRC)$(ASM_callback).asm  Makefile $(CFG)
@@ -35,7 +36,7 @@ clean:
 
 # don't use 'run: $(TARGET)' for remote 
 run: $(TARGET)
-	mc12101run $(TARGET) 
+	mc12101run $(TARGET) -p
 
 run-proton: $(TARGET)
 	$(RUNDIR)/run
