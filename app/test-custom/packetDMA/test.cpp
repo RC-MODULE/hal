@@ -4,9 +4,10 @@
 #include "dma.h"
 #include "hal.h"
 #include "stdio.h"
+#include <string.h>
 
 void initChain7707(int *buf);
-extern chain7707 chain;
+//extern chain7707 chain;
 
 
 #define MAX_NUM_BUFFERS 16  // Maximum buffers in packet
@@ -17,7 +18,8 @@ int chainBuf[MAX_NUM_BUFFERS*16];
 int main()
 { 
 	clock_t t0,t1;
-	initChain7707((int*)chainBuf); // Создаём пустую таблицу в памяти массива chainBuf
+	//initChain7707((int*)chainBuf); // Создаём пустую таблицу в памяти массива chainBuf
+	//halOpenDMA((int*)chainBuf); // Создаём пустую таблицу в памяти массива chainBuf
 	
 
 	int numBuffers = 16; // counter of buffers in packet 1
@@ -35,7 +37,8 @@ int main()
 			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 	
 			nmppsRandUniform_32s(src, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-			nmppsSet_32s(dst, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+			//nmppsSet_32s(dst, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+			memset(dst, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 
 			if (src == 0 || dst == 0)
 				return -1;
@@ -67,7 +70,7 @@ int main()
 				halSleep(1);
 				if (time++ > 2000)
 					return 333;
-				status = xdmac0();
+				status = halStatusDMA();
 			} while (status);
 			t1 = clock();
 
