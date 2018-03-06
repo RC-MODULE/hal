@@ -49,24 +49,24 @@
 #
 include $(ROOT)/global.mk
 #--------------  target & input dirs -------------------
-PROJECT          = test_mb7707
+PROJECT          = test_mc7601
 
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NEURO)/include" -I"$(MB7707)/include" -I"$(NMPP)/include"  -I"$(NMPP)/include/nmpli"  -I../../src/common  -I$(HAL)/include -I$(ROOT)/include
+INC_DIRS         = -I"$(NEURO)/include" -I"$(MC7601)/include" -I"$(NMPP)/include"  -I"$(NMPP)/include/nmpli"  -I../../src/common  -I$(HAL)/include -I$(ROOT)/include
 SRC_DIRS         = $(ROOT)/src/nm $(ROOT)/src/common ..
-LIB_DIRS         = -l"$(NEURO)/lib"   -l"$(MB7707)/lib" -l"$(NMPP)/lib" -l$(ROOT)/lib 
+LIB_DIRS         = -l"$(NEURO)/lib"   -l"$(MC7601)/lib" -l"$(NMPP)/lib" -l$(ROOT)/lib 
 TMP_DIR          = Release
 #--------------  RELEASE/ALL config -------------------
 HEAPS 			?= -heap=18384 -heap1=18384 -heap2=16384 -heap3=16384
 AS               = asm 				 
 AS_FLAGS         = -soc -nm2ms  $(INC_DIRS)
 AS_FLAGS_C2ASM   = -soc -nm2ms  $(INC_DIRS)
-LIBS             = libint_soc.lib mb7707lib.lib libc05.lib cppnew05.lib nmpp-nmc3.lib hal-mb7707.lib
+LIBS             = mc7601_ll_nm.lib nmpp-nmc3d.lib libint_soc.lib  
 CC               = nmcpp
 CC_FLAGS         = -6405 -DNEURO -OPT2 -inline 
 BUILDER          = linker
-BUILDER_FLAGS    = -cMB7707brd.cfg -m  $(HEAPS) -full_names -o$(TARGET) $(LIB_DIRS)
+BUILDER_FLAGS    = -mc7601brd.cfg -m  $(HEAPS) -full_names -o$(TARGET) $(LIB_DIRS)
 #--------------  DEBUG config -------------------------
 ifdef DEBUG      
 TARGET           = $(OUT_DIR)/$(PROJECT)d.abs

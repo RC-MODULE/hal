@@ -1,9 +1,9 @@
 #!lua
 
 -- A solution contains projects, and defines the available configurations
-solution "test_mc12101"
+solution "test_mc7601"
 	configurations { "Debug", "Release" }
-	project "test_mc12101"
+	project "test_mc7601"
       kind "Makefile"
       files { "../*.cpp", "*.cfg", "Makefile" }
 	  includedirs {"$(NMPP)/include","$(HAL)/include"}

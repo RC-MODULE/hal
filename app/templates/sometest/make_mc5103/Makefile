@@ -49,7 +49,7 @@
 #
 include $(ROOT)/global.mk
 #--------------  target & input dirs -------------------
-PROJECT          = test-mc5103
+PROJECT          = test_mc5103
 
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
@@ -137,6 +137,10 @@ $(PROJECT).vcxproj :	premake5.lua
 $(PROJECT).vcproj :	premake5.lua 
 	premake5 vs2005
 
+vs2005:    	$(PROJECT).vcproj
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).vcproj
+#	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).vcproj /p:Configuration=Release
+	
 vs2015:    	$(PROJECT).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release

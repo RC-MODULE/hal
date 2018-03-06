@@ -1,12 +1,12 @@
 #!lua
 
 -- A solution contains projects, and defines the available configurations
-solution "test_mc7707"
+solution "test_mb7707"
 	configurations { "Debug", "Release" }
-	project "test_mc7707"
+	project "test_mb7707"
       kind "Makefile"
-      files { "../../../src/nm/*.*", "../../../src/common/*.*","../*.*", "*.cfg", "Makefile" }
-	 
+      files { "../*.cpp", "*.cfg", "Makefile" }
+	  includedirs {"$(NMPP)/include","$(HAL)/include"}
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile"}
 		   rebuildcommands {"make -B DEBUG=y -f Makefile"}

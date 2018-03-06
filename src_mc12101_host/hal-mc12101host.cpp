@@ -1,8 +1,12 @@
 #include "mc12101load.h"
 #include <stdio.h>
+
 #include "sleep.h"
 static PL_Board *board=0;
 static PL_Access *access[2]={0,0};
+#include "nm_io_host.h"
+static PL_Access* access_io[2]={0,0};
+static NM_IO_Service *nmservice[2]={0,0};
 #define TRACE(str) printf("%s", str)
 
 static unsigned result[2];
@@ -11,18 +15,17 @@ static bool isFinished[2]={false,false};
 
 extern "C"{
 
+static unsigned sharedBuffer;
+static unsigned sharedSize32;
+static unsigned activeSingleProc1=false;
+
 int halSync(int val,int processor=0){
 	int ret;
-#ifdef DEFAULT_PROCESSOR 
-	PL_Sync(access[DEFAULT_PROCESSOR],val,&ret);
-#else 
+	if (activeSingleProc1)	processor = 1;
 	PL_Sync(access[processor],val,&ret);
-#endif
 	return ret;
 };
 
-static unsigned sharedBuffer;
-static unsigned sharedSize32;
 
 int halOpen(char* absfile=0,...){
 
@@ -57,19 +60,11 @@ int halOpen(char* absfile=0,...){
 		return  (1);
 	}
 
+	if (strlen(abs[0])==0)
+		activeSingleProc1= true;
+	else 
+		activeSingleProc1= false;
 
-#ifdef DEFAULT_PROCESSOR 
-	if (PL_GetAccess(board, DEFAULT_PROCESSOR, &access[DEFAULT_PROCESSOR])){
-		TRACE( "ERROR: Can't access processor  on board    \n");
-		return  (1);
-	}
-	if (PL_LoadProgramFile(access[DEFAULT_PROCESSOR], abs[0])){
-		TRACE( ": : ERROR: Can't load program into board.\n");
-		return  (1);
-	}
-	sharedBuffer=halSync(0x8086);
-	sharedSize32=halSync(0x8086);
-#else
 	bool first_enter=true;
 	for (int proc=0; abs[proc]!=0 ;proc++){
 		if (strlen(abs[proc])){
@@ -81,44 +76,49 @@ int halOpen(char* absfile=0,...){
 				TRACE( ": : ERROR: Can't load program into board.\n");
 				return  (1);
 			}
-		/*
-			if (first_enter){
-				sharedBuffer=halSync(0x8086,proc);
-				sharedSize32=halSync(0x8086,proc);
-				first_enter=false;
-			}
-			else {
-				ok=halSync(sharedBuffer,proc);
-				ok=halSync(sharedSize32,proc);
-			}
-*/
 		}
 	}
-#endif
-	
+	for (int proc=0; abs[proc]!=0 ;proc++){
+		if (strlen(abs[proc])){
+			// io initialization
+			if (PL_GetAccess(board, proc, &access_io[proc])){
+				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
+				return  (1);
+			}
 
+			nmservice[proc]=new NM_IO_Service(abs[proc],access_io[proc]);		
+			if (nmservice[proc]==0)
+				return (1);
+			if (nmservice[proc]->invalid()){
+				PL_CloseAccess(access_io[proc]);
+				delete nmservice[proc];
+				nmservice[proc]=0;
+				access_io[proc]=0;
+			}
+			else 
+				break;
+		}
+	}
 	return 0;
 }
 	
 
 int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
-#ifdef DEFAULT_PROCESSOR 
-	return PL_ReadMemBlock(access[DEFAULT_PROCESSOR], (PL_Word*)dstHostAddr, srcBoardAddr, size32);
-#else
+	if (activeSingleProc1)	processor = 1;
 	return PL_ReadMemBlock(access[processor], (PL_Word*)dstHostAddr, srcBoardAddr, size32);
-#endif
 }
 
 int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
-#ifdef DEFAULT_PROCESSOR 
-	return PL_WriteMemBlock(access[DEFAULT_PROCESSOR ], (PL_Word*)srcHostAddr, dstBoardAddr, size32);
-#else
+	if (activeSingleProc1)	processor = 1;
 	return PL_WriteMemBlock(access[processor], (PL_Word*)srcHostAddr, dstBoardAddr, size32);
-#endif
 }
 
 
 int halClose(){
+	if (nmservice[0])
+		delete nmservice[0];
+	if (nmservice[1])
+		delete nmservice[1];
 	if (access[0])
 		PL_CloseAccess(access[0]);
 	if (access[1])
@@ -129,17 +129,13 @@ int halClose(){
 
 int halGetResult(unsigned long* returnCode, int processor=0){
 	PL_Word status=0;
+	if (activeSingleProc1)	processor = 1;
 	while ((PROGRAM_FINISHED&status)==0){
+		
 		PL_GetStatus(access[processor],&status);
 		halSleep(500);
 	}
-
-#ifdef DEFAULT_PROCESSOR 
-	return PL_GetResult(access[DEFAULT_PROCESSOR], returnCode);
-#else
 	return PL_GetResult(access[processor], returnCode);
-#endif
-
 }
 
 

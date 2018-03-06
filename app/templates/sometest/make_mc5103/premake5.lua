@@ -5,8 +5,8 @@ solution "test_mc5103"
 	configurations { "Debug", "Release" }
 	project "test_mc5103"
       kind "Makefile"
-      files { "../../../src/nm/*.*", "../../../src/common/*.*","../*.*", "*.cfg", "Makefile" }
-	 
+      files { "../*.cpp", "*.cfg", "Makefile" }
+	  includedirs {"$(NMPP)/include","$(HAL)/include"}
 	  configuration "Debug"
 		   buildcommands {"make DEBUG=y -f Makefile"}
 		   rebuildcommands {"make -B DEBUG=y -f Makefile"}

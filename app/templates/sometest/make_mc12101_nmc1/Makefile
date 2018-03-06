@@ -51,11 +51,11 @@ ROOT=../../..
 #
 include $(ROOT)/global.mk
 #--------------  target & input dirs -------------------
-PROJECT          = test-mc12101
+PROJECT          = test_mc12101
 
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NEURO)/include" -I"$(MC5103)/include" -I"$(NMPP)/include"  -I"$(NMPP)/include/nmpli"  -I../../src/common  -I$(HAL)/include -I$(ROOT)/include
+INC_DIRS         = -I"$(NEURO)/include" -I"$(MC12101)/include" -I"$(NMPP)/include"  -I"$(NMPP)/include/nmpli"  -I../../src/common  -I$(HAL)/include -I$(ROOT)/include
 SRC_DIRS         = $(ROOT)/src/nm $(ROOT)/src/common ..
 LIB_DIRS         = -l"$(NEURO)/lib"   -l"$(MC12101)/lib" -l"$(NMPP)/lib" -l$(HAL)/lib 
 TMP_DIR          = Release
@@ -139,6 +139,10 @@ $(PROJECT).vcxproj :	premake5.lua
 $(PROJECT).vcproj :	premake5.lua 
 	premake5 vs2005
 
+vs2005:    	$(PROJECT).vcproj
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).vcproj
+#	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).vcproj /p:Configuration=Release
+	
 vs2015:    	$(PROJECT).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
