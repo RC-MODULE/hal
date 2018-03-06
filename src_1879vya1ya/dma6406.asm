@@ -9,7 +9,7 @@
 global _SetCallBack: label;
 global _dmainit: label;
 global _dmaInit: label;
-global _dmac0: label;
+global \: label;
 global _dmac1: label;
 begin "text"
 .branch;
