@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <hal.h>
 #include <sleep.h>
+#define LOOP_SIZE  32000
 #define SIZE_DDR   160000
 #define MEM_OFFSET 0x40000
 #define IASH       0x40000458
@@ -12,7 +13,7 @@
 	int arr2read[32000];
 #pragma data_section ".data_imu2"
 	int arr2wrt[32000];
-#pragma data_section ".data_shared"
+#pragma data_section ".my_ddr"
 	int align[20];
 	int buff[SIZE_DDR]; 	
  	int buff_ref[SIZE_DDR];
@@ -53,7 +54,8 @@ int main(){
 int i;
 	index  = 0;
 	status = 0;
-	halInitDMA();
+	halEnbExtInt();
+	printf("TEST halInitDMA %d \n",halInitDMA());
 	for(i=0;i<32000;i++){
 		arr2read[i] = i;
 	}
@@ -69,32 +71,27 @@ int i;
 
 	int* pntr2ic = (int*)IMRH;// init mask
 	*pntr2ic = 0x1;
+	
+	pntr2ic = (int*)IASH;
+	printf("IASH = %x\n",*pntr2ic);
+
+
 	int buff_loc = (int)buff>>4;
 	buff_loc<<=4;
 	int* pntr2mem = (int*)buff_loc;
 	printf("buff = %x\n",buff);	
 	printf("buff_loc = %x\n",buff_loc);	
 	count=0;
-	status =0;	
+	
 	halSetCallbackDMA((DmaCallback)call_back);
-	/*halInitSingleDMA((arr2read + MEM_OFFSET),(buff),32000);
-	int temp =0;
-	while(halStatusDMA()){
-		temp++;
-	}
-	printf("temp = %d\n",temp);
-	for(i=0;i<100;i++){
-		printf("out[%d] = %d \n",i,buff[i]);
-	}
-	return 100;*/
 
-
-	for(i=0;i<32000;i++){
+	printf("SATAGE 1 \n");
+	for(i=0;i<LOOP_SIZE;i+=2){
 		status = 0;
 		count++;
+		printf("%d\n",i);
 		halInitSingleDMA((arr2read + MEM_OFFSET),(pntr2mem),i);
 		while(1){
-			//printf("status dma = %x\n",halStatusDMA());
 			if(status){
 				ref_DMA(int(arr2read + MEM_OFFSET),int(buff_ref),i);
 				res = cmp(SIZE_DDR,buff_ref,pntr2mem);
@@ -108,31 +105,13 @@ int i;
 			}
 		}
 	}
-
-	for(i=0;i<32000;i++){
-		arr2read[i] = i;
-	}
-	for(i=0;i<20;i++){
-		align[i] = 0;
-	}
-
-	for (int i = 0; i < SIZE_DDR;i++){
-		buff[i] = 0;
-		buff_ref[i] = 0;
-	}
-
-	printf("SATAGE 2 \n");
-	printf("address = %x\n",buff);
-	for(i=0;i<1000;i++){
+	printf("SATAGE 2 unaligned address\n");
+	count = 0;
+	for(i=0;i<LOOP_SIZE;i+=2){
 		status = 0;
 		count++;
-		halSetCallbackDMA((DmaCallback)call_back);
 		halInitSingleDMA((arr2read + MEM_OFFSET),(buff),i);
-		//printf("i = %d\n",i);
-		halSleep(0);
-		while(1){
-			if(status){
-				//printf("status dma = %x\n",halStatusDMA());
+		while(halStatusDMA() == 0){
 				ref_DMA(int(arr2read + MEM_OFFSET),int(buff_ref),i);
 				res = cmp(SIZE_DDR,buff_ref,buff);
 				if(res){
@@ -142,26 +121,54 @@ int i;
 					goto MIS_CALL;
 				}
 				break;
-			}
+		}
+	}
+	printf("SATAGE 3 test halStatusDMA alligned adderss\n");
+	count = 0;
+	for(i=0;i<LOOP_SIZE;i+=2){
+		status = 0;
+		count++;
+		halInitSingleDMA((arr2read + MEM_OFFSET),(pntr2mem),i);
+		while(halStatusDMA() == 0){
+				ref_DMA(int(arr2read + MEM_OFFSET),int(buff_ref),i);
+				res = cmp(SIZE_DDR,buff_ref,pntr2mem);
+				if(res){
+					goto MIS_CMP;
+				}
+				if(count != index){
+					goto MIS_CALL;
+				}
+				break;
+		}
+	}
+	printf("SATAGE 4 test halStatusDMA unalligned adderss\n");
+	count = 0;
+	for(i=0;i<LOOP_SIZE;i+=2){
+		status = 0;
+		count++;
+		halInitSingleDMA((arr2read + MEM_OFFSET),(buff),i);
+		while(halStatusDMA() == 0){
+				ref_DMA(int(arr2read + MEM_OFFSET),int(buff_ref),i);
+				res = cmp(SIZE_DDR,buff_ref,buff);
+				if(res){
+					goto MIS_CMP;
+				}
+				if(count != index){
+					goto MIS_CALL;
+				}
+				break;
 		}
 	}
 
 goto PASS;
-	MIS_CMP:
+MIS_CMP:
 		printf("MIS_CMP at [%d]\n",res);
 
-	MIS_CALL:
+MIS_CALL:
 		printf("MIS_CALL at [%d]\n",count);
 	
 PASS:
-
-	if(cmp(SIZE_DDR,buff,buff_ref)){
-		printf("ERROR!!!!\n");
-		return 100;
-	}else{
 		printf("TEST has been passed\n");
-	}
 
-	return 1;
 	return 1;
 }
