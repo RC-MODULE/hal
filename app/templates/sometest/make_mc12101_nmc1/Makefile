@@ -62,7 +62,7 @@ SRC_DIRS         = $(ROOT)/src/nm $(ROOT)/src/common ..
 LIB_DIRS         = -l"$(NEURO)/lib"   -l"$(MC12101)/lib" -l"$(NMPP)/lib" -l$(HAL)/lib 
 TMP_DIR          = Release
 #--------------  RELEASE/ALL config -------------------
-HEAPS 			?= -heap=118384 -heap1=118384 -heap2=116384 -heap3=116384
+HEAPS 			?= -heap=118384 -heap1=16384 -heap2=16384 -heap3=16384
 AS               = asm 				 
 AS_FLAGS         = -nmc4 -nm2ms  $(INC_DIRS) -split_sir
 AS_FLAGS_C2ASM   = -nmc4 -nm2ms  $(INC_DIRS) -split_sir
