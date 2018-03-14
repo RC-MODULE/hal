@@ -150,7 +150,6 @@ int main(){
 			}
 		}
 	}
-	
 	printf("satage 2\n");
 
 	for(j=0;j<100;j++){
@@ -178,18 +177,5 @@ int main(){
 	}
 	printf("TEST has secsessfuly passed\n");
 END:
-	/*for(i=0;i<110;i++){
-		printf("out[%d] = %d\n",i,pntr2mem[i]);
-	}
-	printf("\n");
-	for(i=0;i<110;i++){
-	printf("ref[%d] = %d\n",i,buff_ref[i]);
-	}
-	pntr2ic = (int*)IASH;
-	printf("IASH = %x\n",*pntr2ic);
-	pntr2ic = (int*)IMRH;
-	*pntr2ic = 0x1;
-	printf("IMRH = %x\n",*pntr2ic);*/
-
 	return 10;
 }

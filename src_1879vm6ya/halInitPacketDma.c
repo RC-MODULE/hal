@@ -1,13 +1,12 @@
 #include "hal.h"
+extern "C"{
 static void** pSrc; 
 static void** pDst; 
 static int*   pSize;
 static DmaCallback userCallback;
 extern int flag_of_pack_DMA;
 
-extern "C"{
 	DmaCallback readCallback();
-};
 
 static int ownCallback(){
 	pSrc++;
@@ -33,3 +32,4 @@ int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32){
 	return 0;
 }
 
+};

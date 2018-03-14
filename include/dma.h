@@ -50,7 +50,9 @@ typedef int(*DmaCallback2)();
 	int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
 	int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	void halSetCallbackDMA(DmaCallback user_callback);
-	void halInitDMA();
+	int  halInitDMA();
+	void halEnbExtInt();
+	void halDisExtInt();
 	int  halStatusDMA();
 
 

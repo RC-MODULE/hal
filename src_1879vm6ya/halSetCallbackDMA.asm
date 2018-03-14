@@ -2,7 +2,9 @@ global _halSetCallbackDMA : label;
 global _readCallback      : label;
 global _halInitDMA        : label;
 global _halStatusDMA      : label;
-global _haltest					: label;
+global _haltest						: label;
+global _halEnbExtInt			: label;
+global _halDisExtInt			: label;
 nobits "nobits"
  GR7:word;
  AR5:word;
@@ -18,9 +20,7 @@ begin "text"
 		[AR5] = ar5;
 	delayed goto _CALL_BACK;
 		[GR7]=gr7;
-
-
-
+////////////////////////////////////////////////
 <_CALL_BACK>
 	pswr clear 01e0h;
 	//the code below was written according the prescription of how to clear IAS register on the right was;
@@ -38,8 +38,7 @@ begin "text"
 	ar5=[AR5];
  	delayed	ireturn;
 	gr7=[GR7];
-
-//////////////////////////////////////////////////////// //set call back
+///////////////////////////////////////////////////
 <_halSetCallbackDMA>
 	ar5 = ar7 - 2;
 	push ar0,gr0;	
@@ -47,19 +46,29 @@ begin "text"
 	gr1 = [--ar5];
 	ar5 = Lint_6407;
 	ar1 = 00000120h with gr1;
-	
 	if <>0 delayed goto PASS_SET_CALLBACK;
-	ar5 = change_addr4call + 1;
+		ar5 = change_addr4call + 1;
 	gr1 = dummy;
 <PASS_SET_CALLBACK>
 	[ar5] = gr1;
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
-
+////////////////////////////////////////////////////
+<_halEnbExtInt>
+	pswr set 040h;
+	return;
+<_halDisExtInt>
+	pswr clear 01e0h;
+	return;	
+////////////////////////////////////////////////////
 <_halInitDMA>
-	push ar0,gr0;	
-	push ar1,gr1 with gr7 = false;
+	gr7 = pswr;	
+	push ar0,gr0 with gr7 >>= 6;
+	push ar1,gr1 with gr7 <<= 31;
+	if =0 delayed goto END;
+		gr7 = 10;
+	gr7 = false;
 	[_flag_of_pack_DMA] = gr7;	
 	ar5 = Lint_6407;
 	ar1 = 00000120h;
@@ -71,15 +80,15 @@ begin "text"
 	[ar1++]=ar0,gr0;
 	gr1 = dummy;
 	[change_addr4call + 1] = gr1;
+<END>	
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
-
-
+////////////////////////////////////////////////////
 <_readCallback>
 	ar5 = [change_addr4call+1];
 	return;
-
+////////////////////////////////////////////////////
 <_halStatusDMA>
 	push ar0,gr0;
 	gr7 = [10010010h];//read counter

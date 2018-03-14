@@ -65,6 +65,7 @@ int main(){
 	int dummy =0;
 	while(halStatusDMA()){
 		dummy++;
+		printf("dummy = %d\n",dummy);
 	}
 
 	ref_DMA((int)(arr2read + MEM_OFFSET),(int)buff_ref,SIZE_MEM);
@@ -81,7 +82,7 @@ int main(){
 	}
 
 //case aligned address
-	printf("CASE address ALIGNED as 4 the LSB are 0\n");
+	printf("CASE address ALIGNED as 4 the LSBs are 0\n");
 	int* pntr2mem;
 	int aligned = (int)(int(buff + 15) >> 4);
 	aligned<<=4;
@@ -94,6 +95,7 @@ int main(){
 	dummy =0;
 	while(halStatusDMA()){
 		dummy++;
+		printf("dummy = %d\n",dummy);
 	}
 
 	ref_DMA((int)(arr2read + MEM_OFFSET),(int)buff_ref,SIZE_MEM);
