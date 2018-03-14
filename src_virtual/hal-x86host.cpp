@@ -316,10 +316,10 @@ int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned
 
 
 int halClose(){
-	for(int processor=1; absFile[processor]; processor++){  
-		halSync(0x600DBA10+processor,processor);
-	}
-	halSync((int)0x600DBA100);
+	//for(int processor=1; absFile[processor]; processor++){  
+	//	halSync(0x600DBA10+processor,processor);
+	//}
+	//halSync((int)0x600DBA100);
 	if (pSyncBuf)
 		UnmapViewOfFile(pSyncBuf);
 	//if (pSharedMem)

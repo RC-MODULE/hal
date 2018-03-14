@@ -2,12 +2,16 @@ ROOT = ..
 -include $(ROOT)/global.mk
 
 
-.SUFFIXES:
-PROJECT   = hal-mc12101
-LIB_X86   = $(PROJECT)-x86
-LIBIO_X86 = $(PROJECT)io-x86
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I$(ROOT)/src_1879vm6ya -I../src_nmc_all
+.SUFFIXES:
+PROJECT   	 = hal-mc12101
+PROJECT_X86  = $(PROJECT)-x86
+
+
+TARGET_X86 = $(OUT_DIR)/$(PROJECT_X86).lib
+
+OUT_DIR  = ../lib
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm5ya
 LIB_DIRS = 
 SRC_DIRS = ../src_1879vm6ya ../src_mc12101  ../src_nmc_all ../src_nmc_all
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
@@ -49,9 +53,11 @@ OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM
 VPATH    = $(SRC_DIRS)
 
 
-all: $(TARGET) $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib
+all: nmc x86
 
 #--------------- nmc build --------------------------------	
+nmc: $(TARGET)
+
 $(TARGET): $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
 
@@ -74,23 +80,23 @@ $(TMP_DIR)/%.asmx: %.c
 	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
 
 #--------------- X86 build --------------------------------	
-	
-$(OUT_DIR)/$(LIB_X86).lib: $(LIB_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIB_X86).vcproj
+x86: $(VS_VER)
 
-$(OUT_DIR)/$(LIBIO_X86).lib: $(LIBIO_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIBIO_X86).vcproj
 	
-$(LIB_X86).vcproj $(LIBIO_X86).vcproj  vs2005:	premake5.lua 
+vs2005: $(PROJECT_X86).vcproj
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT_X86).vcproj "Debug"
+
+vs2015:	$(PROJECT_X86).vcxproj
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Debug
+#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Release
+	
+$(PROJECT_X86).vcproj:	premake5.lua 
 	premake5 vs2005
+
+$(PROJECT_X86).vcxproj :	premake5.lua 
+	premake5 vs2015
 	
 #--------------- cleanup  --------------------------------	
 
-clean:
-	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib $(OUT_DIR)/$(PROJECT).lib $(OUT_DIR)/$(PROJECT)d.lib
-	-$(OS_RD) bin obj Release Debug
-	
-kill: clean
-	-$(OS_RM) *.vcproj *.sln *.vcxproj
-	
-	
+
+-include $(ROOT)/clean.mk

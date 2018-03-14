@@ -85,4 +85,14 @@ define BACKSLASH
 	$(subst /,\,$(1))
 endef
 
+ifdef VS140COMNTOOLS
+VS_VER = vs2015
+else ifdef VS80COMNTOOLS
+VS_VER = vs2005
+else 
+$(warning NO VISUAL STUDIO INSTALLED. X86-BUILD ABORTED)
+VS_VER = 
+endif 
+
+
  
