@@ -13,33 +13,30 @@ void initChain7707(int *buf);
 #define ALIGN( addr, numInts) ((((unsigned)addr)+numInts-1)%numInts*numInts) // align "addr" address to boundary of numInts 32-bit words
 
 int chainBuf[MAX_NUM_BUFFERS*16];
-int main()
-{ 
+void InitArr(nm32s* arr, int amm){
+	for(int i=0; i<amm; i++){
+		arr[i] = i;
+	}
+}
+
+int main(){ 
 	clock_t t0,t1;
-	//initChain7707((int*)chainBuf); // Создаём пустую таблицу в памяти массива chainBuf
-	//halOpenDMA((int*)chainBuf); // Создаём пустую таблицу в памяти массива chainBuf
 	
-
-	//int numBuffers = 1; // counter of buffers in packet 1
-
 	halInitDMA();
 	halEnbExtInt();	
-			
 
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
 		for (int dstBankIndx = 0; dstBankIndx < 4; dstBankIndx++) {
 			nmppsMallocSetRoute16((0xF00) | (dstBankIndx << 4) | srcBankIndx);
-			//nm32s* src = (nm32s*)0x00040000; // (MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-			//nm32s* dst = (nm32s*)0x00048000; // (MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-			//nmppsMallocSetRoute16(0xF00);
 			nm32s* src = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-	
-			//printf("src: %x dst:%x \n", src, dst);
+			printf("src: %x dst:%x \n", src, dst);
 			//nmppsRandUniform_32s(src, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 			//nmppsSet_32s(dst, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-			memset(dst, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 			memset(src, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+			InitArr(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE);
+			//memset(src, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+			memset(dst, 0xcccccccc, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
 
 			if (src == 0 || dst == 0)
 				return -1;
@@ -66,8 +63,7 @@ int main()
 			t0 = clock();
 			int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 
-			//nmppsCopy_32s(src, dst, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-			//if (err)	return -2;
+			if (err)	return -2;
 
 			int status=1;
 			unsigned time = 0;
