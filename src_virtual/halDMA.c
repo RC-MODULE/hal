@@ -52,9 +52,9 @@ void halInitSingleDMA(int  src,  int  dst,  int  size32){
  		}
  	}
 
- 	void halSetCallbackDMA(DmaCallback user_callback){
-
- 	};
+// 	void halSetCallbackDMA(DmaCallback user_callback){
+//
+ //	};
 
 	void halInitDMA(){
 
