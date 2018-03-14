@@ -11,7 +11,7 @@ PROJECT_X86  = $(PROJECT)-x86
 TARGET_X86 = $(OUT_DIR)/$(PROJECT_X86).lib
 
 OUT_DIR  = ../lib
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm5ya
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya
 LIB_DIRS = 
 SRC_DIRS = ../src_1879vm6ya ../src_mc12101  ../src_nmc_all ../src_nmc_all
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
