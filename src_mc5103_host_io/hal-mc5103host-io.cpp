@@ -18,7 +18,18 @@ int halSync(int val){
 }
 
 int halOpen(char* absfile=0,...){
-	int boardCount;
+
+	va_list args;
+	va_start(args, absfile);
+	char* abs[3]={0,0,0};
+	abs[0] = absfile;
+	abs[1] = va_arg(args, char*);
+	va_end(args);
+	if (absfile==0)
+		absfile=abs[1];
+
+
+	unsigned int boardCount;
 	PL_Word Length = 0;
 	
 	PL_Word *Buffer = 0;
