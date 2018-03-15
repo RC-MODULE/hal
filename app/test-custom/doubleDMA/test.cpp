@@ -6,7 +6,8 @@
 #include <string.h>
 
 #define Heap_size 8000
-#define DDR_add_beging 0x20000000;
+#define IMRH       0x40000448
+
 int index = 0;
 int callback(){
 	index++;
@@ -45,9 +46,9 @@ int main(){
 	
 	halEnbExtInt();
 	halInitDMA();
+	halMaskIntContMdma_mc12101();
 	//halSetCallbackDMA((DmaCallback)callback);
 	
-	clock_t t0,t1;
 	int count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
 		for (int dstBankIndx = 0; dstBankIndx < 4; dstBankIndx++) {
@@ -68,10 +69,14 @@ int main(){
 			SetArr(dst,Heap_size + 20,0xCCCCCCCC);
 			unsigned int crcDst = 0;
 			unsigned int crcSrc = 0;
-			for(int i=0; i<2000; i+=4){
-				InitArr(src,i);
+			nm32s* src1;
+			nm32s* dst1;
+			for(int i=0; i<8; i+=4){
+				InitArr(src,20);
 				halLed(i);
-				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
+				src1 = (nm32s*)((int)src + 10);
+				dst1 = (nm32s*)((int)dst + 10);
+				halInitDoubleDMA(src,src1,dst,dst1,10,10);
 				int time = 0;
 				while(1){
 					halSleep(1);
@@ -85,6 +90,14 @@ int main(){
 						halLed(3);
 						return 3;
 					}
+				}
+				printf("\n");
+				for(int ind =0;ind<22;ind++){
+					printf("src[%d] = %d\n",ind,src[ind]);
+				}
+				printf("\n");
+				for(int ind =0;ind<22;ind++){
+					printf("dst[%d] = %x\n",ind,dst[ind]);
 				}
 				nmppsCrcAcc_32s(dst, Heap_size + 20, &crcDst);//compute crc code of destination
 				nmppsCrcAcc_32s(src, Heap_size + 20, &crcSrc);//compute crc code of source

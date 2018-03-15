@@ -9,7 +9,7 @@
 void initChain7707(int *buf);
 
 #define MAX_NUM_BUFFERS 16 // Maximum buffers in packet
-#define MAX_BUFFER_SIZE 128	// Maximum size of each buffer 
+#define MAX_BUFFER_SIZE 512	// Maximum size of each buffer 
 #define ALIGN( addr, numInts) ((((unsigned)addr)+numInts-1)%numInts*numInts) // align "addr" address to boundary of numInts 32-bit words
 
 int chainBuf[MAX_NUM_BUFFERS*16];
@@ -44,19 +44,20 @@ int main(){
 	
 	halInitDMA();
 	halEnbExtInt();	
-
+	int step_count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
 		for (int dstBankIndx = 0; dstBankIndx < 4; dstBankIndx++) {
 			nmppsMallocSetRoute16((0xF00) | (dstBankIndx << 4) | srcBankIndx);
-			nm32s* src = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+			printf("STEP %d\n",step_count++);
+			nm32s* src = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
+			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 			printf("src: %x dst:%x \n", src, dst);
 			if (src == 0 || dst == 0){
 				printf("ERROR : one of mallocs was not created heap\n");
 				return -1;
 			}
-			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2,0xcccccccc);
-			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2,0xcccccccc);
+			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
+			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
 			nm32s* src_loc = AlignAddr(src);
 			nm32s* dst_loc = AlignAddr(dst);
 			printf("Aligned address src = %x dst = %x\n",src_loc,dst_loc);
@@ -84,16 +85,16 @@ int main(){
 						return 333;
 					}
 				}
-				crcSrc = nmppsCrc_32s(src, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-				crcDst = nmppsCrc_32s(dst, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+				crcSrc = nmppsCrc_32s(src, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
+				crcDst = nmppsCrc_32s(dst, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 				if(crcSrc - crcDst){
 					printf("ERROR : mismatch btw crces of src and dst\n");
 					return 9;
 				}
 			}
 			/////////////////////////// unaligned address
-			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2,0xcccccccc);
-			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2,0xcccccccc);
+			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20,0xcccccccc);
+			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20,0xcccccccc);
 			src_loc = UnalignAddr(src);
 			dst_loc = UnalignAddr(dst);
 			printf("Unaligned address src = %x dst = %x\n",src_loc,dst_loc);
@@ -117,8 +118,8 @@ int main(){
 						return 333;
 					}
 				}
-				crcSrc = nmppsCrc_32s(src, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
-				crcDst = nmppsCrc_32s(dst, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE * 2);
+				crcSrc = nmppsCrc_32s(src, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
+				crcDst = nmppsCrc_32s(dst, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 				if(crcSrc - crcDst){
 					printf("ERROR : mismatch btw crces of src and dst\n");
 					return 9;
@@ -126,7 +127,6 @@ int main(){
 			}
 			nmppsFree(src);
 			nmppsFree(dst);
-			
 		}
 	}
 	

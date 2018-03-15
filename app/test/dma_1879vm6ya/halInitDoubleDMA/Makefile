@@ -13,7 +13,7 @@ endif
 TARGET = main.abs
 CFG    = my_mc12101brd1.cfg
 C_prog 		 = halInitDoubleDMA
-C_test 		 = test_halInitDoubleDMA
+C_test 		 = test_halInitDoubleDMA_2
 ASM_prog 	 = halInitSingleDMA
 ASM_call 	 = halSetCallbackDMA
 PATH2SRC   = ../../../../src_1879vm6ya/
@@ -25,7 +25,7 @@ $(TARGET):  $(C_test).c $(PATH2SRC)$(C_prog).c $(PATH2SRC)$(ASM_prog).asm $(PATH
 	asm  $(PATH2SRC)$(ASM_call).asm -nmc4 
 	asm  $(PATH2SRC)$(ASM_prog).asm -nmc4 
 	nmcc $(C_test).c -Sc -g -nmc4 -Tc99 $(INC)
-	nmcc $(PATH2SRC)$(C_prog).c -Sc -g -nmc4 -Tc99 $(INC)
+	nmcc $(PATH2SRC)$(C_prog).c -Sc -g -nmc4 $(INC)
 	linker $(C_prog).elf $(C_test).elf $(ASM_prog).elf $(ASM_call).elf -o$(TARGET) -c$(CFG) $(LIBS) $(LIB_DIRS) -mmain.map
 else 
 

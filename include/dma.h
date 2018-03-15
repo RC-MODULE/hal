@@ -54,7 +54,7 @@ typedef int(*DmaCallback2)();
 	void halEnbExtInt();
 	void halDisExtInt();
 	int  halStatusDMA();
-
+	void halMaskIntContMdma_mc12101();
 
 #ifdef __cplusplus
 		};

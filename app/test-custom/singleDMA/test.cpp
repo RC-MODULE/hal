@@ -68,13 +68,14 @@ int main(){
 			SetArr(dst,Heap_size + 20,0xCCCCCCCC);
 			unsigned int crcDst = 0;
 			unsigned int crcSrc = 0;
-			for(int i=0; i<Heap_size; i+=2){
+			for(int j=0;j<Heap_size;j+=500)
+			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				halLed(i);
 				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
-					halSleep(1);
+					//halSleep(1);
 					if(halStatusDMA() == 0){
 						break;
 					}

@@ -5,6 +5,7 @@ global _halStatusDMA      : label;
 global _haltest						: label;
 global _halEnbExtInt			: label;
 global _halDisExtInt			: label;
+global _halMaskIntContMdma_mc12101 : label;
 nobits "nobits"
  GR7:word;
  AR5:word;
@@ -96,6 +97,11 @@ begin "text"
 	gr7 = gr0 or gr7;
 	pop ar0,gr0;
 	return;
+
+<_halMaskIntContMdma_mc12101>
+	gr7 = 1;
+	[40000448h] = gr7;
+	return;	
 end "text";	
 
 	
