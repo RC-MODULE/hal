@@ -2,6 +2,8 @@
 #include "stdio.h"
 #include "nm_io_host.h"
 #include "sleep.h"
+#include "stdarg.h"
+
 static PL_Board *board=0;
 static PL_Access *access=0;
 static PL_Access* access_io=0;
@@ -18,6 +20,14 @@ int halSync(int val){
 }
 
 int halOpen(char* absfile=0,...){
+	va_list args;
+	va_start(args, absfile);
+	char* abs[3]={0,0,0};
+	abs[0] = absfile;
+	abs[1] = va_arg(args, char*);
+	va_end(args);
+	if (absfile[0]==0)
+		absfile=abs[1];
 	int boardCount;
 	PL_Word Length = 0;
 	
