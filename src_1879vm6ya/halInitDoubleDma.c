@@ -1,13 +1,12 @@
 #include <hal.h>
+extern "C"{
 static void* pntr2src_2dma[2]; 
 static void* pntr2dst_2dma[2]; 
 static int pntr2size_2dma[2];
 static DmaCallback user_callback_loc;
-extern int flag_of_pack_DMA;
+static int flag_of_pack_DMA;
 
-extern "C"{
 	DmaCallback readCallback();
-};	
 
 static int ownCallback(){
 	halSetCallbackDMA((DmaCallback)user_callback_loc);
@@ -30,3 +29,4 @@ int halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int int
 	return 0;
 }
 
+};	
