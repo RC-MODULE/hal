@@ -43,7 +43,8 @@ int main(){
 	clock_t t0,t1;
 	
 	halInitDMA();
-	halEnbExtInt();	
+	halEnbExtInt();
+	halMaskIntContMdma_mc12101();
 	int step_count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
 		for (int dstBankIndx = 0; dstBankIndx < 4; dstBankIndx++) {

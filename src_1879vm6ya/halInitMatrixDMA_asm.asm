@@ -8,15 +8,25 @@ begin "text"
 	push ar1,gr1;
 	push ar2,gr2;
 	push ar3,gr3;
+	gr3 = 0fffffffeh;
+	gr7 = [--ar5];//load src
+	gr7 = gr7 and gr3;
+	ar0 = gr7;
 
-	ar0 = [--ar5];//load src
 	gr0 = [--ar5];//load width
-	ar1 = [--ar5];//load height
+	ar1 = [--ar5] with gr0 = gr0 and gr3;//load height
+	
 	gr1 = [--ar5];//load srcstride
+	gr1 = gr1 and gr3;
+	
 	gr1 = gr1 - gr0;
 	if < delayed goto END;
-	ar2 = [--ar5];//load dst
+		ar2 = [--ar5];//load dst
+	gr7 = ar2;
+	gr7 = gr7 and gr3;
+	ar2 = gr7;
 	gr2 = [--ar5];//load dststride
+	gr2 = gr2 and gr3;
 	gr2 = gr2 - gr0;
 	if < delayed goto END;
 ///////////////////////////////////////////////////////////	//init dma

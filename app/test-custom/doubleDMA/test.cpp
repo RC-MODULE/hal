@@ -71,12 +71,14 @@ int main(){
 			unsigned int crcSrc = 0;
 			nm32s* src1;
 			nm32s* dst1;
-			for(int i=0; i<8; i+=4){
-				InitArr(src,20);
+			SetArr(src,Heap_size + 18,0xCCCCCCCC);
+			SetArr(dst,Heap_size + 18,0xCCCCCCCC);
+			crcDst = 0;
+			crcSrc = 0;
+			for(int i=0; i<2000; i+=4){
+				InitArr(src,i);
 				halLed(i);
-				src1 = (nm32s*)((int)src + 10);
-				dst1 = (nm32s*)((int)dst + 10);
-				halInitDoubleDMA(src,src1,dst,dst1,10,10);
+				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
 				while(1){
 					halSleep(1);
@@ -91,16 +93,8 @@ int main(){
 						return 3;
 					}
 				}
-				printf("\n");
-				for(int ind =0;ind<22;ind++){
-					printf("src[%d] = %d\n",ind,src[ind]);
-				}
-				printf("\n");
-				for(int ind =0;ind<22;ind++){
-					printf("dst[%d] = %x\n",ind,dst[ind]);
-				}
-				nmppsCrcAcc_32s(dst, Heap_size + 20, &crcDst);//compute crc code of destination
-				nmppsCrcAcc_32s(src, Heap_size + 20, &crcSrc);//compute crc code of source
+				nmppsCrcAcc_32s(dst, Heap_size + 18, &crcDst);//compute crc code of destination
+				nmppsCrcAcc_32s(src, Heap_size + 18, &crcSrc);//compute crc code of source
 				if(crcDst != crcSrc){
 					printf("ERROR mismatch btw crc of src and dst\n");
 					printf("srcBankIndx = %d dstBankIndx = %d index = %d\n",srcBankIndx,dstBankIndx,i);
