@@ -33,6 +33,33 @@ static int own_callback(){
 }
 
 int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+	///error codes
+	// 1  unaliged src address
+	// 2  unaliged dst address
+	// 4  width is odd number
+	// 8  srcStride32 is odd number
+	// 16 dstStride32 is odd number
+	int temp = (int)src;
+	if(temp << 31){//test src
+		return 1;
+	}
+	temp = (int)dst;
+	if(temp << 31){//test dst
+		return 2;
+	}
+	temp = width;
+	if(temp << 31){//test width
+		return 4;
+	}
+	temp = srcStride32;
+	if(temp << 31){//temp srcStride32
+		return 8;
+	}
+	temp = dstStride32;
+	if(temp << 31){
+		return 16;
+	}
+
 	flag_of_pack_DMA = 0;
 	if(width < 16){
 		if(height == 1){
@@ -50,17 +77,13 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 	int test_dst         = (int)dst;
 	int check = test_src | test_width | test_srcStride32 | test_dstStride32 | test_dst; 
 	if(check<<28){
-		//printf("CASE PACKET\n");
 		if(height == 0 || width ==0){
-			//printf("height == 0 || width ==0\n");
 			halInitSingleDMA(src,dst,0);
 			return 0;
 		}
 		if(height == 1){
-			//printf("height == 1\n");
 			halInitSingleDMA(src,dst,width);
 		}else{
-			//printf("PACKET\n");
 			flag_of_pack_DMA = 0xffffffff;
 			user_callback_loc = readCallback();
 			halSetCallbackDMA((DmaCallback)own_callback);
@@ -74,7 +97,6 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 			halInitSingleDMA(src,dst,width);
 		}
 	}else{
-		//printf("CASE REAL\n");
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
 		}else {

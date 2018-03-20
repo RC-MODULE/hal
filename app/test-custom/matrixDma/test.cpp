@@ -115,10 +115,10 @@ int main(){
 	
 			//halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 			int i = 0;
-			for(int offset = 0; offset < 100; offset+=2){
+			for(int offset = 0; offset < 32; offset+=2){
 				printf("Current offset %d\n",offset);
-				for(int height = 0; height < 100; height++){
-					for(int width = 0; width < 120; width+=2){
+				for(int height = 0; height < 100; height+=10){
+					for(int width = 0; width < 120; width+=16){
 						halLed(i++);
 						SetArr(dst,Heap_size,0xcccccccc);
 						SetArr(arr_ref,Heap_size,0xcccccccc);
@@ -183,5 +183,6 @@ PRINT:
 			printf("%d ",arr_ref[pntr]);
 		}
 	}
+	halLed(0x9);
 	return 9;
 }

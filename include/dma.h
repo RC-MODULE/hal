@@ -55,6 +55,30 @@ typedef int(*DmaCallback2)();
 	void halDisExtInt();
 	int  halStatusDMA();
 	void halMaskIntContMdma_mc12101();
+	// test of params
+	// error code description
+	////////single DMA
+	// 1 stands for src is odd 
+	// 2 stands for dst is odd
+	// 3 stands for size is odd
+	int halTestParamSingleDMA(void* src, void* dst, int size);
+	// error code description
+	///// double dma
+	// 1 stands for src0 is odd
+	// 2 stands for src1 is odd
+	// 3 stands for dst0 is odd
+	// 4 stands for dst1 is odd
+	// 5 stands for intSize0 is odd
+	// 6 stands for intSize1 is odd
+	int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
+	// error code descriptoin 
+	///// matrix DMA
+	// 1 stands for src is odd
+	// 2 stands for width is odd
+	// 3 stands for srcStride32 is odd
+	// 4 stands for dst is odd
+	// 5 stands for dstStride32 is odd
+	int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 
 #ifdef __cplusplus
 		};

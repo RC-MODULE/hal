@@ -14,7 +14,7 @@ static int ownCallback(){
 	pSize++;
   if(*(int*)(pSize+1) == 0){
 		halSetCallbackDMA(userCallback);	
-		flag_of_pack_DMA = 0xFFFF;
+		flag_of_pack_DMA = 0x0;
 	}
 	halInitSingleDMA(*pSrc,*pDst,*pSize);
 	return 0;
@@ -22,10 +22,15 @@ static int ownCallback(){
 
 
 int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32){
-	flag_of_pack_DMA = 0;
+	flag_of_pack_DMA = 0xffffffff;
 	pSrc  = psrc;
 	pDst  = pdst;
 	pSize = psize32;
+	if(*(int*)(psize32 + 1) == 0){
+		flag_of_pack_DMA = 0x0;
+		halInitSingleDMA(*pSrc,*pDst,*pSize);
+		return 0;
+	}
 	userCallback = readCallback();
 	halSetCallbackDMA((DmaCallback)ownCallback);
 	halInitSingleDMA(*pSrc,*pDst,*pSize);

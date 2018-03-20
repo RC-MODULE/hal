@@ -46,6 +46,25 @@ int main(){
 	halEnbExtInt();
 	halInitDMA();
 	//halSetCallbackDMA((DmaCallback)callback);
+	//error code check
+	int error_code = halInitSingleDMA((int*)3,(int*)3,3);
+	if(error_code != 1){
+		printf("ERROR: wrong error code case src is not even\n");
+		printf("code is %d\n",error_code);
+		return 10;
+	}
+	error_code = halInitSingleDMA((int*)210,(int*)3,3);
+	if(error_code != 2){
+		printf("ERROR: wrong error code case dst is not even\n");
+		printf("code is %d\n",error_code);
+		return 10;
+	}
+	error_code = halInitSingleDMA((int*)210,(int*)210,11);
+	if(error_code != 4){
+		printf("ERROR: wrong error code case size32 is not even\n");
+		printf("code is %d\n",error_code);
+		return 10;
+	}
 	
 	clock_t t0,t1;
 	int count = 0;
@@ -75,7 +94,6 @@ int main(){
 				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
-					//halSleep(1);
 					if(halStatusDMA() == 0){
 						break;
 					}

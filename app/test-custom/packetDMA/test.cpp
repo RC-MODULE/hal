@@ -13,11 +13,22 @@ void initChain7707(int *buf);
 #define ALIGN( addr, numInts) ((((unsigned)addr)+numInts-1)%numInts*numInts) // align "addr" address to boundary of numInts 32-bit words
 
 int chainBuf[MAX_NUM_BUFFERS*16];
-void InitArr(nm32s* arr, int amm){
+void InitArr(nm32s* arr, int amm, int start){
 	for(int i=0; i<amm; i++){
-		arr[i] = i;
+		arr[i] = start++;
 	}
 }
+
+void InitArrChain(void** src_arr, int* size_buff){
+	int i = 0;
+	int start = 0;
+	while(size_buff[i]){
+		InitArr((nm32s*)src_arr[i],size_buff[i],start);
+		start += size_buff[i];
+		i++;
+	}
+}
+
 void Memset(nm32s* arr, int amm, int const2wrt){
 	for(int i=0; i<amm; i++){
 		arr[i] = const2wrt;
@@ -39,9 +50,37 @@ nm32s* UnalignAddr(nm32s* addr){
 	return addr;
 }
 
+void print_arr(nm32s** srcAddrList, nm32s** dstAddrList, int* bufSizeList){
+	int i = 0;
+	while(bufSizeList[i]){
+		printf("buff[%d] = %d\n",i,bufSizeList[i]);
+		i++;
+	}
+	printf("\n");
+	nm32s** pntr = srcAddrList;
+	for(int j = 0; j < i; j++){
+		printf("src[%d] = %x\n",j,pntr[j]);
+	}
+	printf("\n");
+	pntr = dstAddrList;
+	for(int j = 0; j < i; j++){
+		printf("dst[%d] = %x\n",j,pntr[j]);
+	}
+	printf("\n");
+}
+
+struct ret{
+	nm32s* src;
+	nm32s* dst;	
+};
+
 int main(){ 
 	clock_t t0,t1;
-	
+	ret loop_out;
+	nm32s* srcAddrList[MAX_NUM_BUFFERS];
+	nm32s* dstAddrList[MAX_NUM_BUFFERS];
+	int    bufSizeList[MAX_NUM_BUFFERS + 1];
+		
 	halInitDMA();
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
@@ -62,20 +101,18 @@ int main(){
 			nm32s* src_loc = AlignAddr(src);
 			nm32s* dst_loc = AlignAddr(dst);
 			printf("Aligned address src = %x dst = %x\n",src_loc,dst_loc);
-			nm32s* srcAddrList[MAX_NUM_BUFFERS];
-			nm32s* dstAddrList[MAX_NUM_BUFFERS];
-			int    bufSizeList[MAX_NUM_BUFFERS + 1];
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
-			for(int j=0;j<MAX_BUFFER_SIZE;j++){
-				for(int i = 0; i < MAX_NUM_BUFFERS; i++){
-					srcAddrList[i] = (nm32s*)((int)src_loc + i); 
-					dstAddrList[i] = (nm32s*)((int)dst_loc + i);
-					bufSizeList[i] = j;
+			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
+					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
+					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
+					bufSizeList[i] = size;
 				}
 				//printf("Size = %d\n",j);
 				halLed(j);
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
+				InitArrChain((void**)srcAddrList,(int*)bufSizeList);
 				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
@@ -90,7 +127,9 @@ int main(){
 				crcDst = nmppsCrc_32s(dst, MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 				if(crcSrc - crcDst){
 					printf("ERROR : mismatch btw crces of src and dst\n");
-					return 9;
+					loop_out.src = src;
+					loop_out.dst = dst;
+					goto PRINT;
 				}
 			}
 			/////////////////////////// unaligned address
@@ -135,5 +174,7 @@ int main(){
 	//return t1-t0;		
 	halLed(0xaa);
 	return 777;		
-
+PRINT:
+	print_arr(srcAddrList,dstAddrList,bufSizeList);
+	return 9;
 }

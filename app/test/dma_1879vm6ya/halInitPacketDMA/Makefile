@@ -25,7 +25,7 @@ ifeq ($(NMCC),y)
 $(TARGET):  $(PATH2SRC)$(C_prog).c $(C_test).c $(PATH2SRC)$(ASM_callback).asm $(PATH2SRC)$(ASM_dma).asm  Makefile $(CFG)
 	asm  $(PATH2SRC)$(ASM_dma).asm -nmc4 
 	asm  $(PATH2SRC)$(ASM_callback).asm -nmc4 
-	nmcc $(C_test).c -Sc -g -nmc4 -Tc99 $(INC)
+	nmcc $(C_test).c -Sc -g -nmc4 $(INC)
 	nmcc $(PATH2SRC)$(C_prog).c -Sc -g -nmc4 -Tc99 $(INC)
 	linker $(C_prog).elf $(C_test).elf $(ASM_callback).elf $(ASM_dma).elf	-o$(TARGET) -c$(CFG) $(LIBS) $(LIB_DIRS) -mmain.map
 else 
