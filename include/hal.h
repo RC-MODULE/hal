@@ -19,3 +19,7 @@
 		};
 #endif
 
+	/**
+    *
+    *     \defgroup hal HAL функции 
+    */

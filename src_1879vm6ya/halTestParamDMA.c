@@ -63,5 +63,8 @@ int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32, 
 	return 0;
 }
 
+int halTestParamPacketDMA(** src,  void** dst,  int* size32){
+	
+}
 
 };
