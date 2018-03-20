@@ -45,7 +45,7 @@ run: $(TARGET) $(HOST)
 	bin\debug\$(HOST)
 	
 mcrun: $(TARGET) 
-	mc5103run $(HOST)
+	mc5103run $(TARGET)
 	
 clean:
 	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters
