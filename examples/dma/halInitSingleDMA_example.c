@@ -45,17 +45,19 @@
 
 
 int main(){
-	//set up a mask of interraption from MDMA enable
-	*((int*)IMRH) = 0x1;
 	int i;
 	clock_t t0,t1;
+	
+	halEnbExtInt();
+	halMaskIntContMdma_mc12101();
+	halInitDMA();
+	halSetCallbackDMA((DmaCallback)callback);
+	
 	for(i=0;i<SIZE_MEM;i++){
 		arr2read[i] = i;
 		buff[i] = 0;
 		buff_ref[i] = 0;
 	}
-	halInitDMA();
-	halSetCallbackDMA((DmaCallback)user_callback);
 
 	printf("SRC: %x DST: %x\n",arr2read,buff);
 	status = 0;
@@ -68,15 +70,8 @@ int main(){
 			break;
 		}
 	}
-
-	ref_DMA((int)(arr2read + MEM_OFFSET),(int)buff_ref,SIZE_MEM);
-	int index = cmp(SIZE_MEM,buff,buff_ref);
-	if(index){
-		printf("ERROR: mismatch btw ref function and true DMA at %d\n",index);
-	}else{
-		printf("DMA has finished correctly\n");
-		printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",SIZE_MEM,(t1-t0));
-	}
+	
+	printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",SIZE_MEM,(t1-t0));
 	
 	for(i=0;i<10;i++){
 		printf("buff[%d] = %d\n",i,buff[i]);
