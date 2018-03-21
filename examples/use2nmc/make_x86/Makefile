@@ -13,16 +13,29 @@ TARGET0   = board-target0
 TARGET1   = board-target1
 HOST      = board-host
 
-ALL: $(TARGET0) $(TARGET1) $(HOST)
+VS ?=vs2015
+ALL: $(VS)
+.PHONY = vs2005 vs2015
 
-$(TARGET0): $(TARGET0).vcproj
+
+$(TARGET0) $(TARGET1) $(HOST): $(VS)
+	
+vs2005: $(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj	
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(TARGET0).vcproj
-
-$(TARGET1): $(TARGET1).vcproj
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(TARGET1).vcproj
 	
-$(HOST): $(HOST).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
+
+vs2015:	$(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj    /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET0).vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(TARGET1).vcxproj /p:Configuration=Debug
+
+$(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj:
+	premake5 vs2005
+
+$(HOST).vcxproj $(TARGET0).vcxproj $(TARGET1).vcxproj:
+	premake5 vs2015
 
 
 run: 
@@ -38,16 +51,5 @@ runtarget1: $(TARGET1)
 	bin\debug\$(TARGET1)
 	
 
-clean:
-	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters
-	-$(OS_RD) bin obj obj0 obj1
-	
-kill: clean
-	-$(OS_RM) *.vcproj *.sln *.vcxproj
-	
-vs2005:	$(HOST).vcproj
-
-
-$(HOST).vcproj $(TARGET0).vcproj $(TARGET1).vcproj   vs2015:	
-	premake5 vs2005
+include $(ROOT)/clean.mk
 
