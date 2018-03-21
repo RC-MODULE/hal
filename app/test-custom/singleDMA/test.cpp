@@ -5,12 +5,15 @@
 #include "stdio.h"
 #include <string.h>
 
-#define Heap_size 8000
+#define Heap_size 4000
 #define DDR_add_beging 0x20000000;
-int index = 0;
+volatile int index = 0;
+volatile int call_counter = 0;
+volatile int status = 0;
 int callback(){
 	index++;
 	halLed(index);
+	status = 0;
 	return 0;
 }
 
@@ -42,25 +45,25 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 };
 
 int main(){ 
-	
 	halEnbExtInt();
+	halMaskIntContMdma_mc12101();
 	halInitDMA();
-	//halSetCallbackDMA((DmaCallback)callback);
+	halSetCallbackDMA((DmaCallback)callback);
 	//error code check
-	int error_code = halInitSingleDMA((int*)3,(int*)3,3);
+	int error_code = halTestParamSingleDMA((int*)3,(int*)3,3);
 	if(error_code != 1){
 		printf("ERROR: wrong error code case src is not even\n");
 		printf("code is %d\n",error_code);
 		return 10;
 	}
-	error_code = halInitSingleDMA((int*)210,(int*)3,3);
+	error_code = halTestParamSingleDMA((int*)210,(int*)3,3);
 	if(error_code != 2){
 		printf("ERROR: wrong error code case dst is not even\n");
 		printf("code is %d\n",error_code);
 		return 10;
 	}
-	error_code = halInitSingleDMA((int*)210,(int*)210,11);
-	if(error_code != 4){
+	error_code = halTestParamSingleDMA((int*)210,(int*)210,11);
+	if(error_code != 3){
 		printf("ERROR: wrong error code case size32 is not even\n");
 		printf("code is %d\n",error_code);
 		return 10;
@@ -87,10 +90,10 @@ int main(){
 			SetArr(dst,Heap_size + 20,0xCCCCCCCC);
 			unsigned int crcDst = 0;
 			unsigned int crcSrc = 0;
-			for(int j=0;j<Heap_size;j+=500)
+			for(int j=0;j<Heap_size;j+=700)
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
-				halLed(i);
+				call_counter++;
 				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
@@ -98,18 +101,18 @@ int main(){
 						break;
 					}
 					time++;
-					if(time > (i<<1)){
+					if(time > ((i<<1))){
 						printf("ERROR time is over\n");
 						printf("DMA size %d\n",i);
 						halLed(3);
 						return 3;
 					}
+					halSleep(1);
 				}
 				nmppsCrcAcc_32s(dst, Heap_size + 20, &crcDst);//compute crc code of destination
 				nmppsCrcAcc_32s(src, Heap_size + 20, &crcSrc);//compute crc code of source
 				if(crcDst != crcSrc){
 					printf("ERROR mismatch btw crc of src and dst\n");
-					printf("srcBankIndx = %d dstBankIndx = %d index = %d\n",srcBankIndx,dstBankIndx,i);
 					halLed(9);
 					return 9;
 				}
@@ -121,14 +124,14 @@ int main(){
 			SetArr(src,Heap_size + 18,0xCCCCCCCC);
 			SetArr(dst,Heap_size + 18,0xCCCCCCCC);
 			crcDst = 0;
-			crcSrc = 0;
-			for(int i=0; i<Heap_size; i+=2){
+			crcSrc = 0;	
+			for(int j=0;j<Heap_size;j+=700)
+			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
-				halLed(i);
+				call_counter++;
 				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
-					halSleep(1);
 					if(halStatusDMA() == 0){
 						break;
 					}
@@ -139,6 +142,7 @@ int main(){
 						halLed(3);
 						return 3;
 					}
+					halSleep(1);
 				}
 				nmppsCrcAcc_32s(dst, Heap_size + 18, &crcDst);//compute crc code of destination
 				nmppsCrcAcc_32s(src, Heap_size + 18, &crcSrc);//compute crc code of source
@@ -154,6 +158,9 @@ int main(){
 			nmppsFree(dst);
 			
 		}
+	}
+	if(call_counter != index){
+		printf("ERROR : call_counter is unequled to index \n"); 
 	}
 	halLed(0xaa);
 	return 777;		

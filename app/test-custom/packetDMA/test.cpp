@@ -73,8 +73,14 @@ struct ret{
 	nm32s* src;
 	nm32s* dst;	
 };
-
+int index = 0;
+int callback(){
+	index++;
+	halLed(index);
+	return 0;
+}
 int main(){ 
+	int call_counter = 0;
 	clock_t t0,t1;
 	ret loop_out;
 	nm32s* srcAddrList[MAX_NUM_BUFFERS];
@@ -84,6 +90,7 @@ int main(){
 	halInitDMA();
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
+	halSetCallbackDMA((DmaCallback)callback);
 	int step_count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
 		for (int dstBankIndx = 0; dstBankIndx < 4; dstBankIndx++) {
@@ -108,10 +115,9 @@ int main(){
 					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
-				//printf("Size = %d\n",j);
-				halLed(j);
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
+				call_counter++;
 				InitArrChain((void**)srcAddrList,(int*)bufSizeList);
 				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
@@ -148,6 +154,7 @@ int main(){
 				halLed(j);
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
+				call_counter++;
 				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
@@ -170,7 +177,9 @@ int main(){
 		}
 	}
 	
-	
+	if(call_counter != index){
+		printf("ERROR: callback had not been called\n");
+	}
 	//return t1-t0;		
 	halLed(0xaa);
 	return 777;		

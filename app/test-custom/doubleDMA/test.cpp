@@ -43,11 +43,11 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 };
 
 int main(){ 
-	
+	int call_counter = 0;
 	halEnbExtInt();
 	halInitDMA();
 	halMaskIntContMdma_mc12101();
-	//halSetCallbackDMA((DmaCallback)callback);
+	halSetCallbackDMA((DmaCallback)callback);
 	
 	int count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
@@ -77,7 +77,7 @@ int main(){
 			crcSrc = 0;
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
-				halLed(i);
+				call_counter++;
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
 				while(1){
@@ -112,7 +112,7 @@ int main(){
 			crcSrc = 0;
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
-				halLed(i);
+				call_counter++;
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
 				while(1){
@@ -142,6 +142,9 @@ int main(){
 			nmppsFree(dst);
 			
 		}
+	}
+	if(call_counter != index){
+		printf("ERROR : callback had not been called\n");
 	}
 	halLed(0xaa);
 	return 777;		

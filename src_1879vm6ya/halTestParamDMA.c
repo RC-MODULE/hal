@@ -64,7 +64,31 @@ int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32, 
 }
 
 int halTestParamPacketDMA(** src,  void** dst,  int* size32){
-	
+	int pntr = 0;
+	int error_code = 0;
+	int test;
+	while(size32[pntr]){
+		test = (int)src[pntr] << 31;//test src is even or not
+		if(test){
+			error_code = 1;
+			break;
+		}
+		test = (int)dst[pntr] << 31;//test dst is even or not
+		if(test){
+			error_code = 2;
+			break;
+		}
+		test = (int)size32[pntr] << 31;//test size32 is even or not
+		if(test){
+			error_code = 4;
+			break;
+		}
+		pntr++;
+	}
+	if(error_code == 0){
+		pntr = 0;
+	}
+	return error_code | (pntr << 4);
 }
 
 };

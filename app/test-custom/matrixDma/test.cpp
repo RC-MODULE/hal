@@ -3,9 +3,8 @@
 #include "dma.h"
 #include "hal.h"
 #include "stdio.h"
-#include <string.h>
 
-#define Heap_size 14000
+#define Heap_size 10000
 
 #pragma data_section ".ddr"
 int arr_ref[Heap_size];
@@ -92,12 +91,12 @@ struct params_of_run_2save
 	int height;		
 };
 
-
 int main(){ 
-	
+	int call_counter = 0;
 	halEnbExtInt();
 	halInitDMA();
 	halMaskIntContMdma_mc12101();
+	halSetCallbackDMA((DmaCallback)callback);
 	int count = 0;
 	params_of_run_2save output;	
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
@@ -112,16 +111,14 @@ int main(){
 				return -1;
 			}
 			InitArr(src,Heap_size);
-	
 			//halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
-			int i = 0;
 			for(int offset = 0; offset < 32; offset+=2){
 				printf("Current offset %d\n",offset);
-				for(int height = 0; height < 100; height+=10){
-					for(int width = 0; width < 120; width+=16){
-						halLed(i++);
+				for(int height = 0; height < 100; height += 20){
+					for(int width = 0; width < 100; width += 2){
 						SetArr(dst,Heap_size,0xcccccccc);
 						SetArr(arr_ref,Heap_size,0xcccccccc);
+						call_counter++;
 						halInitMatrixDMA(src + offset,width,height,width,dst,width);
 						int count = 0;
 						while(halStatusDMA()){
@@ -152,6 +149,9 @@ int main(){
 			nmppsFree(src);
 			nmppsFree(dst);
 		}
+	}
+	if(call_counter != index){
+		printf("ERROR : callback had not been called\n");
 	}
 	halLed(0xaa);
 	return 777;		
