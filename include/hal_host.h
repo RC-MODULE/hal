@@ -5,5 +5,6 @@ int halSync(int val, unsigned processor=0);
 int halReadMemBlock (unsigned* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0);
 int halWriteMemBlock(unsigned* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0);
 int halGetResult(unsigned* result,  unsigned processor=0);
+int halSetTimeout(int msec);
 int halClose();
 };

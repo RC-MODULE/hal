@@ -15,7 +15,7 @@ HOST      = board-host
 
 VS ?=vs2015
 ALL: $(VS)
-.PHONY = vs2005 vs2015
+.PHONY : vs2005 vs2015
 
 
 $(TARGET0) $(TARGET1) $(HOST): $(VS)
