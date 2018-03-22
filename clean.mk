@@ -3,4 +3,4 @@ kill: clean
 
 clean:
 	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters *.db .* *.opendb  $(TARGET) $(TARGET_X86)
-	-$(OS_RD) Debug Release bin obj .vs
+	-$(OS_RD) Debug Release bin obj obj0 obj1 .vs

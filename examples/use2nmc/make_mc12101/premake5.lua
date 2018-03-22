@@ -28,13 +28,13 @@ solution "mc12101access"
       files { "../../../include/*.h","../src_nm0/*.cpp" }
 	 
 	  configuration "Debug"
-		   buildcommands {"make DEBUG=y"}
-		   rebuildcommands {"make -B DEBUG=y"}
+		   buildcommands {"make DEBUG=y -f Makefile0"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile0"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
-		   buildcommands {"make"}
-		   rebuildcommands {"make -B"}
+		   buildcommands {"make -f Makefile0"}
+		   rebuildcommands {"make -B -f Makefile0"}
 		   cleancommands {"make clean"}		   
 		   
 	project "mc12101-nmc4-1"
@@ -42,11 +42,11 @@ solution "mc12101access"
       files { "../../../include/*.h","../src_nm1/*.cpp" }
 	 
 	  configuration "Debug"
-		   buildcommands {"make DEBUG=y"}
-		   rebuildcommands {"make -B DEBUG=y"}
+		   buildcommands {"make DEBUG=y -f Makefile1"}
+		   rebuildcommands {"make -B DEBUG=y -f Makefile1"}
 		   cleancommands {"make clean"}
 		   
 	  configuration "Release"
-		   buildcommands {"make"}
-		   rebuildcommands {"make -B"}
+		   buildcommands {"make -f Makefile1"}
+		   rebuildcommands {"make -B -f Makefile1"}
 		   cleancommands {"make clean"}		   		   
