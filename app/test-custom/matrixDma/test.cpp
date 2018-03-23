@@ -118,17 +118,24 @@ int main(){
 					for(int width = 0; width < 100; width += 2){
 						SetArr(dst,Heap_size,0xcccccccc);
 						SetArr(arr_ref,Heap_size,0xcccccccc);
-						call_counter++;
-						halInitMatrixDMA(src + offset,width,height,width,dst,width);
+						int test_param_flag = halCheckParamMatrixDMA(src + offset,width,height,width,dst,width);
+						if(test_param_flag == 0){
+							halInitMatrixDMA(src + offset,width,height,width,dst,width);
+							call_counter++;
+						}else{
+							printf("wrong parametrs were detected \n src = 0x%x width = %d height = %d \n src_stride32 = %d dst = 0x%x dst_stride32 = %d\n",(src + offset),width,height,width,dst,width);
+						}
 						int count = 0;
 						while(halStatusDMA()){
-							if(count++ > 1000){
-								printf("ERROR : halStatusDMA does not work\n");
-								printf("case srs = %x dst = %x width = %d height = %d\n",src,dst,width,height);	
+							if(count++ > 2000){
+								printf("ERROR : halStatusDMA does not work or time of coping more then expected\n");
+								printf("case srs = 0x%x dst = 0x%x width = %d height = %d\n",src,dst,width,height);	
 								return 3;
 							}
 						};
-						ref_matrix_dma((int)src + offset,width,height,width,(int)arr_ref,width);
+						if(test_param_flag == 0){
+							ref_matrix_dma((int)src + offset,width,height,width,(int)arr_ref,width);
+						}
 						unsigned Crc_dst  	 = nmppsCrc_32s(dst, Heap_size);
 						unsigned Crc_arr_ref = nmppsCrc_32s(arr_ref,Heap_size);
 						if(Crc_dst != Crc_arr_ref){

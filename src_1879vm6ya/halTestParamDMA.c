@@ -1,7 +1,7 @@
 extern "C"{
 
 
-int halTestParamSingleDMA(void* src, void* dst, int size){
+int halCheckParamSingleDMA(void* src, void* dst, int size){
 	int temp = (int)src;
 	if(temp << 31){
 		return 1;
@@ -16,7 +16,7 @@ int halTestParamSingleDMA(void* src, void* dst, int size){
 	return 0;
 };
 
-int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1){
+int halCheckParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1){
 	int temp = (int)src0;
 	if(temp << 31){
 		return 1;
@@ -42,7 +42,7 @@ int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, in
 	return 0;
 };
 
-int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+int halCheckParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	int temp = (int)src;
 	if(temp << 31){
 		return 1;
@@ -63,7 +63,7 @@ int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32, 
 	return 0;
 }
 
-int halTestParamPacketDMA(void** src,  void** dst,  int* size32){
+int halCheckParamPacketDMA(void** src,  void** dst,  int* size32){
 	int pntr = 0;
 	int error_code = 0;
 	int test;
@@ -88,7 +88,7 @@ int halTestParamPacketDMA(void** src,  void** dst,  int* size32){
 	if(error_code == 0){
 		pntr = 0;
 	}
-	return error_code | (pntr << 4);
+	return error_code | (pntr << 16);
 }
 
 };
