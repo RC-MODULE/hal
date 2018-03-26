@@ -59,12 +59,12 @@ void print_arr(nm32s** srcAddrList, nm32s** dstAddrList, int* bufSizeList){
 	printf("\n");
 	nm32s** pntr = srcAddrList;
 	for(int j = 0; j < i; j++){
-		printf("src[%d] = 0x%x\n",j,pntr[j]);
+		printf("src[%d] = %x\n",j,pntr[j]);
 	}
 	printf("\n");
 	pntr = dstAddrList;
 	for(int j = 0; j < i; j++){
-		printf("dst[%d] = 0x%x\n",j,pntr[j]);
+		printf("dst[%d] = %x\n",j,pntr[j]);
 	}
 	printf("\n");
 }
@@ -73,7 +73,6 @@ struct ret{
 	nm32s* src;
 	nm32s* dst;	
 };
-
 int index = 0;
 int callback(){
 	index++;
@@ -88,9 +87,9 @@ int main(){
 	nm32s* dstAddrList[MAX_NUM_BUFFERS];
 	int    bufSizeList[MAX_NUM_BUFFERS + 1];
 		
-	halInitDMA();
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
+	halInitDMA();
 	halSetCallbackDMA((DmaCallback)callback);
 	int step_count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
@@ -101,7 +100,7 @@ int main(){
 			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 			printf("src: %x dst:%x \n", src, dst);
 			if (src == 0 || dst == 0){
-				printf("ERROR : one of mallocs had not created heap\n");
+				printf("ERROR : one of mallocs was not created heap\n");
 				return -1;
 			}
 			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
@@ -110,22 +109,17 @@ int main(){
 			nm32s* dst_loc = AlignAddr(dst);
 			printf("Aligned address src = %x dst = %x\n",src_loc,dst_loc);
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
-			for(int j = 0, size = 0; j < MAX_BUFFER_SIZE; j++,size += 2){
-				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++,offset += 2){
+			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
 					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
 					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
-				if(halCheckParamPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList) == 0){
-					InitArrChain((void**)srcAddrList,(int*)bufSizeList);
-					halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
-					call_counter++;
-				}else{
-					printf("wrong parametrs were detected\n");
-					print_arr(srcAddrList,dstAddrList,bufSizeList);
-				}
+				call_counter++;
+				InitArrChain((void**)srcAddrList,(int*)bufSizeList);
+				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
@@ -161,9 +155,7 @@ int main(){
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
-				if(halCheckParamPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList) == 0){
-					halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
-				}
+				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
@@ -187,22 +179,11 @@ int main(){
 	
 	if(call_counter != index){
 		printf("ERROR: callback had not been called\n");
-		halLed(0xe);
-		return 666;	
 	}
 	//return t1-t0;		
 	halLed(0xaa);
 	return 777;		
 PRINT:
 	print_arr(srcAddrList,dstAddrList,bufSizeList);
-	nm32s* pntr = loop_out.src;
-	for(int i = 0; i < 10; i++){
-		printf("src[%d] = %d \n",i,pntr[i]);
-	}
-	printf("\n");
-	pntr = loop_out.dst;
-	for(int i = 0; i < 10; i++){
-		printf("dst[%d] = %d \n",i,pntr[i]);
-	}
 	return 9;
 }

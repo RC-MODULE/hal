@@ -1,6 +1,6 @@
 global _halInitSingleDMA : label;
 extern _flag_of_pack_DMA : word;
-begin "text"
+begin ".text"
 
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
@@ -66,4 +66,4 @@ begin "text"
 	pop ar0,gr0;
 	delayed return;
 	gr7 = false;
-end "text";
+end ".text";

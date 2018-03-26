@@ -76,13 +76,9 @@ int main(){
 			crcDst = 0;
 			crcSrc = 0;
 			for(int i=0; i<2000; i+=4){
-				if(halCheckParamDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2) == 0){
-					InitArr(src,i);
-					call_counter++;
-					halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
-				}else{
-					printf("wrong parametrs were detected src1 = 0x%x, src2 = 0x%x, dst1 = 0x%x, dst2 = 0x%x, size1 = %d size2 = %d\n",src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
-				}
+				InitArr(src,i);
+				call_counter++;
+				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
 				while(1){
 					halSleep(1);
@@ -117,9 +113,7 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				if(halCheckParamDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2) == 0){
-					halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
-				}
+				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
 				while(1){
 					halSleep(1);

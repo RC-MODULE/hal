@@ -114,7 +114,11 @@ typedef int(*DmaCallback2)();
 	void halSetCallbackDMA(DmaCallback user_callback);
 	/**
 		* \brief Функция выполняет инициализацию программы обработки перывания и должна быть вызвана один раз перед запуском ПДП 
-		* в случа необходимости использования callBack
+		* в случа необходимости использования callBack. 
+		*	<p>ВАЖНО! Данная функция анализирует регистр pswr и в случае если он запрещает внешние прерывания то фунция не инициализирует программу а возвращает 10 
+		* \return
+		* 0  функция инициализировала программу в обработчике прерываний 
+		* 10 функция не инициализировала программу по причине запрещенных внешних прерываний 
 	*/
 	int  halInitDMA();
 	/**
@@ -150,7 +154,7 @@ typedef int(*DmaCallback2)();
 		* <p>2 - нечетный адрес массива приемника
 		* <p>3 - нечетное колличество 32 битных слов для копирования
 	*/
-	int halCheckParamSingleDMA(void* src, void* dst, int size);
+	int halTestParamSingleDMA(void* src, void* dst, int size);
 	/**
 		* \brief Функция возвращает код ошибки для параметров функции halInitDoubleDMA() 
 		* \return
@@ -171,7 +175,7 @@ typedef int(*DmaCallback2)();
 	// 4 stands for dst1 is odd
 	// 5 stands for intSize0 is odd
 	// 6 stands for intSize1 is odd
-	int halCheckParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
+	int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
 	/**
 		* \brief Функция возвращает код ошибки для параметров функции halInitMatrixDMA() 
 		* \return
@@ -189,7 +193,7 @@ typedef int(*DmaCallback2)();
 	// 3 stands for srcStride32 is odd
 	// 4 stands for dst is odd
 	// 5 stands for dstStride32 is odd
-	int halCheckParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
+	int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	//error code description
 	///// packet DMA
 	//// function returns error code in 4 LSB and from 4th bits number of chaine were erroneous parametr was detected
@@ -207,7 +211,7 @@ typedef int(*DmaCallback2)();
 		*
 		*
 	*/
-	int halCheckParamPacketDMA(void** src,  void** dst,  int* size32); 
+	int halTestPacketDMA(void** src,  void** dst,  int* size32); 
 #ifdef __cplusplus
 		};
 #endif

@@ -6,14 +6,16 @@ global _haltest						: label;
 global _halEnbExtInt			: label;
 global _halDisExtInt			: label;
 global _halMaskIntContMdma_mc12101 : label;
-nobits "nobits"
+global _GetPswr 					: label;
+
+nobits ".nobits"
  GR7:word;
  AR5:word;
  global _flag_of_pack_DMA : word;
-end "nobits";
+end ".nobits";
 
 
-begin "text"
+begin ".text"
 <dummy>
 	return;
 	
@@ -101,7 +103,13 @@ begin "text"
 <_halMaskIntContMdma_mc12101>
 	gr7 = 1;
 	[40000448h] = gr7;
-	return;	
-end "text";	
+	return;
+
+<_GetPswr>
+	delayed return;		
+	gr7 = pswr;
+	nop;
+
+end ".text";	
 
 	
