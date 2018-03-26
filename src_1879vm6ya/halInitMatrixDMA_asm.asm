@@ -1,6 +1,6 @@
 global _halInitMatrixDMA_asm : label;
 
-begin "text"
+begin ".text"
 <_halInitMatrixDMA_asm>
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
@@ -81,4 +81,4 @@ begin "text"
 	pop ar0,gr0;
 	delayed return;
 	gr7 = false;
-end "text";
+end ".text";
