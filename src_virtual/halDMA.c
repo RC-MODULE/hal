@@ -64,13 +64,11 @@ void halInitSingleDMA(int  src,  int  dst,  int  size32){
 //
 //	};
 
-	void halInitDMA(){
-
-	};
-	
-	int  halStatusDMA(){
-		return 0;
-	};
+	void halInitDMA(){};
+	int  halStatusDMA(){return 0;};
+	void halEnbExtInt(){};
+	void halDisExtInt(){};
+	void halMaskIntContMdma_mc12101(){};
 
 
 int halTestParamSingleDMA(void* src, void* dst, int size){
@@ -162,4 +160,7 @@ int halTestParamPacketDMA(void** src,  void** dst,  int* size32){
 	}
 	return error_code | (pntr << 4);
 };
+
+
+
 
