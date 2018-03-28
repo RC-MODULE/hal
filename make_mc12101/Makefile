@@ -53,10 +53,17 @@ OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM
 VPATH    = $(SRC_DIRS)
 
 
-all: nmc x86
+#all: nmc x86
 
 #--------------- nmc build --------------------------------	
-nmc: $(TARGET)
+nmc: echo $(TARGET)
+
+echo 
+	$(info *******************************************************************************)
+	$(info **                                                                           **)
+	$(info **                       Neuro Matrix  compiling...                          **)
+	$(info **                                                                           **)
+	$(info *******************************************************************************)
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
@@ -83,18 +90,14 @@ $(TMP_DIR)/%.asmx: %.c
 x86: $(VS_VER)
 
 	
-vs2005: $(PROJECT_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT_X86).vcproj "Debug"
+vs2005: $(PROJECT).sln
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln 
 
-vs2015:	$(PROJECT_X86).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Debug
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Release
+vs2015:	$(PROJECT).sln
+	"$(VS140COMNTOOLS)vsvars32" && msbuild.exe $(PROJECT).sln /t:Build
 	
-$(PROJECT_X86).vcproj:	premake5.lua 
-	premake5 vs2005
-
-$(PROJECT_X86).vcxproj :	premake5.lua 
-	premake5 vs2015
+$(PROJECT).sln:	premake5.lua 
+	premake5 $(MAKECMDGOALS) 
 	
 #--------------- cleanup  --------------------------------	
 
