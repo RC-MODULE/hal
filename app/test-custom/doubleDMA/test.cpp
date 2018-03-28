@@ -45,8 +45,8 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 int main(){ 
 	int call_counter = 0;
 	halEnbExtInt();
-	halInitDMA();
 	halMaskIntContMdma_mc12101();
+	halInitDMA();
 	halSetCallbackDMA((DmaCallback)callback);
 	
 	int count = 0;
@@ -80,11 +80,11 @@ int main(){
 				call_counter++;
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
-				while(1){
-					halSleep(1);
+				while(halStatusDMA()){
+					/*halSleep(1);
 					if(halStatusDMA() == 0){
 						break;
-					}
+					}*/
 					time++;
 					if(time > (i<<1)){
 						printf("ERROR time is over\n");
@@ -115,11 +115,11 @@ int main(){
 				call_counter++;
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
-				while(1){
-					halSleep(1);
+				while(halStatusDMA()){
+					/*halSleep(1);
 					if(halStatusDMA() == 0){
 						break;
-					}
+					}*/
 					time++;
 					if(time > (i<<1)){
 						printf("ERROR time is over\n");
