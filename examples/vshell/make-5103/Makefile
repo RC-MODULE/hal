@@ -64,34 +64,32 @@ VS ?= vs2005
 	
 #.DEFAULT_GOAL =	vs2015 
 #========================== NeuroMatrix build ===================
-ifndef MC12101
-$(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
+ifndef MC5103
+$(warning *** WARNING: 'MC5103' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
-INC_DIRS = -I"$(MC12101)/include" -I"$(NEURO)/include" -I"$(HAL)/include"
-LIB_DIRS = -L"$(MC12101)/lib" -L$(HAL)/lib -L"$(NEURO)/lib"
-LIBS     = mc12101lib_nm.lib libc4f.lib libc4.lib hal-mc12101.lib
+INC_DIRS = -I"$(MC5103)/include" -I"$(NEURO)/include" -I"$(HAL)/include"
+LIB_DIRS = -L"$(MC5103)/lib" -L$(HAL)/lib -L"$(NEURO)/lib"
+LIBS     = mc5103lib.lib libc05.lib hal-mc5103.lib
 TARGET   = main.abs
-CFG      = mc12101brd-nmc0.cfg
+CFG      = mc5103brd.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src-nm))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src-nm))
-HEAPS    =  -heap=122000 -heap1=22000 -heap2=16384 -heap3=16384
+HEAPS    =  -heap=2500000 -heap1=32500 -heap2=32500 -heap3=32500
 
-
+         
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile $(NMPP)/lib/nmpp-nmc4f.lib
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
 	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                   **)
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
-	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
+	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc3 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
                                                                            
 
 
 
 #========================== Visual Studio build ===================
-
-
 
 .PHONY : vs2005 vs2015 run $(VS)
 	

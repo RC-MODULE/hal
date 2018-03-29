@@ -1,13 +1,13 @@
 #!lua
 
 HAL = "../../.."
-BOARD ="mc12101"
+BOARD = "mc5103"
 -- A solution contains projects, and defines the available configurations
 solution "vshell"
 	configurations { "Debug", "Release" }
 	project "host"
-		kind "ConsoleApp"
-		language "C++"
+      kind "ConsoleApp"
+      language "C++"
 		files { "../src-pc/*.cpp"}
 	  links { "hal-"..BOARD.."-x86.lib", BOARD.."load.lib", "vshell.lib" } 
 	  libdirs { "$(HAL)/lib","$("..BOARD..")/libload","$(VSHELL)/lib"}
@@ -22,7 +22,7 @@ solution "vshell"
 		 
 	project "target"
         kind "Makefile"
-		files { "../src-nm/*.cpp", BOARD.."brd-nmc0.cfg", "Makefile" }
+		files { "../src-nm/*.cpp", BOARD.."brd.cfg", "Makefile" }
 	 
 		configuration "Debug"
 			buildcommands {"make DEBUG=y -f Makefile"}
