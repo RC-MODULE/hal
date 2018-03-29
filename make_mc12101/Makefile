@@ -8,6 +8,11 @@ PROJECT   	 = hal-mc12101
 PROJECT_X86  = $(PROJECT)-x86
 
 
+CONFIGURATION ?= Release
+ifdef DEBUG
+CONFIGURATION =Debug
+endif
+
 TARGET_X86 = $(OUT_DIR)/$(PROJECT_X86).lib
 
 OUT_DIR  = ../lib
@@ -27,20 +32,19 @@ AS_FLAGS         =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 AS_FLAGS_C2ASM   =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 LIBS             =
 CC               =nmcpp
-CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline 
+CCPP_FLAGS       =-nmc3 -DNEURO -OPT2 -inline 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 BUILDER          =libr
 BUILDER_FLAGS    =-s $(TARGET)
-TMP_DIR          =Release
+TMP_DIR          =$(CONFIGURATION)
 #--------------  DEBUG config -------------------------
-ifdef DEBUG      
+ifdef DEBUG
 TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 LIBS            :=
 AS_FLAGS        +=-ga
 BUILDER_FLAGS   +=-d0
-TMP_DIR          =Debug
 endif 
 
 # collecting of objects
@@ -58,10 +62,10 @@ VPATH    = $(SRC_DIRS)
 #--------------- nmc build --------------------------------	
 nmc: echo $(TARGET)
 
-echo 
+echo:
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix  compiling...                          **)
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                   **)
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 
@@ -86,15 +90,16 @@ $(TMP_DIR)/%.asmx: %.cpp
 $(TMP_DIR)/%.asmx: %.c
 	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
 
-#--------------- X86 build --------------------------------	
-x86: $(VS_VER)
+#========================== Visual Studio build ===================	
 
 	
 vs2005: $(PROJECT).sln
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln 
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
+	
 
 vs2015:	$(PROJECT).sln
-	"$(VS140COMNTOOLS)vsvars32" && msbuild.exe $(PROJECT).sln /t:Build
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:$(CONFIGURATION)
+
 	
 $(PROJECT).sln:	premake5.lua 
 	premake5 $(MAKECMDGOALS) 
