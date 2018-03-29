@@ -68,8 +68,8 @@ ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
-INC_DIRS = -I"$(MC12101)/include" -I"$(NEURO)/include" -I"$(HAL)/include"
-LIB_DIRS = -L"$(MC12101)/lib" -L$(HAL)/lib -L"$(NEURO)/lib"
+INC_DIRS = -I$(ROOT)/include -I"$(MC12101)/include" -I"$(NEURO)/include" -I"$(HAL)/include"
+LIB_DIRS = -L$(ROOT)/lib -L"$(MC12101)/lib" -L$(HAL)/lib -L"$(NEURO)/lib"
 LIBS     = mc12101lib_nm.lib libc4f.lib libc4.lib hal-mc12101.lib
 TARGET   = main.abs
 CFG      = mc12101brd-nmc0.cfg
@@ -78,7 +78,7 @@ SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src-nm))
 HEAPS    =  -heap=122000 -heap1=22000 -heap2=16384 -heap3=16384
 
 
-$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile $(NMPP)/lib/nmpp-nmc4f.lib
+$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile 
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
 	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                   **)

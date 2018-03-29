@@ -10,8 +10,8 @@ solution "vshell"
 		language "C++"
 		files { "../src-pc/*.cpp"}
 	  links { "hal-"..BOARD.."-x86.lib", BOARD.."load.lib", "vshell.lib" } 
-	  libdirs { "$(HAL)/lib","$("..BOARD..")/libload","$(VSHELL)/lib"}
-		includedirs { "$(HAL)/include","$(VSHELL)/include"}
+	  libdirs { HAL.."/lib","$(HAL)/lib","$("..BOARD..")/lib","$(VSHELL)/lib"}
+		includedirs { HAL.."/include","$(HAL)/include","$(VSHELL)/include"}
 		debugenvs { "PATH=%PATH%;$(VSHELL)/bin" }
 		configuration "Debug"
 			defines { "DEBUG" }
