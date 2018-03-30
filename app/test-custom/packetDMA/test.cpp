@@ -79,6 +79,15 @@ int callback(){
 	halLed(index);
 	return 0;
 }
+
+nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
+	if((int)addr > min && (int)addr < max){
+		return (nm32s*)((int)addr + MIRROR);
+	}else{
+		return addr; 
+	}
+}
+
 int main(){ 
 	int call_counter = 0;
 	clock_t t0,t1;
@@ -111,8 +120,8 @@ int main(){
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
 			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
 				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
-					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
-					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
+					srcAddrList[i] = CheckIsExtMem(((nm32s*)((int)src_loc + offset)),0x0,0xA0000); 
+					dstAddrList[i] = CheckIsExtMem(((nm32s*)((int)dst_loc + offset)),0x0,0xA0000);
 					bufSizeList[i] = size;
 				}
 				unsigned crcDst = 0;
@@ -144,14 +153,13 @@ int main(){
 			src_loc = UnalignAddr(src);
 			dst_loc = UnalignAddr(dst);
 			printf("Unaligned address src = %x dst = %x\n",src_loc,dst_loc);
-			for(int j=0;j<MAX_BUFFER_SIZE;j++){
-				for(int i = 0; i < MAX_NUM_BUFFERS; i++){
-					srcAddrList[i] = (nm32s*)((int)src_loc + i); 
-					dstAddrList[i] = (nm32s*)((int)dst_loc + i);
-					bufSizeList[i] = j;
+			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
+					srcAddrList[i] = CheckIsExtMem(((nm32s*)((int)src_loc + offset)),0x0,0xA0000); 
+					dstAddrList[i] = CheckIsExtMem(((nm32s*)((int)dst_loc + offset)),0x0,0xA0000);
+					bufSizeList[i] = size;
 				}
 				//printf("Size = %d\n",j);
-				halLed(j);
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
