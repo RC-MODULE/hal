@@ -98,7 +98,7 @@ vs2005: $(PROJECT).sln
 	
 
 vs2015:	$(PROJECT).sln
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:$(CONFIGURATION)
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
 
 	
 $(PROJECT).sln:	premake5.lua 

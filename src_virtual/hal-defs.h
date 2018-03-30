@@ -9,6 +9,7 @@
 #define SYNC_BUFFER_MAPPING_NAME "Global\\SyncFileMappingObject"
 #define SYNC_BUF_SIZE 64*1024
 #define MAX_COUNT_PROCESSORS 8
+#define HOST_CONNECT_TIMEOUT 100000
 
 TCHAR* createName(TCHAR* baseName, int index0, int index2);
 

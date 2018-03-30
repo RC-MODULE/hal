@@ -8,16 +8,15 @@
 # * GNU Make           http://gnuwin32.sourceforge.net/packages/make.htm
 #
 # USAGE:
-#   For release build                    run 'make'
-#   For debug   build                    run 'make DEBUG=y'
-#   For debug & release  build           run 'make all'
-#   For full  rebuild                    run 'make -B'
-#   Multithread build (speed up)         run 'make -j4'
-#   To clean                             run 'make clean'
-#   To create VisualStudio 2005 project  run 'make vs8'
-#   To create VisualStudio 2013 project  run 'make vs13'
-#   Execute target                       run 'make run'
-#   Execute debug target                 run 'make rund'
+#   For release nmc build                type 'make'
+#   For debug   nmc build                type 'make DEBUG=y'
+#   For full  rebuild                    type 'make -B'
+#   Multithread build (speed up)         type 'make -j4'
+#   To create VisualStudio 2005 project  type 'make vs2005'  (premake5.exe is required)
+#   To create VisualStudio 2015 project  type 'make vs2015'  (premake5.exe is required)
+#   Run application                      type 'make run'
+#   To clean                             type 'make clean'
+#   To delete all VS projects &clean     type 'make kill'
 #
 # WARNING:
 #   Makefile is sensitive to leading or trailing spaces and backslashes in the pathes
@@ -56,7 +55,9 @@ include $(ROOT)/global.mk
 PROJECT=vshell
 
 CONFIGURATION ?= Release
+OPT ?= -O2
 ifdef DEBUG
+OPT = -O0 -g 
 CONFIGURATION =Debug
 endif
 
@@ -70,7 +71,7 @@ endif
 
 INC_DIRS = -I$(ROOT)/include -I"$(MC12101)/include" -I"$(NEURO)/include" -I"$(HAL)/include"
 LIB_DIRS = -L$(ROOT)/lib -L"$(MC12101)/lib" -L$(HAL)/lib -L"$(NEURO)/lib"
-LIBS     = mc12101lib_nm.lib libc4f.lib libc4.lib hal-mc12101.lib
+LIBS     = mc12101lib_nm.lib libc4.lib hal-mc12101.lib
 TARGET   = main.abs
 CFG      = mc12101brd-nmc0.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src-nm))
@@ -81,17 +82,16 @@ HEAPS    =  -heap=122000 -heap1=22000 -heap2=16384 -heap3=16384
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile 
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                   **)
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                )
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
-	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
-                                                                           
-
+	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc4 $(OPT) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
+	@echo ------------------------------------------------------------------------------
+	@echo !                            BUILD OK!                                       !
+	@echo ------------------------------------------------------------------------------
 
 
 #========================== Visual Studio build ===================
-
-
 
 .PHONY : vs2005 vs2015 run $(VS)
 	

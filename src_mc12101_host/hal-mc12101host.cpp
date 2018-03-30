@@ -2,18 +2,21 @@
 #include <stdio.h>
 
 #include "sleep.h"
-static PL_Board *board=0;
-static PL_Access *access[2]={0,0};
 #include "nm_io_host.h"
-static PL_Access* access_io[2]={0,0};
-static NM_IO_Service *nmservice[2]={0,0};
-#define TRACE(str) printf("%s", str)
 
-static unsigned result[2];
-static bool isFinished[2]={false,false};
+
 
 
 extern "C"{
+#define TRACE(str) 
+	//printf("%s", str)
+static PL_Access* access_io[2] = { 0,0 };
+static NM_IO_Service *nmservice[2] = { 0,0 };
+
+static PL_Board *board = 0;
+static PL_Access *access[2] = { 0,0 };
+static unsigned result[2];
+static bool isFinished[2] = { false,false };
 
 static unsigned sharedBuffer;
 static unsigned sharedSize32;

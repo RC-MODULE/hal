@@ -1,4 +1,5 @@
 #include "hal_target.h"
+#include "hal.h"
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>
@@ -24,11 +25,15 @@ extern "C"{
 // Возвращает указатель на буфер синхронизации
 SyncBuf* getSyncBuffer(){
 	if (pSyncBuf==0){
-		HANDLE hMapFile = OpenFileMapping(
-			FILE_MAP_ALL_ACCESS,   // read/write access
-			FALSE,                 // do not inherit the name
-			TEXT(SYNC_BUFFER_MAPPING_NAME));               // name of mapping object
-
+		HANDLE hMapFile;
+		for (int i=0; i<HOST_CONNECT_TIMEOUT; i+=100){
+			hMapFile = OpenFileMapping(
+				FILE_MAP_ALL_ACCESS,   // read/write access
+				FALSE,                 // do not inherit the name
+				TEXT(SYNC_BUFFER_MAPPING_NAME));               // name of mapping object
+			if (hMapFile) break;
+			halSleep(100);
+		}
 		if (hMapFile == NULL){
 			printf("Could not open file mapping object (%d).\n",GetLastError());
 			return 0;
@@ -55,21 +60,19 @@ SyncBuf* getSyncBuffer(){
 
 extern "C"{
     
-	int ncl_getProcessorNo(){
+int ncl_getProcessorNo(){
 
-		return procNo;
-	}
+	return procNo;
+}
 
-	int turn=1;
+int turn=1;
 	
-	int ncl_hostSync(int val){
+int ncl_hostSync(int val){
 		//findBuffer();
-		if (pSyncBuf==0)
-			pSyncBuf=getSyncBuffer();
-		//int procNo=ncl_getProcessorNo();
-		//printf ("TARGET[%d]:Sync[%d] (%Xh)...",procNo,pSyncBuf[procNo].counter1,val);
-
-SyncBuf& syncro = pSyncBuf[procNo];
+	if (pSyncBuf==0)
+		pSyncBuf=getSyncBuffer();
+	
+	SyncBuf& syncro = pSyncBuf[procNo];
 
 			
 	while(syncro.writeCounter[1]>syncro.readCounter[1])

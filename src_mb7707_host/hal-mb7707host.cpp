@@ -145,8 +145,8 @@ int halOpen(char* absfile=0,...){
 		return  (1);
 	}
 
-	unsigned sharedBuffer=halSync(0x8086);
-	unsigned sharedSize32=halSync(0x8086);
+	//unsigned sharedBuffer=halSync(0x8086);
+	//unsigned sharedSize32=halSync(0x8086);
 
 
 	TRACE ("OK!\n");

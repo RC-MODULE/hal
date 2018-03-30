@@ -8,16 +8,15 @@
 # * GNU Make           http://gnuwin32.sourceforge.net/packages/make.htm
 #
 # USAGE:
-#   For release build                    run 'make'
-#   For debug   build                    run 'make DEBUG=y'
-#   For debug & release  build           run 'make all'
-#   For full  rebuild                    run 'make -B'
-#   Multithread build (speed up)         run 'make -j4'
-#   To clean                             run 'make clean'
-#   To create VisualStudio 2005 project  run 'make vs8'
-#   To create VisualStudio 2013 project  run 'make vs13'
-#   Execute target                       run 'make run'
-#   Execute debug target                 run 'make rund'
+#   For release nmc build                type 'make'
+#   For debug   nmc build                type 'make DEBUG=y'
+#   For full  rebuild                    type 'make -B'
+#   Multithread build (speed up)         type 'make -j4'
+#   To create VisualStudio 2005 project  type 'make vs2005'  (premake5.exe is required)
+#   To create VisualStudio 2015 project  type 'make vs2015'  (premake5.exe is required)
+#   Run application                      type 'make run'
+#   To clean                             type 'make clean'
+#   To delete all VS projects &clean     type 'make kill'
 #
 # WARNING:
 #   Makefile is sensitive to leading or trailing spaces and backslashes in the pathes
@@ -49,14 +48,12 @@
 ROOT             = ../../..
 include $(ROOT)/global.mk
 
-# BUILD AND RUN MAKEFILE
-# This makefile builds simple nmc-application containing single cpp-file  
-# Rule 'run' executes the application on MC5103 board and stores return code in ".exitcode"  file
-.SUFFIXES:
 PROJECT=vshell
 
 CONFIGURATION ?= Release
+OPT ?= -O2
 ifdef DEBUG
+OPT = -O0 -g 
 CONFIGURATION =Debug
 endif
 
@@ -78,15 +75,16 @@ SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src-nm))
 HEAPS    =  -heap=2500000 -heap1=32500 -heap2=32500 -heap3=32500
 
          
-$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile $(NMPP)/lib/nmpp-nmc4f.lib
+$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile 
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                   **)
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                )
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
-	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc3 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
-                                                                           
-
+	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc3 $(OPT) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
+	@echo ------------------------------------------------------------------------------
+	@echo !                            BUILD OK!                                       !
+	@echo ------------------------------------------------------------------------------
 
 
 #========================== Visual Studio build ===================
