@@ -4,6 +4,12 @@
 #include "sleep.h"
 static PL_Board *board=0;
 static PL_Access *access=0;
+
+#ifndef SILENT
+#include "nm_io_host.h"
+static PL_Access* access_io=0;
+static NM_IO_Service *nmservice=0;
+#endif
 #define TRACE(str) printf("%s", str)
 
 
@@ -64,6 +70,8 @@ volatile int DDR_EM1_Inited=DDR_NOT_INITED;
 
 #ifdef __cplusplus
 extern "C" {
+	
+	int static locked=false;
 #endif // __cplusplus
 
 
@@ -72,15 +80,23 @@ extern "C" {
 	void INIT_DDR_EMX(unsigned DMCX_APB_Based);
 
 
+void halLock(){
+	while (locked);
+	locked=true;
+}	
+void halUnlock(){
+	locked=false;
+}
 int halSync(int val){
+	halLock();
 	PL_Word ret;
 	PL_Sync(access,val,&ret);
-	
+	halUnlock();
 	return ret;
 }
 
 int halOpen(char* absfile=0,...){
-	int boardCount;
+	//int boardCount;
 	PL_Word Length = 0;
 	
 	PL_Word *Buffer = 0;
@@ -88,6 +104,7 @@ int halOpen(char* absfile=0,...){
 
 	TRACE ("Connection to board...");
 
+	unsigned long long MAC64;
 	unsigned char MAC_ADDRESS[] = { 0x1A,0x2B,0x3C,0x4D,0x5E,0x6F,0,0,0,0 };
 	char* strMacAddressEnv = getenv ("MB7707MAC");
 	char  strMacAddress[128];
@@ -101,14 +118,17 @@ int halOpen(char* absfile=0,...){
 				strMacAddress[i++]=c;
 		}
 		strMacAddress[i]=0;
-		sscanf(strMacAddress,  "%2x",MAC_ADDRESS);
-		sscanf(strMacAddress+2,"%2x",MAC_ADDRESS+1);
-		sscanf(strMacAddress+4,"%2x",MAC_ADDRESS+2);
-		sscanf(strMacAddress+6,"%2x",MAC_ADDRESS+3);
-		sscanf(strMacAddress+8,"%2x",MAC_ADDRESS+4);
-		sscanf(strMacAddress+10,"%2x",MAC_ADDRESS+5);
+		char* endp;
+		MAC64=_strtoi64(strMacAddress,&endp,16);
+		char* c=(char*)&MAC64;
+		MAC_ADDRESS[0]=c[5];
+		MAC_ADDRESS[1]=c[4];
+		MAC_ADDRESS[2]=c[3];
+		MAC_ADDRESS[3]=c[2];
+		MAC_ADDRESS[4]=c[1];
+		MAC_ADDRESS[5]=c[0];
 	}
-	MAC_ADDRESS[6]=0;
+
 
 	if (PL_GetBoardDesc(MAC_ADDRESS, &board)!=PL_OK){
 		TRACE( "ERROR: Can't open board 0 \n");
@@ -147,6 +167,14 @@ int halOpen(char* absfile=0,...){
 
 	//unsigned sharedBuffer=halSync(0x8086);
 	//unsigned sharedSize32=halSync(0x8086);
+#ifndef SILENT	
+	if (absfile){
+		nmservice=new NM_IO_Service(absfile,access);		
+		if (nmservice==0)
+			return 1;
+
+	}
+#endif	
 
 
 	TRACE ("OK!\n");
@@ -155,13 +183,25 @@ int halOpen(char* absfile=0,...){
 	
 
 int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
-	return PL_ReadMemBlock(access, (PL_Word*)dstHostAddr, srcBoardAddr, size32);
+	halLock();
+	int ret=PL_ReadMemBlock(access, (PL_Word*)dstHostAddr, srcBoardAddr, size32);
+	halUnlock();
+	return ret;
 }
 
 int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
-	return PL_WriteMemBlock(access, (PL_Word*)srcHostAddr, dstBoardAddr, size32);
+	halLock();
+	int ret=PL_WriteMemBlock(access, (PL_Word*)srcHostAddr, dstBoardAddr, size32);
+	halUnlock();
+	return ret;
 }
 
+int halGetStatus(PL_Word *status){
+	halLock();
+	int ret=PL_GetStatus(access, status);
+	halUnlock();
+	return ret;
+}
 /*
 void boardSleep()	//virtual int memcpy(unsigned* dst_addr, unsigned* src_addr, int size32){return 0;};
 	void Sleep(int msecs){
@@ -169,6 +209,9 @@ void boardSleep()	//virtual int memcpy(unsigned* dst_addr, unsigned* src_addr, i
 	}
 */	
 int halClose(){
+	#ifndef SILENT	
+	delete nmservice;
+	#endif
 	PL_CloseAccess(access);
 	return PL_CloseBoardDesc(board);
 }
@@ -176,9 +219,11 @@ int halClose(){
 int halGetResult(unsigned* result,  unsigned processor=0){
 	PL_Word status=0;
 	while ((PROGRAM_FINISHED&status)==0){
-		PL_GetStatus(access,&status);
+		//PL_GetStatus(access,&status);
+		halGetStatus(&status);
 		halSleep(500);
 	}
+
 	return PL_GetResult(access,(PL_Word*)result);
 }
 
@@ -187,7 +232,6 @@ void Init_DDR_EM0(){
 	if (DDR_EM0_Inited==DDR_NOT_INITED){
 		PL_Word t;
 		WRITE_MEM(0x2003c050,0x1c); //DDR PHY ODT ON
-		PL_Word x; 
 		//	int r=PL_WriteMemBlock(access, &x, ARM2NM(0x2003c050),1);
 
 		//tube_msg("INIT DDR EM0 ...");
@@ -239,7 +283,7 @@ void INIT_DDR_EMX(unsigned DMCX_APB_Based){
 	do {
 		READ_MEM(DMCX_APB_Based+PL341_MEMC_STATUS,v);
 
-	} while (v&0x3!= 0x0);
+	} while ((v&0x3)!= 0x0);
 
 
 	READ_MEM(DMCX_APB_Based+PL341_MEMC_STATUS,v);

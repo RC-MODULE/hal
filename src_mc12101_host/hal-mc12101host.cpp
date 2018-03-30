@@ -2,16 +2,17 @@
 #include <stdio.h>
 
 #include "sleep.h"
-#include "nm_io_host.h"
 
+#ifndef SILENT
+#include "nm_io_host.h"
+static PL_Access* access_io[2] = { 0,0 };
+static NM_IO_Service *nmservice[2] = { 0,0 };
+#endif
 
 
 
 extern "C"{
-#define TRACE(str) 
-	//printf("%s", str)
-static PL_Access* access_io[2] = { 0,0 };
-static NM_IO_Service *nmservice[2] = { 0,0 };
+#define TRACE(str) printf("%s", str)
 
 static PL_Board *board = 0;
 static PL_Access *access[2] = { 0,0 };
@@ -41,7 +42,7 @@ int halOpen(char* absfile=0,...){
 
 
 
-	unsigned int boardCount,ok;
+	unsigned boardCount,ok;
 	PL_Word Length = 0;
 	
 	PL_Word *Buffer = 0;
@@ -83,11 +84,13 @@ int halOpen(char* absfile=0,...){
 	}
 	for (int proc=0; abs[proc]!=0 ;proc++){
 		if (strlen(abs[proc])){
+#ifndef SILENT	
 			// io initialization
 			if (PL_GetAccess(board, proc, &access_io[proc])){
 				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
 				return  (1);
 			}
+
 
 			nmservice[proc]=new NM_IO_Service(abs[proc],access_io[proc]);		
 			if (nmservice[proc]==0)
@@ -100,6 +103,7 @@ int halOpen(char* absfile=0,...){
 			}
 			else 
 				break;
+#endif				
 		}
 	}
 	return 0;
@@ -118,10 +122,17 @@ int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned
 
 
 int halClose(){
+	#ifndef SILENT	
 	if (nmservice[0])
 		delete nmservice[0];
 	if (nmservice[1])
 		delete nmservice[1];
+	if (access_io[0])
+		PL_CloseAccess(access_io[0]);
+	if (access_io[1])
+		PL_CloseAccess(access_io[1]);
+
+	#endif
 	if (access[0])
 		PL_CloseAccess(access[0]);
 	if (access[1])

@@ -1,13 +1,14 @@
 #include "mc5103load.h"
-#include "stdio.h"
-#include "nm_io_host.h"
+#include <stdio.h>
+#include <stdarg.h>
 #include "sleep.h"
-#include "stdarg.h"
-
 static PL_Board *board=0;
 static PL_Access *access=0;
+#ifndef SILENT
+#include "nm_io_host.h"
 static PL_Access* access_io=0;
 static NM_IO_Service *nmservice=0;
+#endif
 
 #define TRACE(str) printf("%s", str)
 
@@ -20,14 +21,17 @@ int halSync(int val){
 }
 
 int halOpen(char* absfile=0,...){
+
 	va_list args;
 	va_start(args, absfile);
 	char* abs[3]={0,0,0};
 	abs[0] = absfile;
 	abs[1] = va_arg(args, char*);
 	va_end(args);
-	if (absfile[0]==0)
+	if (absfile==0)
 		absfile=abs[1];
+
+
 	int boardCount;
 	PL_Word Length = 0;
 	
@@ -64,7 +68,7 @@ int halOpen(char* absfile=0,...){
 	}
 	
 	
-	
+
 	if (absfile){
 		if (PL_LoadProgramFile(access, absfile)){
 			access=0;
@@ -72,11 +76,12 @@ int halOpen(char* absfile=0,...){
 			//return  (1);
 		}
 	}
-
+#ifndef SILENT	
 	if (PL_GetAccess(board, 0, &access_io)){
 		TRACE( "ERROR: Can't access processor  0 on board  0  \n");
 		return  (1);
 	}
+
 
 	if (absfile){
 		nmservice=new NM_IO_Service(absfile,access_io);		
@@ -84,7 +89,7 @@ int halOpen(char* absfile=0,...){
 			return 1;
 
 	}
-
+#endif
 		
 
 
@@ -108,8 +113,11 @@ void boardSleep()	//virtual int memcpy(unsigned* dst_addr, unsigned* src_addr, i
 	}
 */	
 int halClose(){
-	PL_CloseAccess(access);
+	#ifndef SILENT	
 	delete nmservice;
+	PL_CloseAccess(access_io);
+	#endif
+	PL_CloseAccess(access);
 	return PL_CloseBoardDesc(board);
 }
 

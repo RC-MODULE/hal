@@ -6,32 +6,32 @@ solution "mb7707-printf"
 
    -- A project defines one build target
    project "mb7707-x86"
-      kind "ConsoleApp"
-      language "C++"
-      files { "**.h", "../src_pc/*.cpp"}
-	  links { "hal-mb7707io-x86.lib","mb7707load.lib","mb7707-nmc3" } 
-	  includedirs { "../../../include"}	  
-	  libdirs { "$(mb7707)/libload","../../../lib" }
+		kind "ConsoleApp"
+		language "C++"
+		files { "**.h", "../src_pc/*.cpp"}
+		links { "hal-mb7707-x86.lib","mb7707load.lib","mb7707-nmc3" } 
+		includedirs { "../../../include"}	  
+		libdirs { "$(mb7707)/libload","../../../lib" }
 
-      configuration "Debug"
-         defines { "DEBUG" }
-         symbols  "On" 
+		configuration "Debug"
+			defines { "DEBUG" }
+			symbols  "On" 
 
-      configuration "Release"
-         defines { "NDEBUG" }
-         symbols  "Off" 
+		configuration "Release"
+			defines { "NDEBUG" }
+			symbols  "Off" 
 		 
 		 
 	project "mb7707-nmc3"
-      kind "Makefile"
-      files { "../src_nm0/*.cpp" }
+		kind "Makefile"
+		files { "../src_nm0/*.cpp" }
 	 
-	  configuration "Debug"
-		   buildcommands {"make DEBUG=y"}
-		   rebuildcommands {"make -B DEBUG=y"}
-		   cleancommands {"make clean"}
+		configuration "Debug"
+			buildcommands {"make DEBUG=y"}
+			rebuildcommands {"make -B DEBUG=y"}
+			cleancommands {"make clean"}
 		   
-	  configuration "Release"
-		   buildcommands {"make"}
-		   rebuildcommands {"make -B"}
-		   cleancommands {"make clean"}		   
+		configuration "Release"
+			buildcommands {"make"}
+			rebuildcommands {"make -B"}
+			cleancommands {"make clean"}		   

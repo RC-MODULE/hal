@@ -1,11 +1,14 @@
 ROOT = ..
 -include $(ROOT)/global.mk
-
-
 .SUFFIXES:
+
 PROJECT  = hal-mb7707
-LIB_X86   = $(PROJECT)-x86
-LIBIO_X86 = $(PROJECT)io-x86
+CONFIGURATION ?= Release
+ifdef DEBUG
+CONFIGURATION =Debug
+endif
+
+
 INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
 LIB_DIRS = 
 SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_nm_io
@@ -22,20 +25,18 @@ AS_FLAGS         =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 AS_FLAGS_C2ASM   =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 LIBS             =
 CC               =nmcpp
-CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline 
+CCPP_FLAGS       =-nmc3 -DNEURO -OPT2 -inline 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 BUILDER          =libr
 BUILDER_FLAGS    =-s $(TARGET)
-TMP_DIR          =Release
+TMP_DIR          =$(CONFIGURATION)
 #--------------  DEBUG config -------------------------
-ifdef DEBUG      
+ifdef DEBUG
 TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
-LIBS            :=
 AS_FLAGS        +=-ga
 BUILDER_FLAGS   +=-d0
-TMP_DIR          =Debug
 endif 
 
 # collecting of objects
@@ -48,11 +49,23 @@ OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM
 VPATH    = $(SRC_DIRS)
 
 
-all: $(TARGET) $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib
+#========================== NeuroMatrix build ===================	
+nmc: echo $(TARGET)
 
-#--------------- nmc build --------------------------------	
+echo:
+	$(info *******************************************************************************)
+	$(info **                                                                           **)
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...          )
+	$(info **                                                                           **)
+	$(info *******************************************************************************)
+
 $(TARGET): $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
+	@echo *******************************************************************************
+	@echo **                                                                           **
+	@echo **                                   Build OK!                               **
+	@echo **                                                                           **
+	@echo *******************************************************************************
 
 $(TMP_DIR):
 	-mkdir "$(@)"
@@ -72,24 +85,21 @@ $(TMP_DIR)/%.asmx: %.cpp
 $(TMP_DIR)/%.asmx: %.c
 	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
 
-#--------------- X86 build --------------------------------	
-	
-$(OUT_DIR)/$(LIB_X86).lib: $(LIB_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIB_X86).vcproj
+#========================== Visual Studio build ===================	
 
-$(OUT_DIR)/$(LIBIO_X86).lib: $(LIBIO_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIBIO_X86).vcproj
 	
-$(LIB_X86).vcproj $(LIBIO_X86).vcproj  vs2005:	premake5.lua 
-	premake5 vs2005
+vs2005: $(PROJECT).sln
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
+	
+
+vs2015:	$(PROJECT).sln
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
+
+	
+$(PROJECT).sln:	premake5.lua 
+	premake5 $(MAKECMDGOALS) 
 	
 #--------------- cleanup  --------------------------------	
 
-clean:
-	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib $(OUT_DIR)/$(PROJECT).lib $(OUT_DIR)/$(PROJECT)d.lib
-	-$(OS_RD) bin obj Release Debug
-	
-kill: clean
-	-$(OS_RM) *.vcproj *.sln *.vcxproj
-	
-	
+
+-include $(ROOT)/clean.mk

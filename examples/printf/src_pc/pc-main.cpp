@@ -21,6 +21,7 @@ int main(){
 		if (halOpen("main0.abs",NULL))			// Load executable file to board, connect to shared memory
 			return -1;
 		halGetResult(&sync);					// get return value (0x600D)				
+		//while(1);
 	#endif	
 	
 	printf("Return value:%X\n",sync);

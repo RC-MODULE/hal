@@ -1,24 +1,19 @@
 ROOT = ..
 -include $(ROOT)/global.mk
-
-
-
 .SUFFIXES:
-PROJECT   	 = hal-mc12101
-PROJECT_X86  = $(PROJECT)-x86
 
-
+PROJECT  = hal-mc12101
 CONFIGURATION ?= Release
 ifdef DEBUG
 CONFIGURATION =Debug
+else
+$(error Release configuration cause bug in printf. Run with flag DEBUG=y )
 endif
 
-TARGET_X86 = $(OUT_DIR)/$(PROJECT_X86).lib
 
-OUT_DIR  = ../lib
 INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vm6ya ../src_mc12101  ../src_nmc_all ../src_nmc_all
+SRC_DIRS = ../src_1879vm6ya ../src_mc12101  ../src_nm_io ../src_nmc_all
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
@@ -42,7 +37,6 @@ ifdef DEBUG
 TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
-LIBS            :=
 AS_FLAGS        +=-ga
 BUILDER_FLAGS   +=-d0
 endif 
@@ -57,20 +51,23 @@ OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM
 VPATH    = $(SRC_DIRS)
 
 
-#all: nmc x86
-
-#--------------- nmc build --------------------------------	
+#========================== NeuroMatrix build ===================	
 nmc: echo $(TARGET)
 
 echo:
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                   **)
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...          )
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 
 $(TARGET): $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
+	@echo *******************************************************************************
+	@echo **                                                                           **
+	@echo **                                   Build OK!                               **
+	@echo **                                                                           **
+	@echo *******************************************************************************
 
 $(TMP_DIR):
 	-mkdir "$(@)"

@@ -19,7 +19,7 @@
 #include "nm_io_host.h"
 #include "host_duties.h"
 #include "libelf.h"
-
+#include "hal_host.h"
 //#include "mc5101load.h"
 //	Рассчитываем на использование любой библиотеки загрузки и обмена
 extern "C" {
@@ -28,10 +28,11 @@ enum RetValue{	PL_OK         = 0};
 // Получаем извне, закрываем сами
 int PL_CloseAccess(PL_Access *access);
 
-int PL_WriteMemBlock(PL_Access *access, 
-							  PL_Word *block, PL_Addr address, PL_Word len);
-int PL_ReadMemBlock(PL_Access *access, 
-							 PL_Word *block, PL_Addr address, PL_Word len);
+//int PL_WriteMemBlock(PL_Access *access, PL_Word *block, PL_Addr address, PL_Word len);
+//int PL_ReadMemBlock(PL_Access *access,  PL_Word *block, PL_Addr address, PL_Word len);
+#define PL_WriteMemBlock(access, block, address, len) halWriteMemBlock((unsigned*)block, address, len)
+#define PL_ReadMemBlock(access,  block, address, len) halReadMemBlock((unsigned*)block, address, len)
+
 }
 //	END #include "mc5101load.h"
 
