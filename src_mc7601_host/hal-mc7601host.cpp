@@ -3,6 +3,12 @@
 #include <stdlib.h>
 static WR_Access *access[2]={0,0};
 static WR_Board  *board=0;
+#ifndef SILENT
+#include "nm_io_host.h"
+static WR_Access* access_io[2]={0,0};
+static NM_IO_Service *nmservice[2]={0,0};
+
+#endif
 static unsigned result[2];
 static bool isFinished[2]={false,false};
 #define TRACE(str) printf("%s", str)
@@ -73,6 +79,29 @@ int halOpen(char* absfile,...){
 			return  (1);
 		}
 	}
+	for (int proc=0; abs[proc]!=0 ;proc++){
+		if (strlen(abs[proc])){
+#ifndef SILENT	
+			// io initialization
+			if (WR_GetAccess(board, proc, &access_io[proc])){
+				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
+				return  (1);
+			}
+
+			nmservice[proc]=new NM_IO_Service(abs[proc],access_io[proc]);		
+			if (nmservice[proc]==0)
+				return (1);
+			if (nmservice[proc]->invalid()){
+				WR_CloseAccess(access_io[proc]);
+				delete nmservice[proc];
+				nmservice[proc]=0;
+				access_io[proc]=0;
+			}
+			else 
+				break;
+#endif				
+		}
+	}
 	return WR_OK;
 }
 	
@@ -94,6 +123,17 @@ void boardSleep()	//virtual int memcpy(unsigned* dst_addr, unsigned* src_addr, i
 	}
 */	
 int halClose(){
+	#ifndef SILENT	
+	if (nmservice[0])
+		delete nmservice[0];
+	if (nmservice[1])
+		delete nmservice[1];
+	if (access_io[0])
+		WR_CloseAccess(access_io[0]);
+	if (access_io[1])
+		WR_CloseAccess(access_io[1]);
+	#endif
+		
 	if (access[0]){
 		if (isFinished[0]==false){
 			WR_WaitEndProgram(access[0], &result[0], 0xFFFFFFFF) ;

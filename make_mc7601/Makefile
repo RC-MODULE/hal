@@ -1,14 +1,20 @@
 ROOT = ..
 -include $(ROOT)/global.mk
-
-
 .SUFFIXES:
+
 PROJECT  = hal-mc7601
-LIB_X86   = $(PROJECT)-x86
-LIBIO_X86 = $(PROJECT)io-x86
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include" -I$(ROOT)/src_1879vya1ya -I../src_nmc_all
+DEBUG =y
+ifdef DEBUG
+CONFIGURATION =Debug
+else
+CONFIGURATION =Release
+$(error Release configuration cause bug in printf. Run with flag DEBUG=y )
+endif
+
+
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vya1ya ../src_mc7601  ../src_nmc_all ../src_nmc_all
+SRC_DIRS = ../src_1879vya1ya ../src_mc7601  ../src_nm_io ../src_nmc_all
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
@@ -22,20 +28,18 @@ AS_FLAGS         =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 AS_FLAGS_C2ASM   =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 LIBS             =
 CC               =nmcpp
-CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -except -rtti
-CC_FLAGS         =$(CCPP_FLAGS) 
+CCPP_FLAGS       =-nmc3 -DNEURO -OPT2 -inline 
+CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 BUILDER          =libr
 BUILDER_FLAGS    =-s $(TARGET)
-TMP_DIR          =Release
+TMP_DIR          =$(CONFIGURATION)
 #--------------  DEBUG config -------------------------
-ifdef DEBUG      
-TARGET           =$(OUT_DIR)/$(PROJECT)d.lib
-CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug -except -rtti
-CC_FLAGS         =$(CCPP_FLAGS) 
-LIBS            :=
+ifdef DEBUG
+TARGET           =$(OUT_DIR)/$(PROJECT).lib
+CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
+CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 AS_FLAGS        +=-ga
 BUILDER_FLAGS   +=-d0
-TMP_DIR          =Debug
 endif 
 
 # collecting of objects
@@ -48,11 +52,23 @@ OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM
 VPATH    = $(SRC_DIRS)
 
 
-all: $(TARGET) $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib
+#========================== NeuroMatrix build ===================	
+nmc: echo $(TARGET)
 
-#--------------- nmc build --------------------------------	
+echo:
+	$(info *******************************************************************************)
+	$(info **                                                                           **)
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...          )
+	$(info **                                                                           **)
+	$(info *******************************************************************************)
+
 $(TARGET): $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
+	@echo *******************************************************************************
+	@echo **                                                                           **
+	@echo **                                   Build OK!                               **
+	@echo **                                                                           **
+	@echo *******************************************************************************
 
 $(TMP_DIR):
 	-mkdir "$(@)"
@@ -72,24 +88,21 @@ $(TMP_DIR)/%.asmx: %.cpp
 $(TMP_DIR)/%.asmx: %.c
 	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
 
-#--------------- X86 build --------------------------------	
-	
-$(OUT_DIR)/$(LIB_X86).lib: $(LIB_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIB_X86).vcproj
+#========================== Visual Studio build ===================	
 
-$(OUT_DIR)/$(LIBIO_X86).lib: $(LIBIO_X86).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(LIBIO_X86).vcproj
 	
-$(LIB_X86).vcproj $(LIBIO_X86).vcproj  vs2005:	premake5.lua 
-	premake5 vs2005
+vs2005: $(PROJECT).sln
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
+	
+
+vs2015:	$(PROJECT).sln
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
+
+	
+$(PROJECT).sln:	premake5.lua 
+	premake5 $(MAKECMDGOALS) 
 	
 #--------------- cleanup  --------------------------------	
 
-clean:
-	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters $(OUT_DIR)/$(LIB_X86).lib $(OUT_DIR)/$(LIBIO_X86).lib $(OUT_DIR)/$(PROJECT).lib $(OUT_DIR)/$(PROJECT)d.lib
-	-$(OS_RD) bin obj Release Debug
-	
-kill: clean
-	-$(OS_RM) *.vcproj *.sln *.vcxproj
-	
-	
+
+-include $(ROOT)/clean.mk

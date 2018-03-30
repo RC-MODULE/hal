@@ -8,7 +8,7 @@ solution "hal-mc12101"
 	-- x86  library with printf support  ---------------------------------	 
 	project "hal-mc12101-x86"
       		kind "StaticLib"
-		includedirs { "../include","$(MC12101)/include","../src_mc12101_host","../src_host_io"}
+		includedirs { "../include","$(MC12101)/include","../src_host_io"}
 		targetdir ("../lib")
       		files { 	"../src_mc12101_host/*.*",
 				"../src_x86/*.*",
@@ -27,11 +27,10 @@ solution "hal-mc12101"
 	-- x86  library without printf support  ---------------------------------	 
 	project "hal-mc12101silent-x86"
       		kind "StaticLib"
-		includedirs { "../include","$(MC12101)/include","../src_mc12101_host","../src_host_io"}
+		includedirs { "../include","$(MC12101)/include"}
 		targetdir ("../lib")
       	files {	"../src_mc12101_host/*.*",
 				"../src_x86/*.*",
-				"../src_host_io/*.*",
 				"../include/*.h"}
 
 	  
