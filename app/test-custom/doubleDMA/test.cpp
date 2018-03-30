@@ -42,6 +42,14 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 	}
 };
 
+nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
+	if((int)addr > min && (int)addr < max){
+		return (nm32s*)((int)addr + MIRROR);
+	}else{
+		return addr; 
+	}
+}
+
 int main(){ 
 	int call_counter = 0;
 	halEnbExtInt();
@@ -78,7 +86,9 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
+				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
+				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
+				halInitDoubleDMA(src_loc,(nm32s*)((int)src_loc+i/2),dst_loc,(nm32s*)((int)dst_loc+i/2),i/2,i/2);
 				int time = 0;
 				while(halStatusDMA()){
 					/*halSleep(1);
@@ -113,13 +123,11 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
+				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
+				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
+				halInitDoubleDMA(src_loc,(nm32s*)((int)src_loc+i/2),dst_loc,(nm32s*)((int)dst_loc+i/2),i/2,i/2);
 				int time = 0;
 				while(halStatusDMA()){
-					/*halSleep(1);
-					if(halStatusDMA() == 0){
-						break;
-					}*/
 					time++;
 					if(time > (i<<1)){
 						printf("ERROR time is over\n");
@@ -128,8 +136,8 @@ int main(){
 						return 3;
 					}
 				}
-				nmppsCrcAcc_32s(dst, Heap_size + 18, &crcDst);//compute crc code of destination
-				nmppsCrcAcc_32s(src, Heap_size + 18, &crcSrc);//compute crc code of source
+				nmppsCrcAcc_32s(dst-2, Heap_size + 18, &crcDst);//compute crc code of destination
+				nmppsCrcAcc_32s(src-2, Heap_size + 18, &crcSrc);//compute crc code of source
 				if(crcDst != crcSrc){
 					printf("ERROR mismatch btw crc of src and dst\n");
 					printf("srcBankIndx = %d dstBankIndx = %d index = %d\n",srcBankIndx,dstBankIndx,i);

@@ -68,13 +68,13 @@ AS_FLAGS         = -nmc4 -nm2ms  $(INC_DIRS) -split_sir
 AS_FLAGS_C2ASM   = -nmc4 -nm2ms  $(INC_DIRS) -split_sir
 LIBS             = mc12101lib_nm.lib libc4.lib nmpp-nmc4.lib hal-mc12101.lib cppnew4.lib libint_6407.lib
 CC               = nmcpp
-CC_FLAGS         = -6405 -DNEURO -OPT2 -inline 
+CC_FLAGS         = -6405 -DNEURO -OPT2 -inline -DMIRROR=0x80000 
 BUILDER          = linker
 BUILDER_FLAGS    = -cmc12101brd-nmc1.cfg -m  $(HEAPS) -full_names -o$(TARGET) $(LIB_DIRS)
 #--------------  DEBUG config -------------------------
 ifdef DEBUG      
 TARGET           = $(OUT_DIR)/$(PROJECT)d.abs
-CC_FLAGS         = -6405 -DNEURO -OPT0 -inline -debug 
+CC_FLAGS         = -6405 -DNEURO -OPT0 -inline -debug -DMIRROR=0x80000
 #LIBS            := $(subst nmc3.lib,nmc3d.lib,$(LIBS))
 AS_FLAGS        += -ga
 BUILDER_FLAGS   += -d0

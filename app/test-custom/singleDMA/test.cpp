@@ -44,31 +44,19 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 	}
 };
 
+nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
+	if((int)addr > min && (int)addr < max){
+		return (nm32s*)((int)addr + MIRROR);
+	}else{
+		return addr; 
+	}
+}
 int main(){ 
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
 	halSetCallbackDMA((DmaCallback)callback);
 	//error code check
-	int error_code = halTestParamSingleDMA((int*)3,(int*)3,3);
-	if(error_code != 1){
-		printf("ERROR: wrong error code case src is not even\n");
-		printf("code is %d\n",error_code);
-		return 10;
-	}
-	error_code = halTestParamSingleDMA((int*)210,(int*)3,3);
-	if(error_code != 2){
-		printf("ERROR: wrong error code case dst is not even\n");
-		printf("code is %d\n",error_code);
-		return 10;
-	}
-	error_code = halTestParamSingleDMA((int*)210,(int*)210,11);
-	if(error_code != 3){
-		printf("ERROR: wrong error code case size32 is not even\n");
-		printf("code is %d\n",error_code);
-		return 10;
-	}
-	
 	clock_t t0,t1;
 	int count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
@@ -94,14 +82,17 @@ int main(){
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				call_counter++;
-				halInitSingleDMA(src,dst,i);
+				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
+				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
+				halInitSingleDMA(src_loc,dst_loc,i);
 				int time = 0;
 				while(1){
 					if(halStatusDMA() == 0){
 						break;
 					}
+					//printf("Status = 0x%x\n",halStatusDMA());
 					time++;
-					if(time > ((i<<1))){
+					if(time > ((i<<5))){
 						printf("ERROR time is over\n");
 						printf("DMA size %d\n",i);
 						halLed(3);
@@ -129,7 +120,9 @@ int main(){
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				call_counter++;
-				halInitSingleDMA(src,dst,i);
+				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
+				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
+				halInitSingleDMA(src_loc,dst_loc,i);
 				int time = 0;
 				while(1){
 					if(halStatusDMA() == 0){

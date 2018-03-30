@@ -16,14 +16,15 @@
 #include "hal_target.h"
 #include "sleep.h"
 #include "hal.h"
-
+#include "cache.h"
 //DISABLE_PRINTF();
 
 int main()
 {
 	for(int i=0; i<10; i++){
+		halInstrCacheEnable();
 		printf("Hello %d from NMC[1]\n",i);	
-		halSleep(100);
+		halSleep(10000);
 	}
 
 	return 0x600D;

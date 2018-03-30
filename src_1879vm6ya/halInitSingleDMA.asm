@@ -30,7 +30,7 @@ begin ".text"
 	[10010016h] = ar1;//wrt row counter to mdma
 	ar1++;
 	[10010004h] = ar1;//bias srs
-	delayed goto START;
+	delayed goto START with gr7 = false;
 	[10010014h] = ar1;//bias dst
 
 <PASS_DOUBLE_DEMENTION_SETUP>
@@ -46,13 +46,10 @@ begin ".text"
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
 	[10010012h] = gr0;//wrt address to wrt data into dst
 	///interruption mask
-	gr7 = true;
 	[1001000Ch] = gr7;
-	gr7 = 2;
 	[1001001Ch] = gr7;
 	
 	///init 
-	gr7 = false;
 	[1001000Ah] = gr7;
 	[1001001Ah] = gr7;
 	

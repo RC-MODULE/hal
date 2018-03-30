@@ -7,7 +7,7 @@ global _halEnbExtInt			: label;
 global _halDisExtInt			: label;
 global _halMaskIntContMdma_mc12101 : label;
 global _GetPswr 					: label;
-
+global _SetFlagDMA				: label;
 nobits ".nobits"
  GR7:word;
  AR5:word;
@@ -94,7 +94,7 @@ begin ".text"
 ////////////////////////////////////////////////////
 <_halStatusDMA>
 	push ar0,gr0;
-	gr7 = [10010010h];//read counter
+	gr7 = [10010000h];//read counter
 	gr0 = [_flag_of_pack_DMA];
 	gr7 = gr0 or gr7;
 	pop ar0,gr0;
@@ -109,6 +109,12 @@ begin ".text"
 	delayed return;		
 	gr7 = pswr;
 	nop;
+
+<_SetFlagDMA>
+	ar5 = ar7 - 2;
+	gr7 = [--ar5];
+	delayed return;
+	[_flag_of_pack_DMA] = gr7;
 
 end ".text";	
 
