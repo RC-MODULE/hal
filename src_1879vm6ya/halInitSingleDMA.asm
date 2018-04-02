@@ -2,9 +2,22 @@ global _halInitSingleDMA : label;
 extern _flag_of_pack_DMA : word;
 begin ".text"
 
+<hit_the_break_Jack>
+	push ar0,gr0;
+	gr0 = 28;
+	gr0;
+<LOOP>	
+	if <>0 delayed goto LOOP with gr0--;
+	nop;
+	nop;
+
+	pop ar0,gr0;
+	return;
+
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
-	ar5 = ar7 -2;
+	ar5 = ar7 - 2;
+	call hit_the_break_Jack;
 	push ar0,gr0;
 	push ar1,gr1 with gr7 = false;
 	[_flag_of_pack_DMA] = gr7; 
@@ -16,7 +29,6 @@ begin ".text"
 	//check arguments
 	gr7 = gr7 or gr0;
 	gr7 = gr7 << 28;
-
 	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;// double demention mode was set up to prevent user from hardwaer bug in MDMA becoze of erro in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 otherwise mode is double demention with bias = 2 rowcounter 1 to emulate sigle demention mode use double demention mode
 	//address mode is double demention
 	ar1 = 1 with gr7 = true;
@@ -55,8 +67,8 @@ begin ".text"
 	
 	////start
 	gr7 = 1;
-	[1001000Ah] = gr7;
 	[1001001Ah] = gr7;
+	[1001000Ah] = gr7;
 
 <END>
 	pop ar1,gr1;

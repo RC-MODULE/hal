@@ -50,19 +50,19 @@ int main(){
 		}
 	}
 	
-	//printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",SIZE_MEM,(t1-t0));
+	printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",SIZE_MEM,(t1-t0));
 	
 	for(i=0;i<10;i++){
-		//printf("buff[%d] = %d\n",i,buff[i]);
+		printf("buff[%d] = %d\n",i,buff[i]);
 	}
 
 //case aligned address
-	//printf("CASE address ALIGNED as 4 the LSB are 0\n");
+	printf("CASE address ALIGNED as 4 the LSB are 0\n");
 	int* pntr2mem;
 	int aligned = (int)(int(buff + 15) >> 4);
 	aligned<<=4;
 	pntr2mem = (int*)aligned; 	
-	//printf("SRC: %x DST: %x\n",arr2read,pntr2mem);
+	printf("SRC: %x DST: %x\n",arr2read,pntr2mem);
 	
 	status = 0;
 	t0=clock();
@@ -74,11 +74,11 @@ int main(){
 			break;
 		}
 	}
-		//printf("DMA has finished correctly\n");
-		//printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",SIZE_MEM,(t1-t0));
+		printf("DMA has finished correctly\n");
+		printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",SIZE_MEM,(t1-t0));
 	
 	for(i=0;i<10;i++){
-		//printf("buff[%d] = %d\n",i,buff[i]);
+		printf("buff[%d] = %d\n",i,buff[i]);
 	}
 	return 100;
 }
