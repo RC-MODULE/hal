@@ -6,12 +6,14 @@ PROJECT  = hal-mc5103
 CONFIGURATION ?= Release
 ifdef DEBUG
 CONFIGURATION =Debug
+else
+$(error Release configuration cause bug in printf. Run with flag DEBUG=y )
 endif
 
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MC5103)/include" -I"../src_1879vm5ya"
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vm5ya ../src_mc5103  ../src_nm_io ../src_nmc_all
+SRC_DIRS = ../src_1879vm5ya  ../src_nm_io ../src_nmc_all
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
