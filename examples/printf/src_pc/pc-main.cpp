@@ -9,7 +9,7 @@ int main(){
 	unsigned sync;
 	printf("Openning...\n");
 	#if defined (NMPU0) && defined (NMPU1)
-		if (halOpen("main0.abs","main1.abs",NULL) 
+		if (halOpen("main0.abs","main1.abs",NULL))
 			return -1;
 		halGetResult(&sync,0);					// get return value (0x600D)				
 		halGetResult(&sync,1);					// get return value (0x600D)				

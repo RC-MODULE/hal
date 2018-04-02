@@ -27,7 +27,7 @@ int main()
 	
 	for(int i=0; i<10; i++){
 		printf("Hello %d from NMC[0]\n",i);	
-		halSleep(1000);
+		halSleep(100);
 	}
 	
 	halLedOff(0);
