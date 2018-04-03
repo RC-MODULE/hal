@@ -94,9 +94,11 @@ begin ".text"
 ////////////////////////////////////////////////////
 <_halStatusDMA>
 	push ar0,gr0;
-	gr7 = [10010000h];//read counter
+	gr7 = [1001001Ah];
 	gr0 = [_flag_of_pack_DMA];
 	gr7 = gr0 or gr7;
+	gr0 = 2;
+	gr7 = gr0 xor gr7;
 	pop ar0,gr0;
 	return;
 

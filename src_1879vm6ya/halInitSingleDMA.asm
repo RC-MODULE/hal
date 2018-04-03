@@ -1,23 +1,10 @@
 global _halInitSingleDMA : label;
 extern _flag_of_pack_DMA : word;
+
 begin ".text"
-
-<hit_the_break_Jack>
-	push ar0,gr0;
-	gr0 = 28;
-	gr0;
-<LOOP>	
-	if <>0 delayed goto LOOP with gr0--;
-	nop;
-	nop;
-
-	pop ar0,gr0;
-	return;
-
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
 	ar5 = ar7 - 2;
-	call hit_the_break_Jack;
 	push ar0,gr0;
 	push ar1,gr1 with gr7 = false;
 	[_flag_of_pack_DMA] = gr7; 
