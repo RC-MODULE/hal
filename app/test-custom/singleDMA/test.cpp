@@ -92,8 +92,8 @@ int main(){
 					}
 					//printf("Status = 0x%x\n",halStatusDMA());
 					time++;
-					if(time > ((i<<5))){
-						printf("ERROR time is over\n");
+					if(time > (i<<10)){
+						printf("ERROR time is over. Used loops = %d\n",time);
 						printf("DMA size %d\n",i);
 						halLed(3);
 						return 3;

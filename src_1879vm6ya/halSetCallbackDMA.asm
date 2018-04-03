@@ -28,9 +28,12 @@ begin ".text"
 	pswr clear 01e0h;
 	//the code below was written according the prescription of how to clear IAS register on the right was;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
-	gr7 = false;
-	[1001000Ah] = gr7;//clear the control bit to fall signal of interaption 
-	[1001001Ah] = gr7;//clear the control bit to fall signal of interaption
+	//gr7 = false;
+	//[1001000Ah] = gr7;//clear the control bit to fall signal of interaption 
+	//[1001001Ah] = gr7;//clear the control bit to fall signal of interaption
+	gr7 = true;
+	[1001000Ch] = gr7;
+	[1001001Ch] = gr7;
 	gr7 = [10010000h];//read any MDMA register
 	gr7 = gr7 << 1;//perform the arithmetic operation
 	[40000406h] = gr7;//write the result into any reserved register of interaption contorl unit
@@ -94,9 +97,11 @@ begin ".text"
 ////////////////////////////////////////////////////
 <_halStatusDMA>
 	push ar0,gr0;
-	gr7 = [10010000h];//read counter
+	gr7 = [1001001Ah];
 	gr0 = [_flag_of_pack_DMA];
 	gr7 = gr0 or gr7;
+	gr0 = 2;
+	gr7 = gr0 xor gr7;
 	pop ar0,gr0;
 	return;
 
