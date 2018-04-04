@@ -212,8 +212,11 @@ typedef int(*DmaCallback2)();
 		*
 		*
 	*/
-	int halTestPacketDMA(void** src,  void** dst,  int* size32); 
+	int  halTestPacketDMA(void** src,  void** dst,  int* size32); 
 	void SetFlagDMA(int value);
+ 	void halLockDMA(); 			
+	void halUnlockDMA(); 		
+	int  halIslockedDMA(); 	
 #ifdef __cplusplus
 		};
 #endif

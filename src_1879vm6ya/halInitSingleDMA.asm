@@ -1,9 +1,14 @@
-global _halInitSingleDMA : label;
-extern _flag_of_pack_DMA : word;
+global _halInitSingleDMA 	: label;
+extern _flag_of_pack_DMA 	: word;
+extern _halLockDMA       	: label;
+extern _halWaitUnlockDMA 	: label;
+
+
 
 begin ".text"
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
+	call _halLockDMA;
 	ar5 = ar7 - 2;
 	push ar0,gr0;
 	push ar1,gr1 with gr7 = false;
@@ -38,7 +43,7 @@ begin ".text"
 	[10010006h] = ar1;//wrt row counter to mdma
 	[10010016h] = ar1;//wrt row counter to mdma
 	ar1++;
-	[10010004h] = ar1;//bias srs
+	[10010004h] = ar1;//bias src
 	delayed goto START with gr7 = false;
 	[10010014h] = ar1;//bias dst
 

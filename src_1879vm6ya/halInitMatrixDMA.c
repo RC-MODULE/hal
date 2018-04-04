@@ -11,7 +11,6 @@ static int* dst_loc;
 static int stride_src_loc;
 static int stride_dst_loc;
 static DmaCallback user_callback_loc;
-extern int flag_of_pack_DMA;
 
 	void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	DmaCallback readCallback();	
@@ -24,7 +23,7 @@ static int own_callback(){
 	}else{
 		halSetCallbackDMA(user_callback_loc);	
 		halInitSingleDMA(src_loc,dst_loc,size32_loc);
-		flag_of_pack_DMA = 0;
+		SetFlagDMA(0x0);
 		return 0;
 	}
 	src_loc += stride_src_loc;
@@ -33,34 +32,8 @@ static int own_callback(){
 }
 
 int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
-	///error codes
-	// 1  unaliged src address
-	// 2  unaliged dst address
-	// 4  width is odd number
-	// 8  srcStride32 is odd number
-	// 16 dstStride32 is odd number
-	int temp = (int)src;
-	if(temp << 31){//test src
-		return 1;
-	}
-	temp = (int)dst;
-	if(temp << 31){//test dst
-		return 2;
-	}
-	temp = width;
-	if(temp << 31){//test width
-		return 4;
-	}
-	temp = srcStride32;
-	if(temp << 31){//temp srcStride32
-		return 8;
-	}
-	temp = dstStride32;
-	if(temp << 31){
-		return 16;
-	}
-
-	flag_of_pack_DMA = 0;
+	SetFlagDMA(0x0);
+	halLockDMA();
 	if(width < 16){
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
@@ -77,14 +50,15 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 	int test_dst         = (int)dst;
 	int check = test_src | test_width | test_srcStride32 | test_dstStride32 | test_dst; 
 	if(check<<28){
-		if(height == 0 || width ==0){
+		if(height == 0 || width == 0){
 			halInitSingleDMA(src,dst,0);
 			return 0;
 		}
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
+			return 0;
 		}else{
-			flag_of_pack_DMA = 0xffffffff;
+			SetFlagDMA(0xffffffff);
 			user_callback_loc = readCallback();
 			halSetCallbackDMA((DmaCallback)own_callback);
 			///wrt param for nex call back
