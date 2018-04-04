@@ -15,6 +15,7 @@ static int ownCallback(){
 }
 
 int halInitDoubleDMA(void*  src0, void*  src1, void* dst0, void* dst1, int intSize0, int intSize1){
+	halLockDMA();
 	SetFlagDMA(0xffffffff);
 	pntr2src_2dma  = (int)src1;	
 	pntr2dst_2dma  = (int)dst1;	

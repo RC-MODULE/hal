@@ -1,4 +1,5 @@
 #include "hal.h"
+#include "led.h"
 extern "C"{
 static void** pSrc; 
 static void** pDst; 
@@ -8,6 +9,7 @@ static DmaCallback userCallback;
 	DmaCallback readCallback();
 
 static int ownCallback(){
+  halLed(0x3);
 	pSrc++;
 	pDst++;
 	pSize++;
@@ -21,6 +23,7 @@ static int ownCallback(){
 
 
 int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32){
+	halLockDMA();
 	SetFlagDMA(0xffffffff);
 	pSrc  = psrc;
 	pDst  = pdst;

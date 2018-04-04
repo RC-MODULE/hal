@@ -158,7 +158,7 @@ typedef int(*DmaCallback2)();
 		* <p>2 - нечетный адрес массива приемника
 		* <p>3 - нечетное колличество 32 битных слов для копирования
 	*/
-	int halTestParamSingleDMA(void* src, void* dst, int size);
+	int halCheckParamSingleDMA(void* src, void* dst, int size);
 	/**
 		* \brief Функция возвращает код ошибки для параметров функции halInitDoubleDMA() 
 		* \return
@@ -179,7 +179,7 @@ typedef int(*DmaCallback2)();
 	// 4 stands for dst1 is odd
 	// 5 stands for intSize0 is odd
 	// 6 stands for intSize1 is odd
-	int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
+	int halCheckParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
 	/**
 		* \brief Функция возвращает код ошибки для параметров функции halInitMatrixDMA() 
 		* \return
@@ -197,7 +197,7 @@ typedef int(*DmaCallback2)();
 	// 3 stands for srcStride32 is odd
 	// 4 stands for dst is odd
 	// 5 stands for dstStride32 is odd
-	int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
+	int halCheckParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	//error code description
 	///// packet DMA
 	//// function returns error code in 4 LSB and from 4th bits number of chaine were erroneous parametr was detected
@@ -215,8 +215,16 @@ typedef int(*DmaCallback2)();
 		*
 		*
 	*/
-	int halTestPacketDMA(void** src,  void** dst,  int* size32); 
+	int  halCheckPacketDMA(void** src,  void** dst,  int* size32); 
 	void SetFlagDMA(int value);
+	void halUnlockDMA(); 
+	void halLockDMA();		
+	/**
+		* \brief Функция позволяет узнать занято ли DMA.
+		* /return
+		* 0 если не заблокированно 0xffffffff в противном случаи
+	*/
+	int  halIslockedDMA(); 	
 #ifdef __cplusplus
 		};
 #endif

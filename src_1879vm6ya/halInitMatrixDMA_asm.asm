@@ -4,6 +4,11 @@ begin ".text"
 <_halInitMatrixDMA_asm>
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
+	///init 
+	gr7 = false;
+	[1001000Ah] = gr7;
+	[1001001Ah] = gr7;
+	
 	push ar0,gr0;
 	push ar1,gr1;
 	push ar2,gr2;
@@ -64,11 +69,6 @@ begin ".text"
 	[1001000Ch] = gr7;
 	gr7 = 2;
 	[1001001Ch] = gr7;
-	
-	///init 
-	gr7 = false;
-	[1001000Ah] = gr7;
-	[1001001Ah] = gr7;
 	
 	////start
 	gr7 = 1;
