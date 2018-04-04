@@ -41,14 +41,17 @@ int main(){
 	}
 	dmaopen5103();
 	int ret;
+	
 	halSetCallbackDMA(user_callback);
 	
+	printf("set  \n");
 	
 	ret=halInitSingleDMA((void*)src,(void*)dst, 20);
 	printf("exitCode of halInitSingleDMA=%d \n",ret);
 	
-	if (ret==-1)
+	if (ret!=0)
 		return ret;
+	
 	ret=halStatusDMA();
 	printf("status dma=%d \n",ret);
 	//return ret;
