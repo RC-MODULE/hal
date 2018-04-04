@@ -9,7 +9,6 @@ static DmaCallback userCallback;
 	DmaCallback readCallback();
 
 static int ownCallback(){
-  halLed(0x3);
 	pSrc++;
 	pDst++;
 	pSize++;
