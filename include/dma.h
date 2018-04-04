@@ -214,7 +214,8 @@ typedef int(*DmaCallback2)();
 	*/
 	int  halCheckPacketDMA(void** src,  void** dst,  int* size32); 
 	void SetFlagDMA(int value);
-	void halUnlockDMA(); 		
+	void halUnlockDMA(); 
+	void halLockDMA();		
 	/**
 		* \brief Функция позволяет узнать занято ли DMA.
 		* /return
