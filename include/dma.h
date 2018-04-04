@@ -38,6 +38,9 @@ typedef int(*DmaCallback2)();
 	void dmaMatrixInit(void* src, int width, int height, int srcStride,  void* dst, int dstStride );
 	int  dmaStatus();
 
+	typedef  int (*FuncSingleCopy)(void*  src,  void*  dst,  int  size32);
+	typedef  int (*FuncDoubleCopy)(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
+	typedef void (*FuncSetCallbackDMA)(DmaCallback user_callback);
 	//---------------------------------
 	//int  halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallback* func, int channel=0);
 	//int  halInitPacketDMA(void** src,  void** dst,  int* size32,  DmaCallback* func, int channel=0);
