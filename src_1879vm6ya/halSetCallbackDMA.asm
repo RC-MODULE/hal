@@ -32,7 +32,7 @@ begin ".text"
 		[GR7]=gr7;
 ////////////////////////////////////////////////
 <CALL_BACK>
-	pswr clear 01e0h;//disable extern interruption for imu to avoid interruption inside interruption
+	//pswr clear 01e0h;//disable extern interruption for imu to avoid interruption inside interruption
 	//the code below was written according the prescription of how to clear IAS register on the right was;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
 	//gr7 = false;
@@ -48,9 +48,9 @@ begin ".text"
 	[4000045ch] = gr7;//clear the IAS for MDMA
 <change_addr4call>
 	ar5 = [callback_addr];//set callback address
-	call ar5;
 	gr7 = [_flag_of_pack_DMA];
 	[_locked_DMA] = gr7;// write locked flag of DMA
+	call ar5;
 	ar5=[AR5];
  	delayed	ireturn;
 	gr7=[GR7];
