@@ -221,7 +221,7 @@ typedef int(*DmaCallback2)();
 		* /return
 		* 0 если не заблокированно 0xffffffff в противном случаи
 	*/
-	int  halIslockedDMA(); 	
+	int  halIsBusyDMA(); 	
 #ifdef __cplusplus
 		};
 #endif

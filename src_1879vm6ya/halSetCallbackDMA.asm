@@ -11,7 +11,7 @@ global _SetFlagDMA				: label;
 
 global _halLockDMA 				: label;
 global _halUnlockDMA 			: label;
-global _halIslockedDMA 		: label;
+global _halIsBusyDMA 		  : label;
 
 nobits ".nobits"
  GR7:word;
@@ -149,7 +149,7 @@ begin ".text"
 	delayed return;
 	 [_locked_DMA] = gr7;
 
-<_halIslockedDMA>
+<_halIsBusyDMA>
 	delayed return;		
 	 gr7 = [_locked_DMA];
 

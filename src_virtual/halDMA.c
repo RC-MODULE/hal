@@ -162,5 +162,9 @@ int halTestParamPacketDMA(void** src,  void** dst,  int* size32){
 };
 
 
+int halIsBusyDMA(){
+	return 0;
+}
+
 
 
