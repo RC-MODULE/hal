@@ -62,7 +62,7 @@ int main()
 	printf("Start\n");
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
-	//halInitDMA();
+	halInitDMA();
 
 	int itemSize= 1;
 	int count=1024;
@@ -106,13 +106,13 @@ int main()
 	while(1){
 		halRingBufferPop(&srcRing,IN_MIRROR(src),cnt);
 		halLedOn(0);
-		while(halRingBufferStatus(&srcRing));
+		while(halRingBufferIsBusy(&srcRing));
 		halLedOn(1);
 		for(int i=0; i<cnt;i++)
 			dst[i]=src[i];
 		halRingBufferPush(&dstRing,IN_MIRROR(dst),cnt);
 		halLedOn(2);
-		while(halRingBufferStatus(&dstRing));
+		while(halRingBufferIsBusy(&dstRing));
 		halLedOn(3);
 	}
 

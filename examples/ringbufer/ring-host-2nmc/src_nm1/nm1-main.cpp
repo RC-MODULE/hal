@@ -94,13 +94,13 @@ int main()
 	while(1){
 		halRingBufferPop(&srcRing,IN_MIRROR(src),cnt);
 		halLedOn(4);
-		while(halRingBufferStatus(&srcRing));
+		while(halRingBufferIsBusy(&srcRing));
 		halLedOn(5);
 		for(int i=0; i<count;i++)
 			dst[i]=src[i];
 		halRingBufferPush(&dstRing,IN_MIRROR(dst),cnt);
 		halLedOn(6);
-		while(halRingBufferStatus(&dstRing));
+		while(halRingBufferIsBusy(&dstRing));
 		halLedOn(7);
 	}
 
