@@ -13,12 +13,16 @@ global _halLockDMA 				: label;
 global _halUnlockDMA 			: label;
 global _halIsBusyDMA 		  : label;
 
+global _halWereMirror     : label;
+global _halGetCoreId			: label;
+
 nobits ".nobits"
  GR7:word;
  AR5:word;
  global _flag_of_pack_DMA : word;
  global _locked_DMA : word;
  global callback_addr : word;
+ global mirror_offset : word;
 end ".nobits";
 
 
@@ -80,14 +84,18 @@ begin ".text"
 <_halInitDMA>
 	////this function write the programm at Lint_6407 label 
 	////into interruption vector of interruption controller
-	gr7 = pswr;	
-	push ar0,gr0 with gr7 >>= 6;
-	push ar1,gr1 with gr7 <<= 31;
-	if =0 delayed goto END;
-		gr7 = 10;
+	gr7 = [40000000h];
+	gr7 >>= 24;
+	if <>0 delayed goto SKIP;
+		gr7 = 80000h;
+		gr7 >>= 1;		
+<SKIP>
+	[mirror_offset] = gr7;	
 	gr7 = false;
 	[_flag_of_pack_DMA] = gr7;
 	[_locked_DMA] = gr7;
+	push ar0,gr0;
+	push ar1,gr1;
 	ar5 = Lint_6407;
 	ar1 = 00000120h;
 	ar0,gr0=[ar5++];
@@ -153,6 +161,19 @@ begin ".text"
 	delayed return;		
 	 gr7 = [_locked_DMA];
 
+
+<_halWereMirror>
+	gr7 = [40000000h];
+	gr7 >>= 24;
+	if =0 delayed return;
+		gr7 = 40000h;
+	delayed return; 
+	 gr7 = 80000h;
+
+<_halGetCoreId>
+	gr7 = [40000000h];
+	delayed return; 		
+		gr7 >>= 24;
 end ".text";	
 
 	
