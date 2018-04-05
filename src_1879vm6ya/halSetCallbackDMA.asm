@@ -114,6 +114,7 @@ begin ".text"
 	gr7 = gr0 or gr7;
 	gr0 = 2;
 	gr7 = gr0 xor gr7;
+	if =0 call _halUnlockDMA;
 	pop ar0,gr0;
 	return;
 
