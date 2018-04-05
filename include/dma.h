@@ -215,7 +215,7 @@ typedef int(*DmaCallback2)();
 		*
 		*
 	*/
-	int  halCheckPacketDMA(void** src,  void** dst,  int* size32); 
+	int  halCheckParamPacketDMA(void** src,  void** dst,  int* size32); 
 	void SetFlagDMA(int value);
 	void halUnlockDMA(); 
 	void halLockDMA();		
@@ -224,7 +224,9 @@ typedef int(*DmaCallback2)();
 		* /return
 		* 0 если не заблокированно 0xffffffff в противном случаи
 	*/
-	int  halIslockedDMA(); 	
+	int halIsBusyDMA();
+	int halGetCoreId();
+	int halWereMirror(); 	
 #ifdef __cplusplus
 		};
 #endif

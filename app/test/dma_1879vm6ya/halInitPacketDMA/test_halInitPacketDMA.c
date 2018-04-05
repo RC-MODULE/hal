@@ -10,6 +10,7 @@
 #define MEM_OFFSET  0x40000
 #define SIZE_DDR    100000
 #define CHAIN_LENGTH 3
+
 #pragma data_section ".data_imu1"
 	int arr2read[32000];
 #pragma data_section ".data_imu2"

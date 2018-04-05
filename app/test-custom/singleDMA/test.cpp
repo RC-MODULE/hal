@@ -52,6 +52,9 @@ nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
 	}
 }
 int main(){ 
+	printf("Were mirror check : Mirror at 0x%x\n",halWereMirror());	
+	printf("Core ID : %d\n",halGetCoreId());
+	printf("CHECk %x\n",*(int*)0x40000000);
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
