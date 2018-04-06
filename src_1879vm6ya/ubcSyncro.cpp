@@ -4,21 +4,15 @@
 #include "led.h"
 #pragma data_section ".data_hal_syncro"
 struct SyncBuf {
-	//int		counter0;
-	//int		counter1;
-	//bool	locked0;
-	//bool	locked1;
-	//bool    flag[2];
-	//bool	turn;
-	//int		readFrom[2];
-	//int		writtenFrom[2];
-	//int     counter;
 	int		readCounter[2];
 	int		writeCounter[2];
 	int		sync0;
 	int		sync1;
+	int 	stateDMA;	// -1  free	
+						// 0 used by core 0
+						// 1 used by core 1
 
-} halSyncro={0,0,0,0,0,0};
+} halSyncro={0,0,0,0,0,0,-1};
 
 #pragma data_section ".data"
 extern "C"{
