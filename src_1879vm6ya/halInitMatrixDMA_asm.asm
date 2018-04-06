@@ -19,15 +19,24 @@ begin ".text"
 	push ar2,gr2;
 	push ar3,gr3;
 	push ar4,gr4;
-	
+	gr4 = [mirror_offset];
 	gr7 = [--ar5];//load src
-	ar0 = gr7;
-	gr0 = [--ar5];//load width
-	ar1 = [--ar5];//load height
+	ar4 = gr7 with gr7 >>= 18;
+	if <>0 delayed goto SKIP_SRC_MIRROR_SETUP;
+		gr0 = [--ar5];//load width
+		ar1 = [--ar5];//load height
+	ar4 = ar4 + gr4;
+	<SKIP_SRC_MIRROR_SETUP>
+	ar0 = ar4;
 	gr1 = [--ar5];//load srcstride
-	ar2 = [--ar5] with gr1 = gr1 - gr0;//load dst //got src bias
-	gr2 = [--ar5];//load dststride
-	gr2 = gr2 - gr0; //got dst bias
+	gr7 = [--ar5] with gr1 = gr1 - gr0;//load dst //got src bias
+	ar4 = gr7 with gr7 >>= 18;
+	if <>0 delayed goto SKIP_DST_MIRROR_SETUP;
+		gr2 = [--ar5];//load dststride
+		gr2 = gr2 - gr0; //got dst bias
+	ar4 = ar4 + gr4;
+	<SKIP_DST_MIRROR_SETUP>
+	//ar2 = ar4;
 /////////////////////////////////////////////////////////////init dma
 	
 	gr7 = ar1;
@@ -45,7 +54,7 @@ begin ".text"
 	[10010016h] = gr7;//wrt row counter to mdma
 	//address
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
-	[10010012h] = ar2;//wrt address to wrt data into dst
+	[10010012h] = ar4;//wrt address to wrt data into dst
 	//bias
 	gr1++;gr1++;
 	gr2++;gr2++;
