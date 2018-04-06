@@ -44,17 +44,16 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 	}
 };
 
-nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
+/*nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
 	if((int)addr > min && (int)addr < max){
 		return (nm32s*)((int)addr + MIRROR);
 	}else{
 		return addr; 
 	}
-}
+}*/
 int main(){ 
 	printf("Were mirror check : Mirror at 0x%x\n",halWereMirror());	
 	printf("Core ID : %d\n",halGetCoreId());
-	printf("CHECk %x\n",*(int*)0x40000000);
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
@@ -85,9 +84,7 @@ int main(){
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				call_counter++;
-				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
-				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
-				halInitSingleDMA(src_loc,dst_loc,i);
+				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
 					if(halStatusDMA() == 0){
@@ -123,9 +120,7 @@ int main(){
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				call_counter++;
-				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
-				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
-				halInitSingleDMA(src_loc,dst_loc,i);
+				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
 					if(halStatusDMA() == 0){
