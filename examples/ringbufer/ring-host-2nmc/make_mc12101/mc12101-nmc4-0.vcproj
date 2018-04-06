@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="mc12101-nmc4-0"
+	ProjectGUID="{C6EBA3C9-B2B9-97CF-9B4D-08F687BA7334}"
+	RootNamespace="mc12101-nmc4-0"
+	Keyword="MakeFileProj"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="bin\Debug"
+			IntermediateDirectory="obj\Debug\mc12101-nmc4-0"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="make DEBUG=y -f Makefile0"
+				ReBuildCommandLine="make -B DEBUG=y -f Makefile0"
+				CleanCommandLine="make clean "
+				Output="$(OutDir)mc12101-nmc4-0"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="bin\Release"
+			IntermediateDirectory="obj\Release\mc12101-nmc4-0"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="make -f Makefile0"
+				ReBuildCommandLine="make -B -f Makefile0"
+				CleanCommandLine="make clean"
+				Output="$(OutDir)mc12101-nmc4-0"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="src_nm0"
+			>
+			<File
+				RelativePath="..\src_nm0\nm0-main.cpp"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath="Makefile0"
+			>
+		</File>
+		<File
+			RelativePath="mc12101brd-nmc0.cfg"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

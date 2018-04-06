@@ -36,7 +36,7 @@ extern "C"
 		statusFunc=dmainit(0, (int)dst, (int)src, size32);
 		printf("statusfunc=%x\n",(int)statusFunc);
 		
-		return 123;
+		return 0;
 	}
 	
 	//int args_a[4],args_b[4];
