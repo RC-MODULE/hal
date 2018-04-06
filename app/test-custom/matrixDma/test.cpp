@@ -91,13 +91,13 @@ struct params_of_run_2save
 	int height;		
 };
 
-nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
+/*nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
 	if((int)addr > min && (int)addr < max){
 		return (nm32s*)((int)addr + MIRROR);
 	}else{
 		return addr; 
 	}
-}
+}*/
 
 int main(){ 
 	int call_counter = 0;
@@ -127,9 +127,7 @@ int main(){
 						SetArr(dst,Heap_size,0xcccccccc);
 						SetArr(arr_ref,Heap_size,0xcccccccc);
 						call_counter++;
-						nm32s* src_loc = CheckIsExtMem(src,0x0,0xA0000); 
-						nm32s* dst_loc = CheckIsExtMem(dst,0x0,0xA0000);
-						halInitMatrixDMA(src_loc + offset,width,height,width,dst_loc,width);
+						halInitMatrixDMA(src + offset,width,height,width,dst,width);
 						int count = 0;
 						while(halStatusDMA()){
 							if(count++ > 1000){
