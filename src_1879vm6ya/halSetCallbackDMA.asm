@@ -15,6 +15,7 @@ global _halIsBusyDMA 		  : label;
 
 global _halWereMirror     : label;
 global _halGetCoreId			: label;
+global _halSetMirror      : label;
 
 nobits ".nobits"
  GR7:word;
@@ -85,28 +86,26 @@ begin ".text"
 	////this function write the programm at Lint_6407 label 
 	////into interruption vector of interruption controller
 	gr7 = [40000000h];
-	gr7 >>= 24;
-	if <>0 delayed goto SKIP;
+	push ar0,gr0 with gr7 >>= 24;
+	if <>0 delayed goto SKIP_INIT;
 		gr7 = 80000h;
 		gr7 >>= 1;		
-<SKIP>
+<SKIP_INIT>
 	[mirror_offset] = gr7;	
-	gr7 = false;
+	push ar1,gr1 with gr7 = false;
 	[_flag_of_pack_DMA] = gr7;
 	[_locked_DMA] = gr7;
-	push ar0,gr0;
-	push ar1,gr1;
 	ar5 = Lint_6407;
 	ar1 = 00000120h;
-	ar0,gr0=[ar5++];
-	[ar1++]=ar0,gr0;
-	ar0,gr0=[ar5++];
-	[ar1++]=ar0,gr0;
-	ar0,gr0=[ar5++];
-	[ar1++]=ar0,gr0;
+	gr7 = pswr;
+	ar0,gr0 = [ar5++]; 
+	[ar1++] = ar0,gr0 with gr7 >>= 5;
+	ar0,gr0 = [ar5++] with gr7 <<= 31;
+	[ar1++] = ar0,gr0 with gr7 >>= 31;
+	ar0,gr0 = [ar5++];
+	[ar1++] = ar0,gr0;
 	gr1 = dummy;
 	[callback_addr] = gr1;
-<END>	
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
@@ -115,6 +114,7 @@ begin ".text"
 	ar5 = [callback_addr];
 	return;
 ////////////////////////////////////////////////////
+
 <_halStatusDMA>
 	push ar0,gr0;
 	gr7 = [1001001Ah];
@@ -122,25 +122,32 @@ begin ".text"
 	gr7 = gr0 or gr7;
 	gr0 = 2;
 	gr7 = gr0 xor gr7;
-	if =0 call _halUnlockDMA;
-	pop ar0,gr0;
+	if <>0  delayed goto SKIP_UNLOCK;
+		pop ar0,gr0;
+		nop;
+	gr7 = false;
+	[_locked_DMA] = gr7;
+	<SKIP_UNLOCK>
 	return;
 
 <_halMaskIntContMdma_mc12101>
 	gr7 = 1;
-	[40000448h] = gr7;
-	return;
+	delayed return;
+		[40000448h] = gr7;
+		nop;
 
 <_GetPswr>
 	delayed return;		
-	gr7 = pswr;
-	nop;
+		gr7 = pswr;
+		nop;
+		nop;
 
 <_SetFlagDMA>
 	ar5 = ar7 - 2;
 	gr7 = [--ar5];
 	delayed return;
-	[_flag_of_pack_DMA] = gr7;
+		[_flag_of_pack_DMA] = gr7;
+		nop;
 
 ///////////////////////////////////////////lock functions
 //global _halLockDMA 				: label;
@@ -151,16 +158,18 @@ begin ".text"
 	gr7 = true;
 	delayed return;
 	 [_locked_DMA] = gr7;
+	 nop;
 
 <_halUnlockDMA>
 	gr7 = false;
 	delayed return;
 	 [_locked_DMA] = gr7;
+	 nop;
 
 <_halIsBusyDMA>
 	delayed return;		
 	 gr7 = [_locked_DMA];
-
+	 nop;
 
 <_halWereMirror>
 	gr7 = [40000000h];
@@ -169,11 +178,26 @@ begin ".text"
 		gr7 = 40000h;
 	delayed return; 
 	 gr7 = 80000h;
+	 nop;
 
 <_halGetCoreId>
 	gr7 = [40000000h];
 	delayed return; 		
 		gr7 >>= 24;
+		nop;
+		nop;
+
+<_halSetMirror>
+	gr7 = [40000000h];
+	gr7 >>= 24;
+	if =0 delayed goto SKIP;
+		gr7 = 40000h;
+	gr7 = 80000h;	
+	<SKIP>
+	delayed return;
+		[mirror_offset] = gr7;
+		nop;
+
 end ".text";	
 
 	

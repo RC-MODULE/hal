@@ -1,4 +1,5 @@
 #include "hal.h"
+#include "stdio.h"
 //#include <stdio.h>
 #ifdef __cplusplus
 		extern "C" {
@@ -32,6 +33,9 @@ static int own_callback(){
 }
 
 int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+	if((srcStride32 - width) < 0){
+		return 1;
+	}
 	SetFlagDMA(0x0);
 	halLockDMA();
 	if(width < 16){
@@ -74,6 +78,7 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
 		}else {
+			printf("MATRIX Asm was called\n");	
 			halInitMatrixDMA_asm(src,width,height,srcStride32,dst,dstStride32);
 		}
 	}

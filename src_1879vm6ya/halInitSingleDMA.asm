@@ -1,33 +1,44 @@
 global _halInitSingleDMA 	: label;
+
 extern _flag_of_pack_DMA 	: word;
-extern _halLockDMA       	: label;
-extern _halWaitUnlockDMA 	: label;
+extern mirror_offset : word;
+extern _locked_DMA : word;
 
 
 
 begin ".text"
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
-	call _halLockDMA;
-	ar5 = ar7 - 2;
+	ar5 = ar7 - 2 with gr7 = true;
+	[_locked_DMA] = gr7;
 	push ar0,gr0;
 	push ar1,gr1 with gr7 = false;
+	push ar2,gr2;
 	[_flag_of_pack_DMA] = gr7;
 	///init 
 	[1001000Ah] = gr7;//clear the control register MDAM
 	[1001001Ah] = gr7;//clear the control register MDAM 
 	gr7 = [--ar5];//src
-	ar0 = gr7;	
-	gr0 = [--ar5];//dst
-	gr1 = [--ar5];//size
-	ar5 = gr0 with gr1 = gr1 >> 1;
-	//set up full conter
-	[10010000h] = gr1;//wrt ammnt of data to transiver mdma
+	gr2 = [mirror_offset];
+	ar2 = gr7 with gr7 >>= 18;
+	if <>0 delayed goto SKIP_SRC_MIRROR;	
+		gr7 = [--ar5];//dst
+		gr1 = [--ar5];//size
+		ar2 = ar2 + gr2;
+	<SKIP_SRC_MIRROR>
+	ar0 = ar2;//ar0 is src
+	ar2 = gr7 with gr7 >>= 18;	
+	if <>0 delayed goto SKIP_DST_MIRROR with gr1 = gr1 >> 1;
+		[10010000h] = gr1;//wrt ammnt of data to transiver mdma
+	ar2 = ar2 + gr2;//ar2 is dst
+	<SKIP_DST_MIRROR>	
 	[10010010h] = gr1;//wrt ammnt of data to resiver mdma
-	//check arguments
+	gr0 = ar2;
 	gr0 = gr0 >> 29;//check is the address to wrt data DDR or not
 	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;
-	gr0 = ar5;
+	//check arguments for are they aligned or not
+		gr0 = ar2;
+		gr7 = ar0;
 	gr7 = gr7 or gr0;
 	gr7 = gr7 << 28;
 	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;
@@ -58,7 +69,7 @@ begin ".text"
 	//address
 <START>
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
-	[10010012h] = ar5;//wrt address to wrt data into dst
+	[10010012h] = ar2;//wrt address to wrt data into dst
 	///interruption mask
 	[1001000Ch] = gr7;
 	[1001001Ch] = gr7;
@@ -69,6 +80,7 @@ begin ".text"
 	[1001000Ah] = gr7;
 
 <END>
+	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;
 	delayed return;
