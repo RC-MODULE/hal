@@ -39,7 +39,7 @@
 typedef  void (*memcpy_ptr)(const void *, void *, size_t) ;
 typedef  void *(*t_bytecpy)(void *to, int toIndex, void const *from, int fromIndex, size_t size) ;
 
-
+extern int statusDMA;
 #include "dma.h"
 #include "hal.h"
 struct HalRingBuffer{

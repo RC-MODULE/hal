@@ -1,5 +1,5 @@
-#ifndef HAL_RING_INCLUDED
-#define HAL_RING_INCLUDED
+#ifndef HAL_HOST_RING_INCLUDED
+#define HAL_HOST_RING_INCLUDED
 #include <string.h>
 #include <time.h>
 
@@ -53,6 +53,25 @@ typedef  void *(*t_bytecpy)(void *to, int toIndex, void const *from, int fromInd
 #include "ringbuffer.h"
 
 
+#ifdef __cplusplus
+
+#ifdef _WIN64
+#define offsetof(s,m)   (size_t)( (ptrdiff_t)&reinterpret_cast<const volatile char&>((((s *)0)->m)) )
+#else  /* _WIN64 */
+#define offsetof(s,m)   (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
+#endif  /* _WIN64 */
+
+#else  /* __cplusplus */
+
+#ifdef _WIN64
+#define offsetof(s,m)   (size_t)( (ptrdiff_t)&(((s *)0)->m) )
+#else  /* _WIN64 */
+#define offsetof(s,m)   (size_t)&(((s *)0)->m)
+#endif  /* _WIN64 */
+
+#endif  /* __cplusplus */
+
+
 
 struct HalHostRingBuffer{
 	unsigned 	data;			///<  физический адрес кольцевого буфера входных данных в памяти NM
@@ -74,7 +93,7 @@ struct HalHostRingBuffer{
 	
 int halHostRingBufferInit(HalHostRingBuffer* ringBuffer, unsigned remoteRingBufferAddress, int core=0)
 {
-	
+	/*
 	halReadMemBlock((unsigned*)&ringBuffer->data,	remoteRingBufferAddress+0, 1, core) ;
 	halReadMemBlock(&ringBuffer->maxCount,			remoteRingBufferAddress+1, 1, core) ;
 	halReadMemBlock(&ringBuffer->maxCountMinus1,	remoteRingBufferAddress+2, 1, core) ;
@@ -82,12 +101,23 @@ int halHostRingBufferInit(HalHostRingBuffer* ringBuffer, unsigned remoteRingBuff
 	halReadMemBlock(&ringBuffer->head,				remoteRingBufferAddress+4, 1, core) ; ringBuffer->remoteHeadAddr = remoteRingBufferAddress+4;
 	halReadMemBlock(&ringBuffer->tail,				remoteRingBufferAddress+5, 1, core) ; ringBuffer->remoteTailAddr = remoteRingBufferAddress+5;
 	ringBuffer->processor=core;
+	*/
+	halReadMemBlock((unsigned*)&ringBuffer->data,	remoteRingBufferAddress+offsetof(HalRingBuffer,data)/4, 1, core) ;
+	halReadMemBlock(&ringBuffer->maxCount,			remoteRingBufferAddress+offsetof(HalRingBuffer,maxCount)/4, 1, core) ;
+	halReadMemBlock(&ringBuffer->maxCountMinus1,	remoteRingBufferAddress+offsetof(HalRingBuffer,maxCountMinus1)/4, 1, core) ;
+	halReadMemBlock(&ringBuffer->size,				remoteRingBufferAddress+offsetof(HalRingBuffer,size)/4, 1, core) ;
+	ringBuffer->remoteHeadAddr	=					remoteRingBufferAddress+offsetof(HalRingBuffer,head)/4;
+	ringBuffer->remoteTailAddr =					remoteRingBufferAddress+offsetof(HalRingBuffer,tail)/4;
+	halReadMemBlock(&ringBuffer->head,				ringBuffer->remoteHeadAddr, 1, core) ; 
+	halReadMemBlock(&ringBuffer->tail,				ringBuffer->remoteTailAddr, 1, core) ; 
+	
+	ringBuffer->processor=core;
+
 	return RING_BUFFER_OK;
 }
 
 
 void halHostRingBufferPush(HalHostRingBuffer* ringBuffer, void* src, size_t count){
-	
 	while(1){
 		halReadMemBlock(&ringBuffer->tail,ringBuffer->remoteTailAddr,1, ringBuffer->processor);
 		if (ringBuffer->tail+ringBuffer->maxCount-ringBuffer->head >= count)
