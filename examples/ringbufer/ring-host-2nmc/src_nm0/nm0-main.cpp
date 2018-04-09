@@ -79,30 +79,34 @@ int main()
 	if (srcBuffer==0 || dstBuffer==0 || src==0 || dst==0) 
 		halLedSOS(0);
 	
-	if (int ret=halRingBufferInit(&srcRing,IN_MIRROR(srcBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
-		halLed(ret);
-		return -1;
-	}
-	if (int ret=halRingBufferInit(&dstRing,IN_MIRROR(dstBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
-		halLed(ret);
-		return -1;
-	}
+	int DMA_COPY=1;
+	if (DMA_COPY){
 	
-	/*
-	if (int ret=halRingBufferInit(&srcRing,IN_MIRROR(srcBuffer),itemSize,count, riscSingleCopy, riscDoubleCopy, 0)){
-		halLed(ret);
-		return -1;
+		if (int ret=halRingBufferInit(&srcRing,IN_MIRROR(srcBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
+			halLed(ret);
+			return -1;
+		}
+		if (int ret=halRingBufferInit(&dstRing,IN_MIRROR(dstBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
+			halLed(ret);
+			return -1;
+		}
 	}
-	if (int ret=halRingBufferInit(&dstRing,IN_MIRROR(dstBuffer),itemSize,count, riscSingleCopy, riscDoubleCopy, 0)){
-		halLed(ret);
-		return -1;
+	else {	
+	
+		if (int ret=halRingBufferInit(&srcRing,IN_MIRROR(srcBuffer),itemSize,count, riscSingleCopy, riscDoubleCopy, 0)){
+			halLed(ret);
+			return -1;
+		}
+		if (int ret=halRingBufferInit(&dstRing,IN_MIRROR(dstBuffer),itemSize,count, riscSingleCopy, riscDoubleCopy, 0)){
+			halLed(ret);
+			return -1;
+		}
 	}
-	*/
 	
 	sync=halHostSync((unsigned)&srcRing);	// Gets array size, sends input buffer address
 	sync=halHostSync((unsigned)&dstRing);	// Gets increment (123), sends output buffer address
 	
-	int cnt=8;
+	int cnt=16;
 	while(1){
 		halRingBufferPop(&srcRing,IN_MIRROR(src),cnt);
 		halLedOn(0);
