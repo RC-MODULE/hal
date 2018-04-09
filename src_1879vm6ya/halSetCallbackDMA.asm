@@ -132,11 +132,13 @@ begin ".text"
 	gr0 = 2;
 	gr7 = gr0 xor gr7;
 	if <>0  delayed goto SKIP_UNLOCK;
-		pop ar0,gr0;
+		//pop ar0,gr0;
+		nop;
 		nop;
 	gr0 = true;
 	[_halSyncro] = gr0;
 	<SKIP_UNLOCK>
+	pop ar0,gr0;
 	return;
 
 <_halMaskIntContMdma_mc12101>
