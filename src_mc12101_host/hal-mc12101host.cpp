@@ -24,14 +24,15 @@ static unsigned sharedSize32;
 static unsigned activeSingleProc1=false;
 
 static int locked = false;
-#define LOCK()  while (locked)	locked =true;
+#define LOCK()  while (locked);	locked =true;
 #define UNLOCK()  locked = false;
 int halSync(int val,int processor=0){
+	int static counter[2] = { 0,0 };
+	counter[processor]++;
 	LOCK();
 	int ret;
 	if (activeSingleProc1)	processor = 1;
 	PL_Sync(access[processor],val,&ret);
-	locked=false;
 	UNLOCK();
 	return ret;
 };
