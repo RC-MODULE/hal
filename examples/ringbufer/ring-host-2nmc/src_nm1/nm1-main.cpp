@@ -90,7 +90,7 @@ int main()
 	sync=halHostSync((unsigned)&srcRing);	// Gets array size, sends input buffer address
 	sync=halHostSync((unsigned)&dstRing);	// Gets increment (123), sends output buffer address
 	
-	int cnt =14;
+	int cnt =16;
 	while(1){
 		halRingBufferPop(&srcRing,IN_MIRROR(src),cnt);
 		halLedOn(4);
