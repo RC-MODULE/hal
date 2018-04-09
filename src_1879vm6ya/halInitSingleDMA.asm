@@ -1,17 +1,25 @@
 global _halInitSingleDMA 	: label;
 
 extern _flag_of_pack_DMA 	: word;
-extern mirror_offset : word;
-extern _locked_DMA : word;
-
-
+extern mirror_offset      : word;
+extern coreID             : word;
+extern _halSyncro					: word;
 
 begin ".text"
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
-	ar5 = ar7 - 2 with gr7 = true;
-	[_locked_DMA] = gr7;
+	ar5 = ar7 - 2;
 	push ar0,gr0;
+<WAITE_DMA>	
+	gr7 = [_halSyncro];
+	gr7;
+	if < delayed goto SKIP_CORE_INDEFICATION;
+		gr0 = [coreID];
+	gr7 = gr7 - gr0;
+	if <>0 goto WAITE_DMA;
+
+<SKIP_CORE_INDEFICATION>
+	[_halSyncro] = gr0;	
 	push ar1,gr1 with gr7 = false;
 	push ar2,gr2;
 	[_flag_of_pack_DMA] = gr7;
