@@ -231,6 +231,7 @@ typedef int(*DmaCallback2)();
 	int halGetCoreId();
 	int halWereMirror();
 	void halSetMirror(); 	
+	int halReadCoreID();
 #ifdef __cplusplus
 		};
 #endif

@@ -3,20 +3,20 @@
 #include "hal_target.h"
 #include "led.h"
 #pragma data_section ".data_hal_syncro"
-struct SyncBuf {
-	int 	stateDMA;	// -1  free	
-						// 0 used by core 0
-						// 1 used by core 1
-	int		readCounter[2];
-	int		writeCounter[2];
-	int		sync0;
-	int		sync1;
-	
-
-} halSyncro={-1,0,0,0,0,0,0};
 
 #pragma data_section ".data"
 extern "C"{
+	struct SyncBuf {
+		int 	stateDMA;	// -1  free	
+							// 0 used by core 0
+							// 1 used by core 1
+		int		readCounter[2];
+		int		writeCounter[2];
+		int		sync0;
+		int		sync1;
+		
+	
+	} halSyncro={-1,0,0,0,0,0,0};
 	int procNo=-1;
 	void halSetProcessorNo(int number){
 		procNo=number;
