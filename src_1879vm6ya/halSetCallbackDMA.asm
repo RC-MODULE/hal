@@ -35,22 +35,19 @@ begin ".text"
 	return;
 	
 <Lint_6407>
-		//// the limit of command in interruption vector is 4 64 bit wise words
+		//// the limit of commands in interruption vector is 4 64 bit-wise words !!!
 		[AR5] = ar5;
 		[GR0] = gr0;
 	delayed goto CALL_BACK;
 		[GR7] = gr7;
 ////////////////////////////////////////////////
 <CALL_BACK>
-	//pswr clear 01e0h;//disable extern interruption for imu to avoid interruption inside interruption
-	//the code below was written according the prescription of how to clear IAS register on the right was;
+	//the code below was written according the prescription of how to clear IAS register on the right way;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
 	gr7 = [_halSyncro];
-	if < delayed goto CLEAR_IAS; 
-		gr0 = [coreID];
+	gr0 = [coreID];
 	gr7 = gr7 - gr0;
 	if <>0 goto SKIP_CALLBACK;
-<CLEAR_IAS>
 	gr7 = true;
 	[1001000Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
 	[1001001Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
@@ -105,6 +102,13 @@ begin ".text"
 	ar5 = Lint_6407;
 	ar1 = 00000120h;
 	gr7 = pswr;
+	//simular lines of code below 
+	//are copping the programm to interruption vector of interruption controller
+	//the programm is next
+	//	[AR5] = ar5;
+	//	[GR0] = gr0;
+	//delayed goto CALL_BACK;
+	//	[GR7] = gr7;
 	ar0,gr0 = [ar5++]; 
 	[ar1++] = ar0,gr0 with gr7 >>= 5;
 	ar0,gr0 = [ar5++] with gr7 <<= 31;
@@ -131,9 +135,9 @@ begin ".text"
 	gr7 = gr0 or gr7;
 	gr0 = 2;
 	gr7 = gr0 xor gr7;
-	if <>0  delayed goto SKIP_UNLOCK;
+	if <>0  delayed goto SKIP_UNLOCK with gr0 = true;
 		nop;
-	gr0 = true;
+		nop;
 	[_halSyncro] = gr0;
 	<SKIP_UNLOCK>
 	pop ar0,gr0;

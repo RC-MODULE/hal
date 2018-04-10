@@ -22,7 +22,6 @@ static int ownCallback(){
 
 
 int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32){
-	halLockDMA();
 	SetFlagDMA(0xffffffff);
 	pSrc  = psrc;
 	pDst  = pdst;

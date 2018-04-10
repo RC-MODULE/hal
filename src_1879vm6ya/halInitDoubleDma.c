@@ -1,4 +1,5 @@
 #include <hal.h>
+#include <led.h>
 extern "C"{
 static int pntr2src_2dma; 
 static int pntr2dst_2dma; 
@@ -8,6 +9,7 @@ static DmaCallback user_callback_loc;
 	DmaCallback readCallback();
 
 static int ownCallback(){
+	halLed(0xa);
 	halSetCallbackDMA((DmaCallback)user_callback_loc);
 	SetFlagDMA(0x0);
 	halInitSingleDMA((void*)pntr2src_2dma,(void*)pntr2dst_2dma,size1_dma);
@@ -15,7 +17,7 @@ static int ownCallback(){
 }
 
 int halInitDoubleDMA(void*  src0, void*  src1, void* dst0, void* dst1, int intSize0, int intSize1){
-	halLockDMA();
+	halLed(0x5);
 	SetFlagDMA(0xffffffff);
 	pntr2src_2dma  = (int)src1;	
 	pntr2dst_2dma  = (int)dst1;	

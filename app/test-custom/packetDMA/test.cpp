@@ -19,7 +19,7 @@ void InitArr(nm32s* arr, int amm, int start){
 	}
 }
 
-void InitArrChain(void** src_arr, int* size_buff){
+void InitArrInChain(void** src_arr, int* size_buff){
 	int i = 0;
 	int start = 0;
 	while(size_buff[i]){
@@ -80,14 +80,6 @@ int callback(){
 	return 0;
 }
 
-nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
-	if((int)addr > min && (int)addr < max){
-		return (nm32s*)((int)addr + MIRROR);
-	}else{
-		return addr; 
-	}
-}
-
 int main(){ 
 	int call_counter = 0;
 	clock_t t0,t1;
@@ -116,18 +108,19 @@ int main(){
 			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
 			nm32s* src_loc = AlignAddr(src);
 			nm32s* dst_loc = AlignAddr(dst);
-			printf("Aligned address src = %x dst = %x\n",src_loc,dst_loc);
+			printf("Aligned address src = 0x%x dst = 0x%x \n",src_loc,dst_loc);
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
-			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
+			for(int j = 0, size = 0; j < MAX_BUFFER_SIZE; j++,size += 2){
 				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
-					srcAddrList[i] = CheckIsExtMem(((nm32s*)((int)src_loc + offset)),0x0,0xA0000); 
-					dstAddrList[i] = CheckIsExtMem(((nm32s*)((int)dst_loc + offset)),0x0,0xA0000);
+					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
+					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
-				InitArrChain((void**)srcAddrList,(int*)bufSizeList);
+				InitArrInChain((void**)srcAddrList,(int*)bufSizeList);
+				printf("iteration is %d\n",j);
 				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
@@ -155,8 +148,8 @@ int main(){
 			printf("Unaligned address src = %x dst = %x\n",src_loc,dst_loc);
 			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
 				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
-					srcAddrList[i] = CheckIsExtMem(((nm32s*)((int)src_loc + offset)),0x0,0xA0000); 
-					dstAddrList[i] = CheckIsExtMem(((nm32s*)((int)dst_loc + offset)),0x0,0xA0000);
+					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
+					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
 				//printf("Size = %d\n",j);

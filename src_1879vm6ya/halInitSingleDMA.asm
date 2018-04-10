@@ -10,15 +10,11 @@ begin ".text"
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
 	ar5 = ar7 - 2;
 	push ar0,gr0;
+	gr0 = [coreID];
 <WAITE_DMA>	
 	gr7 = [_halSyncro];
 	gr7;
-	if < delayed goto SKIP_CORE_INDEFICATION;
-		gr0 = [coreID];
-	gr7 = gr7 - gr0;
-	if <>0 goto WAITE_DMA;
-
-<SKIP_CORE_INDEFICATION>
+	if >= goto WAITE_DMA;
 	[_halSyncro] = gr0;	
 	push ar1,gr1 with gr7 = false;
 	push ar2,gr2;
@@ -51,9 +47,10 @@ begin ".text"
 	gr7 = gr7 << 28;
 	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;
 	////// double demention mode was set up to prevent user from hardwaer bug in MDMA,
-	////// becoze of erro in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 
+	////// becoze of error in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 
 	////// otherwise mode is double demention with bias = 2 rowcounter 1 to emulate sigle demention mode use double demention mode
 	////// this trick allows to escape reminder/quotient mode swith inside FSM
+	////// this bug takes effect only when dst address belows DDR
 	//address mode is double demention
 	ar1 = 1 with gr7 = true;
 	[10010008h] = gr7;//double dimention mode
@@ -92,5 +89,7 @@ begin ".text"
 	pop ar1,gr1;
 	pop ar0,gr0;
 	delayed return;
-	gr7 = false;
+		gr7 = false;
+		nop;
+		nop;
 end ".text";
