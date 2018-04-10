@@ -7,9 +7,9 @@ extern "C"{
 	#pragma data_section ".data_hal_syncro"
 	struct SyncBuf {
 		int 	stateDMA;	// -1  free	
-		int     dummy;
 							// 0 used by core 0
 							// 1 used by core 1
+		int     dummy;
 		int		readCounter[2];
 		int		writeCounter[2];
 		int		sync0;
