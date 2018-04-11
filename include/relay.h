@@ -1,4 +1,4 @@
-#include <windows.h>
+//#include <windows.h>
 
-HANDLE halOpenRelay(char* PortName);
+int halOpenRelay(char* PortName);
 int halResetRelay(char* PortName, int relay, int delay);
