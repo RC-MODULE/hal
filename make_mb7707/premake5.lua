@@ -27,7 +27,7 @@ solution "hal-mb7707"
 		kind "StaticLib"
 		includedirs { "../include","$(MB7707)/libload","../src_host"}
 		targetdir ("../lib")
-		files {	"../src_mb7707_host/*.*",
+		files {		"../src_mb7707_host/*.*",
 				"../src_x86/*.*",
 				"../include/*.h"}
 		
