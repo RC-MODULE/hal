@@ -232,6 +232,12 @@ typedef int(*DmaCallback2)();
 	int halWereMirror();
 	void halSetMirror(); 	
 	int halReadCoreID();
+	
+	void halEnterCriticalSection();
+  void halExitCriticalSection();
+
+  void _print_me(unsigned int a);
+
 #ifdef __cplusplus
 		};
 #endif

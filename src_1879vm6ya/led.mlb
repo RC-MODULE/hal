@@ -26,7 +26,7 @@ macro HAL_LED_ON(ledIndx)
 	gr0 = 0FFh;
 	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
 	gr0 =[010030C00h];
-	gr1 = gr1 or gr0;
+	gr1 = gr1 or gr0 noflags;
 	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
 	pop ar1,gr1;
 	pop ar0,gr0;
@@ -42,7 +42,7 @@ macro HAL_LED_OFF(ledIndx)
 	gr0 = 0FFh;
 	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
 	gr0 =[010030C00h];
-	gr1 = gr0 and not gr1;
+	gr1 = gr0 and not gr1 noflags;
 	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
 	pop ar1,gr1;
 	pop ar0,gr0;

@@ -5,26 +5,36 @@ extern mirror_offset      : word;
 extern coreID             : word;
 extern _halSyncro					: word;
 
+extern _halLedSOS0			  :label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+extern _halLedSOS1			  :label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+extern _halLedSOS2			  :label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+extern _halEnterCriticalSection : label;
+extern _halExitCriticalSection  : label;
+
+
 begin ".text"
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
 	ar5 = ar7 - 2;
 	push ar0,gr0;
 	gr0 = [coreID];
-<WAITE_DMA>	
+<WAIT_DMA>	
+call _halEnterCriticalSection;	
 	gr7 = [_halSyncro];
 	gr7;
-	if >= goto WAITE_DMA;
-	[_halSyncro] = gr0;	
+	if >= goto WAIT_DMA;
+	[_halSyncro] = gr0;
+call _halExitCriticalSection;		
 	push ar1,gr1 with gr7 = false;
 	push ar2,gr2;
-	[_flag_of_pack_DMA] = gr7;
 	///init 
-	[1001000Ah] = gr7;//clear the control register MDAM
-	[1001001Ah] = gr7;//clear the control register MDAM 
+	[1001000Ah] = gr7;//clear the control register MDAM to fall interruption register
+	[1001001Ah] = gr7;//clear the control register MDAM to fall interruption register 
 	gr7 = [--ar5];//src
 	gr2 = [mirror_offset];
-	ar2 = gr7 with gr7 >>= 18;
+	ar2 = gr7 with gr7 >>= 18;//check is the src addres in ddr mem or not
 	if <>0 delayed goto SKIP_SRC_MIRROR;	
 		gr7 = [--ar5];//dst
 		gr1 = [--ar5];//size
@@ -33,10 +43,10 @@ begin ".text"
 	ar0 = ar2;//ar0 is src
 	ar2 = gr7 with gr7 >>= 18;	
 	if <>0 delayed goto SKIP_DST_MIRROR with gr1 = gr1 >> 1;
-		[10010000h] = gr1;//wrt ammnt of data to transiver mdma
+		[10010000h] = gr1;//wrt ammnt of data to transmitter mdma
 	ar2 = ar2 + gr2;//ar2 is dst
 	<SKIP_DST_MIRROR>	
-	[10010010h] = gr1;//wrt ammnt of data to resiver mdma
+	[10010010h] = gr1;//wrt ammnt of data to receiver mdma
 	gr0 = ar2;
 	gr0 = gr0 >> 29;//check is the address to wrt data DDR or not
 	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;
@@ -69,15 +79,15 @@ begin ".text"
 	[10010008h] = gr7;
 	[10010018h] = gr7;
 	//counters
-	[10010000h] = gr1;//wrt ammunt of data to mdma
-	[10010010h] = gr1;//wrt ammunt of data to mdma
+	//[10010000h] = gr1;//wrt ammunt of data to mdma
+	//[10010010h] = gr1;//wrt ammunt of data to mdma
 	//address
 <START>
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
 	[10010012h] = ar2;//wrt address to wrt data into dst
 	///interruption mask
-	[1001000Ch] = gr7;
-	[1001001Ch] = gr7;
+	[1001000Ch] = gr7;//MDAM interruption are both enable
+	[1001001Ch] = gr7;//MDAM interruption are both enable
 	
 	////start
 	gr7 = 1;

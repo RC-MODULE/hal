@@ -1,36 +1,46 @@
-global _halSetCallbackDMA : label;
-global _readCallback      : label;
-global _halInitDMA        : label;
-global _halStatusDMA      : label;
-global _haltest						: label;
-global _halEnbExtInt			: label;
-global _halDisExtInt			: label;
-global _halMaskIntContMdma_mc12101 : label;
-global _GetPswr 					: label;
-global _SetFlagDMA				: label;
+global _halSetCallbackDMA :label;
+global _readCallback      :label;
+global _halInitDMA        :label;
+global _halStatusDMA      :label;
+global _haltest						:label;
+global _halEnbExtInt			:label;
+global _halDisExtInt			:label;
+global _halMaskIntContMdma_mc12101 :label;
+global _GetPswr 					:label;
+global _SetFlagDMA				:label;
 
-global _halLockDMA 				: label;
-global _halUnlockDMA 			: label;
-global _halIsBusyDMA 		  : label;
+global _halLockDMA 				:label;
+global _halUnlockDMA 			:label;
+global _halIsBusyDMA 		  :label;
 
-global _halWereMirror     : label;
-global _halGetCoreId			: label;
-global _halSetMirror      : label;
-global _halReadCoreID 		: label;
-extern _halSyncro					: word;
+global _halWereMirror     :label;
+global _halGetCoreId			:label;
+global _halSetMirror      :label;
+global _halReadCoreID 		:label;
+extern _halSyncro					:word;
+
+extern _print_me          :label;
+
+extern _halLedSOS0				:label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+extern _halLedSOS1				:label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+extern _halLedSOS7				:label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 nobits ".nobits"
- GR7:word;
- AR5:word;
- GR0:word;
- global _flag_of_pack_DMA : word;
- global callback_addr : word;
- global mirror_offset : word;
- global coreID : word;
+ GR7											:word;
+ AR5											:word;
+ GR0											:word;
+ global _flag_of_pack_DMA :word;
+ global callback_addr     :word;
+ global mirror_offset     :word;
+ global coreID            :word;
 end ".nobits";
 
 
+
 begin ".text"
+
+import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 <dummy>
 	return;
 	
@@ -44,10 +54,25 @@ begin ".text"
 <CALL_BACK>
 	//the code below was written according the prescription of how to clear IAS register on the right way;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
+	push ar1,gr1;
+	push ar2,gr2;
+	gr0 = [coreID]; 
 	gr7 = [_halSyncro];
-	gr0 = [coreID];
-	gr7 = gr7 - gr0;
-	if <>0 goto SKIP_CALLBACK;
+	//fpu 0 .double vreg0 = vreg0 - vreg0;
+	//gr1 = gr0 + 1;
+	//gr2 = gr7 + 1;
+	//gr2 >>=2;
+	//HAL_LED_ON(gr1);
+	//HAL_LED_ON(gr2);
+	gr7 - gr0;
+	//nop;
+	//nop;
+	//nop;
+	//nop;
+	//nop;
+	//if <>0 goto SKIP_CALLBACK;
+	if <>0 goto TEST;
+<L_>
 	gr7 = true;
 	[1001000Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
 	[1001001Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
@@ -56,14 +81,38 @@ begin ".text"
 	[40000406h] = gr7;//write the result into any reserved register of interaption contorl unit
 	gr7 = 1;
 	[4000045ch] = gr7;//clear the IAS for MDMA
-	ar5 = [callback_addr] with gr7 = true;//set callback address
+	ar5 = [callback_addr];//set callback address
+	gr7 = true;
 	[_halSyncro] = gr7;// write 0xffffffff to flag of DMA means DMA is free
-	call ar5;
-<SKIP_CALLBACK>	
+	call ar5;//be carreful call has to go after _halSyncro is -1
+	//HAL_LED_OFF(gr1);
+	//HAL_LED_OFF(gr2);
+<SKIP_CALLBACK>
+	pop ar2,gr2;	
+	pop ar1,gr1;
+	gr7 = 1;
+	[4000045ch] = gr7;//clear the IAS for MDMA
 	ar5 = [AR5];
 	gr0 = [GR0];
  	delayed	ireturn;
-	gr7 = [GR7];
+		gr7 = [GR7];
+		nop;
+
+<TEST>
+
+	//gr0 core id
+	// gr7 syncro
+	//HAL_LED_ON(gr0);
+	//HAL_LED_ON(gr2);
+	ar1 = gr7;
+	gr1 = gr7;
+	push ar1,gr1;
+	call _print_me;
+	pop ar1,gr1;
+	goto L_;
+//<Loop>	
+	//goto Loop;
+
 ///////////////////////////////////////////////////
 <_halSetCallbackDMA>
 	ar5 = ar7 - 2;
@@ -92,9 +141,10 @@ begin ".text"
 	gr7 = [40000000h];
 	push ar0,gr0 with gr7 >>= 24;//detecting core the programm uses
 	[coreID] = gr7;
+
 	if <>0 delayed goto SKIP_INIT;
 		gr7 = 80000h;
-		gr7 >>= 1;		
+	gr7 >>= 1;		
 <SKIP_INIT>
 	[mirror_offset] = gr7;	
 	push ar1,gr1 with gr7 = false;
@@ -110,9 +160,9 @@ begin ".text"
 	//delayed goto CALL_BACK;
 	//	[GR7] = gr7;
 	ar0,gr0 = [ar5++]; 
-	[ar1++] = ar0,gr0 with gr7 >>= 5;
-	ar0,gr0 = [ar5++] with gr7 <<= 31;
-	[ar1++] = ar0,gr0 with gr7 >>= 31;
+	[ar1++] = ar0,gr0 with gr7 >>= 5;//extract the bit of external interruption is enabled
+	ar0,gr0 = [ar5++] with gr7 <<= 31;//
+	[ar1++] = ar0,gr0 with gr7 >>= 31;//
 	ar0,gr0 = [ar5++];
 	[ar1++] = ar0,gr0;
 	ar0,gr0 = [ar5++];
@@ -124,8 +174,9 @@ begin ".text"
 	return;
 ////////////////////////////////////////////////////
 <_readCallback>
-	ar5 = [callback_addr];
-	return;
+	delayed return;
+		ar5 = [callback_addr];
+		nop;
 ////////////////////////////////////////////////////
 
 <_halStatusDMA>
