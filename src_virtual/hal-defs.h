@@ -12,7 +12,7 @@
 #define HOST_CONNECT_TIMEOUT 100000
 
 TCHAR* createName(TCHAR* baseName, int index0, int index2);
-
+/*
 struct SyncBuf {
 	//int		counter0;
 	//int		counter1;
@@ -27,7 +27,8 @@ struct SyncBuf {
 	//int     counter;
 	int		readCounter[2];
 	int		writeCounter[2];
-};
+};*/
+
 SyncBuf* getSyncBuffer();
 struct MappedBuffer {
 	int*     address;

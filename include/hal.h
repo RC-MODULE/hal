@@ -1,3 +1,5 @@
+#ifndef HAL_H_INCLUDED
+#define HAL_H_INCLUDED
 #include "led.h"
 #include "dma.h"
 #include "sleep.h"
@@ -38,3 +40,5 @@
     *
     *     \defgroup hal HAL функции 
     */
+	
+#endif 	
