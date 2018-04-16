@@ -11,8 +11,8 @@ solution "hal-mc5103"
  		targetdir ("../lib")	  
       		files { 	"../src_mc5103_host/*.*",
 				"../src_x86/*.*",
-				"../src_host_io/*.*",
-				"../include/*.h"}
+				"../include/*.h",
+				"../src_host_io/*.*"}
 	  
 		configuration "Debug"
 			defines { "DEBUG","NM6405"}
@@ -25,12 +25,11 @@ solution "hal-mc5103"
 	-- x86  library without printf support  ---------------------------------	 
 	project "hal-mc5103silent-x86"
       		kind "StaticLib"
-		includedirs { "../include","$(MC5103)/libload","../src_mc5103_host_io","../src_host_io"}
+		includedirs { "../include","$(MC5103)/libload","../src_host_io"}
 		targetdir ("../lib")	  
 	
 	      	files { 	"../src_mc5103_host/*.*",
 				"../src_x86/*.*",
-				"../src_host_io/*.*",
 				"../include/*.h"}
 		
 		configuration "Debug"
