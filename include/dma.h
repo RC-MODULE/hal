@@ -236,7 +236,7 @@ typedef int(*DmaCallback2)();
 	void halEnterCriticalSection();
   void halExitCriticalSection();
 
-  void _print_me(unsigned int a);
+  void print_me(unsigned int a);
 
 #ifdef __cplusplus
 		};
