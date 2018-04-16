@@ -57,9 +57,11 @@ struct HalHostRingBuffer{
 };
 
 	
-int 	halHostRingBufferInit(HalHostRingBuffer* ringBuffer, unsigned remoteRingBufferAddress, int core=0);
-void 	halHostRingBufferPush(HalHostRingBuffer* ringBuffer, void* src, size_t count);
-void 	halHostRingBufferPop(HalHostRingBuffer* ringBuffer, void* dst, size_t count);
+int 	halHostRingBufferInit	(HalHostRingBuffer* ringBuffer, unsigned remoteRingBufferAddress, int core=0);
+void 	halHostRingBufferPush	(HalHostRingBuffer* ringBuffer, void* src, size_t count);
+void 	halHostRingBufferPop	(HalHostRingBuffer* ringBuffer, void* dst, size_t count);
+int		halHostRingBufferIsFull (HalHostRingBuffer* ringBuffer);
+int		halHostRingBufferIsEmpty(HalHostRingBuffer* ringBuffer);
 
 
 #endif

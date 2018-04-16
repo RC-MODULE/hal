@@ -49,7 +49,19 @@ typedef  void *(*t_bytecpy)(void *to, int toIndex, void const *from, int fromInd
 #endif // offdetoff
 
 
-	
+int halHostRingBufferIsFull(HalHostRingBuffer* ringBuffer) {
+	int head, tail;
+	halReadMemBlock(&head, ringBuffer->remoteHeadAddr, 1, ringBuffer->processor);
+	halReadMemBlock(&tail, ringBuffer->remoteTailAddr, 1, ringBuffer->processor);
+	return head == tail+ ringBuffer->maxCount;
+}
+
+int halHostRingBufferIsEmpty(HalHostRingBuffer* ringBuffer) {
+	int head, tail;
+	halReadMemBlock(&head, ringBuffer->remoteHeadAddr, 1, ringBuffer->processor);
+	halReadMemBlock(&tail, ringBuffer->remoteTailAddr, 1, ringBuffer->processor);
+	return head == tail;
+}
 
 int halHostRingBufferInit(HalHostRingBuffer* ringBuffer, unsigned remoteRingBufferAddress, int core)
 {
