@@ -58,18 +58,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	push ar2,gr2;
 	gr0 = [coreID]; 
 	gr7 = [_halSyncro];
-	//fpu 0 .double vreg0 = vreg0 - vreg0;
-	//gr1 = gr0 + 1;
-	//gr2 = gr7 + 1;
-	//gr2 >>=2;
-	//HAL_LED_ON(gr1);
-	//HAL_LED_ON(gr2);
 	gr7 - gr0;
-	//nop;
-	//nop;
-	//nop;
-	//nop;
-	//nop;
 	//if <>0 goto SKIP_CALLBACK;
 	if <>0 goto TEST;
 <L_>
@@ -85,8 +74,6 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	gr7 = true;
 	[_halSyncro] = gr7;// write 0xffffffff to flag of DMA means DMA is free
 	call ar5;//be carreful call has to go after _halSyncro is -1
-	//HAL_LED_OFF(gr1);
-	//HAL_LED_OFF(gr2);
 <SKIP_CALLBACK>
 	pop ar2,gr2;	
 	pop ar1,gr1;
@@ -99,19 +86,12 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		nop;
 
 <TEST>
-
-	//gr0 core id
-	// gr7 syncro
-	//HAL_LED_ON(gr0);
-	//HAL_LED_ON(gr2);
 	ar1 = gr7;
 	gr1 = gr7;
 	push ar1,gr1;
 	call _print_me;
 	pop ar1,gr1;
 	goto L_;
-//<Loop>	
-	//goto Loop;
 
 ///////////////////////////////////////////////////
 <_halSetCallbackDMA>
