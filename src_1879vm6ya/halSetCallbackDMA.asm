@@ -59,8 +59,8 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	gr0 = [coreID]; 
 	gr7 = [_halSyncro];
 	gr7 - gr0;
-	//if <>0 goto SKIP_CALLBACK;
-	if <>0 goto TEST;
+	if <>0 goto SKIP_CALLBACK;
+	//if <>0 goto TEST;
 <L_>
 	gr7 = true;
 	[1001000Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
@@ -74,11 +74,13 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	gr7 = true;
 	[_halSyncro] = gr7;// write 0xffffffff to flag of DMA means DMA is free
 	call ar5;//be carreful call has to go after _halSyncro is -1
+	goto SKIP_CLEAR_IAS;
 <SKIP_CALLBACK>
-	pop ar2,gr2;	
-	pop ar1,gr1;
 	gr7 = 1;
 	[4000045ch] = gr7;//clear the IAS for MDMA
+<SKIP_CLEAR_IAS>	
+	pop ar2,gr2;	
+	pop ar1,gr1;
 	ar5 = [AR5];
 	gr0 = [GR0];
  	delayed	ireturn;

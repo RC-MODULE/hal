@@ -98,7 +98,9 @@ extern SyncBuf halSyncro;
 int main(){
 	printf("turn = %d\n",halSyncro.turn);
 	printf("flag 0 = %d\n",halSyncro.flag0); 
-	printf("flag 1 = %d\n",halSyncro.flag1); 
+	printf("flag 1 = %d\n",halSyncro.flag1);
+	*(int*)(40001000) = 0x10;
+	printf("system integrator CSR = 0x%x\n",*(int*)(40001000)); 
 	int call_counter = 0;
 	//return 0;
 	clock_t t0,t1;
@@ -130,7 +132,7 @@ int main(){
 			printf("Aligned address src = 0x%x dst = 0x%x \n",src_loc,dst_loc);
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
 			/////////////////////////
-			for(int j = 0, size = 512; j < MAX_NUM_BUFFERS; j++,size += 0){
+			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++,size += 2){
 				for(int i = 0, offset = size; i < MAX_NUM_BUFFERS; i++, offset += 0){
 					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
 					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
@@ -170,7 +172,7 @@ int main(){
 			src_loc = UnalignAddr(src);
 			dst_loc = UnalignAddr(dst);
 			printf("Unaligned address src = %x dst = %x\n",src_loc,dst_loc);
-			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
+			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++, size += 2){
 				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
 					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
 					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
