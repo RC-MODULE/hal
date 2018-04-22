@@ -5,9 +5,10 @@
 #include "hal.h"
 #include "stdio.h"
 #include <string.h>
+#include "cache.h"
 void initChain7707(int *buf);
 
-#define MAX_NUM_BUFFERS 2 // Maximum buffers in packet
+#define MAX_NUM_BUFFERS 16 // Maximum buffers in packet
 #define MAX_BUFFER_SIZE 512	// Maximum size of each buffer 
 #define ALIGN( addr, numInts) ((((unsigned)addr)+numInts-1)%numInts*numInts) // align "addr" address to boundary of numInts 32-bit words
 
@@ -96,6 +97,7 @@ extern "C"{
 extern SyncBuf halSyncro;
 
 int main(){
+	//halInstrCacheEnable();
 	printf("turn = %d\n",halSyncro.turn);
 	printf("flag 0 = %d\n",halSyncro.flag0); 
 	printf("flag 1 = %d\n",halSyncro.flag1);
@@ -108,7 +110,8 @@ int main(){
 	nm32s* srcAddrList[MAX_NUM_BUFFERS];
 	nm32s* dstAddrList[MAX_NUM_BUFFERS];
 	int    bufSizeList[MAX_NUM_BUFFERS + 1];
-		
+	//halLed(0xaa);
+	//halSleep(1000);	
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
@@ -122,7 +125,7 @@ int main(){
 			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 			printf("src: %x dst:%x \n", src, dst);
 			if (src == 0 || dst == 0){
-				printf("ERROR : one of mallocs was not created heap\n");
+				printf("ERROR : one of mallocs did't creat heap\n");
 				return -1;
 			}
 			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
@@ -133,7 +136,7 @@ int main(){
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
 			/////////////////////////
 			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++,size += 2){
-				for(int i = 0, offset = size; i < MAX_NUM_BUFFERS; i++, offset += 0){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += size){
 					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
 					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
@@ -144,7 +147,6 @@ int main(){
 				call_counter++;
 				//PrintChaine((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				InitArrInChain((void**)srcAddrList,(int*)bufSizeList);
-				//printf("iteration is %d\n",j);
 				halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
@@ -172,13 +174,15 @@ int main(){
 			src_loc = UnalignAddr(src);
 			dst_loc = UnalignAddr(dst);
 			printf("Unaligned address src = %x dst = %x\n",src_loc,dst_loc);
-			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++, size += 2){
-				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
+			//for(int j = 0, size = 400; size < MAX_BUFFER_SIZE; j++,size += 10){
+			//	for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += size){
+			
+			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++,size += 2){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += size){
 					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
 					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
-				//printf("Size = %d\n",j);
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;

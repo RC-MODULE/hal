@@ -1,14 +1,8 @@
 global _halInitSingleDMA 	: label;
 
-extern _flag_of_pack_DMA 	: word;
 extern mirror_offset      : word;
 extern coreID             : word;
 extern _halSyncro					: word;
-
-extern _halLedSOS0			  :label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-extern _halLedSOS1			  :label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-extern _halLedSOS2			  :label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
 extern _halEnterCriticalSection : label;
 extern _halExitCriticalSection  : label;

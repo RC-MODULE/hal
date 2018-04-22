@@ -6,7 +6,7 @@
 
 extern "C"{
 	#pragma data_section ".data_hal_syncro"
-	SyncBuf halSyncro={-1,0,0,0,0,0,0,0,0,0};
+	SyncBuf halSyncro={-5,0,0,0,0,0,0,0,0,0};
 	#pragma data_section ".data"
 	int procNo=-1;
 	void halSetProcessorNo(int number){

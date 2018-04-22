@@ -19,11 +19,6 @@ global _halSetMirror      :label;
 global _halReadCoreID 		:label;
 extern _halSyncro					:word;
 
-extern _print_me          :label;
-
-extern _halLedSOS0				:label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-extern _halLedSOS1				:label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-extern _halLedSOS7				:label;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 nobits ".nobits"
  GR7											:word;
@@ -35,6 +30,8 @@ nobits ".nobits"
  global coreID            :word;
 end ".nobits";
 
+extern _halEnterCriticalSection : label;
+extern _halExitCriticalSection  : label;
 
 
 begin ".text"
@@ -54,14 +51,10 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 <CALL_BACK>
 	//the code below was written according the prescription of how to clear IAS register on the right way;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
-	push ar1,gr1;
-	push ar2,gr2;
 	gr0 = [coreID]; 
 	gr7 = [_halSyncro];
 	gr7 - gr0;
 	if <>0 goto SKIP_CALLBACK;
-	//if <>0 goto TEST;
-<L_>
 	gr7 = true;
 	[1001000Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
 	[1001001Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
@@ -70,8 +63,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	[40000406h] = gr7;//write the result into any reserved register of interaption contorl unit
 	gr7 = 1;
 	[4000045ch] = gr7;//clear the IAS for MDMA
-	ar5 = [callback_addr];//set callback address
-	gr7 = true;
+	ar5 = [callback_addr] with gr7 = true;//set callback address
 	[_halSyncro] = gr7;// write 0xffffffff to flag of DMA means DMA is free
 	call ar5;//be carreful call has to go after _halSyncro is -1
 	goto SKIP_CLEAR_IAS;
@@ -79,21 +71,11 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	gr7 = 1;
 	[4000045ch] = gr7;//clear the IAS for MDMA
 <SKIP_CLEAR_IAS>	
-	pop ar2,gr2;	
-	pop ar1,gr1;
 	ar5 = [AR5];
 	gr0 = [GR0];
  	delayed	ireturn;
 		gr7 = [GR7];
 		nop;
-
-<TEST>
-	ar1 = gr7;
-	gr1 = gr7;
-	push ar1,gr1;
-	call _print_me;
-	pop ar1,gr1;
-	goto L_;
 
 ///////////////////////////////////////////////////
 <_halSetCallbackDMA>
@@ -168,11 +150,6 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	gr7 = gr0 or gr7;
 	gr0 = 2;
 	gr7 = gr0 xor gr7;
-	if <>0  delayed goto SKIP_UNLOCK with gr0 = true;
-		nop;
-		nop;
-	[_halSyncro] = gr0;
-	<SKIP_UNLOCK>
 	pop ar0,gr0;
 	return;
 
