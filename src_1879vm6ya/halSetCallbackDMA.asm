@@ -17,6 +17,7 @@ global _halWereMirror     :label;
 global _halGetCoreId			:label;
 global _halSetMirror      :label;
 global _halReadCoreID 		:label;
+global _halInitStatusDMA  :label;
 extern _halSyncro					:word;
 
 
@@ -226,7 +227,18 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		[mirror_offset] = gr7;
 		nop;
 
-
+<_halInitStatusDMA>
+	gr7 = [40000000h];
+	gr7 >>= 24;
+	if =0 delayed goto SKIP_;
+		gr7 = 40000h;
+	gr7 = 80000h;	
+	<SKIP_>
+	[mirror_offset] = gr7;
+	gr7 = false;
+	delayed return;
+		[_flag_of_pack_DMA] = gr7;
+		nop;
 
 end ".text";	
 

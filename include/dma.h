@@ -248,6 +248,7 @@ typedef int(*DmaCallback2)();
 	
 	void halEnterCriticalSection();
   void halExitCriticalSection();
+  void halInitStatusDMA();
 
 #ifdef __cplusplus
 		};
