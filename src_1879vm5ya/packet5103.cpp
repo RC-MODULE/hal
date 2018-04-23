@@ -11,18 +11,20 @@ extern "C"
 	int *packet[4];
 	extern int packetcnt;
 	void BellFromDmaPacket()// Обработчик DMA прерывания (векторы 58h,60h)
-	{  
+	{   if (packetcnt>1)    
+	    {	packetcnt--;
 		packet[0]++; packet[1]++; packet[2]++;
 		if (*packet[0])
 		dmainit(0,(int*)*packet[2],(int*)*packet[1], *packet[0]);//OK
+	    } else packetcnt=0;		
 	}
 
-	int halInitPacketDMA(void** src,  void** dst,  int* size32)
+	int halInitPacketDMA(void** src,  void** dst,  int* size32, int N)
 	{
-		if(packetcnt==0)
+		if(packetcnt==-1)
 		{  SetCallBack(0x58, (int)BellFromDmaPacket);
 		   SetCallBack(0x60, (int)BellFromDmaPacket);
-		   packetcnt=1;
+		   packetcnt=N;
 		}
 		packet[1]=(int*)src;
 		packet[2]=(int*)dst;
