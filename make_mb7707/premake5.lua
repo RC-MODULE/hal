@@ -11,6 +11,7 @@ solution "hal-mb7707"
 		targetdir ("../lib")
 		files {	"../src_mb7707_host/*.*",
 				"../src_x86/*.*",
+				"../src_ringbuffer/*.*",
 				"../include/*.h",
 				"../src_host_io/*.*"}
 	  
@@ -27,8 +28,9 @@ solution "hal-mb7707"
 		kind "StaticLib"
 		includedirs { "../include","$(MB7707)/libload","../src_host"}
 		targetdir ("../lib")
-		files {	"../src_mb7707_host/*.*",
+		files {		"../src_mb7707_host/*.*",
 				"../src_x86/*.*",
+				"../src_ringbuffer/*.*",
 				"../include/*.h"}
 		
 		configuration "Debug"
@@ -44,17 +46,18 @@ solution "hal-mb7707"
 		kind "Makefile"
 		files {	"../src_1879hb1ya/*.cpp",
 				"../src_1879hb1ya/*.asm",
+				"../src_ringbuffer/*.*",
 				"../include/*.h", 
 				"Makefile" }
 	 
 		configuration "Debug"
-			buildcommands {"make DEBUG=y -f Makefile"}
-			rebuildcommands {"make -B DEBUG=y -f Makefile"}
-			cleancommands {"make clean"}
+			buildcommands 	{"make DEBUG=y -f 	 Makefile 2>.make & iconv -f cp1251 -t cp866 .make"}
+			rebuildcommands {"make -B DEBUG=y -f Makefile 2>.make & iconv -f cp1251 -t cp866 .make"}
+			cleancommands 	{"make clean"}
 		   
 		configuration "Release"
-			buildcommands {"make -f Makefile"}
-			rebuildcommands {"make -B -f Makefile"}
+			buildcommands 	{"make -f Makefile		2>.make & iconv -f cp1251 -t cp866 .make"}
+			rebuildcommands {"make -B -f Makefile 	2>.make & iconv -f cp1251 -t cp866 .make"}
 			cleancommands {"make clean"}		   
 		
 		

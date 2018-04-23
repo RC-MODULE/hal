@@ -44,18 +44,23 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 	}
 };
 
-nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
+/*nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
 	if((int)addr > min && (int)addr < max){
 		return (nm32s*)((int)addr + MIRROR);
 	}else{
 		return addr; 
 	}
-}
+}*/
 int main(){ 
+	printf("Were mirror check : Mirror at 0x%x\n",halWereMirror());	
+	printf("Core ID : %d\n",halGetCoreId());
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
+	printf("Value of var coreID %d\n",halReadCoreID()); 
+	printf("DMA status is %d \n",halIsBusyDMA());
 	halSetCallbackDMA((DmaCallback)callback);
+	halLed(0xaa);
 	//error code check
 	clock_t t0,t1;
 	int count = 0;
@@ -82,9 +87,12 @@ int main(){
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				call_counter++;
-				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
-				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
-				halInitSingleDMA(src_loc,dst_loc,i);
+				//halLed(call_counter);
+				//printf("Value of var coreID %d\n",halReadCoreID()); 
+				//printf("DMA status is %d \n",halIsBusyDMA());
+				halInitSingleDMA(src,dst,i);
+				//printf("after Value of var coreID %d\n",halReadCoreID()); 
+				//printf("after DMA status is %d \n",halIsBusyDMA());
 				int time = 0;
 				while(1){
 					if(halStatusDMA() == 0){
@@ -92,7 +100,7 @@ int main(){
 					}
 					//printf("Status = 0x%x\n",halStatusDMA());
 					time++;
-					if(time > (i<<10)){
+					if(time > (i<<10) + 100){
 						printf("ERROR time is over. Used loops = %d\n",time);
 						printf("DMA size %d\n",i);
 						halLed(3);
@@ -120,9 +128,7 @@ int main(){
 			for(int i=0; i<j+100; i+=2){
 				InitArr(src,i);
 				call_counter++;
-				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
-				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
-				halInitSingleDMA(src_loc,dst_loc,i);
+				halInitSingleDMA(src,dst,i);
 				int time = 0;
 				while(1){
 					if(halStatusDMA() == 0){

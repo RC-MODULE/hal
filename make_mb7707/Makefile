@@ -11,7 +11,7 @@ endif
 
 INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
 LIB_DIRS = 
-SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_nm_io
+SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_nm_io ../src_ringbuffer
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
@@ -36,7 +36,7 @@ TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 AS_FLAGS        +=-ga
-BUILDER_FLAGS   +=-d0
+BUILDER_FLAGS   +=-d0 -full_names
 endif 
 
 # collecting of objects

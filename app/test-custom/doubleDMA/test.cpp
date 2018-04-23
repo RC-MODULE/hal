@@ -42,21 +42,18 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 	}
 };
 
-nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
-	if((int)addr > min && (int)addr < max){
-		return (nm32s*)((int)addr + MIRROR);
-	}else{
-		return addr; 
-	}
-}
+int main(){
 
-int main(){ 
-	int call_counter = 0;
+	printf("Were mirror check : Mirror at 0x%x\n",halWereMirror());	
+	printf("Core ID : %d\n",halGetCoreId());
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
+	printf("Value of var coreID %d\n",halReadCoreID()); 
+	printf("DMA status is %d \n",halIsBusyDMA());
 	halSetCallbackDMA((DmaCallback)callback);
 	
+	int call_counter = 0;
 	int count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
 		for (int dstBankIndx = 0; dstBankIndx < 4; dstBankIndx++) {
@@ -86,9 +83,11 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
-				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
-				halInitDoubleDMA(src_loc,(nm32s*)((int)src_loc+i/2),dst_loc,(nm32s*)((int)dst_loc+i/2),i/2,i/2);
+				printf("before i = %d Value of var coreID %d\n",i,halReadCoreID()); 
+				printf("before i = %d DMA status is %d \n",i,halIsBusyDMA());
+				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
+				printf("after i = %d Value of var coreID %d\n",i,halReadCoreID()); 
+				printf("after i = %d DMA status is %d \n",i,halIsBusyDMA());
 				int time = 0;
 				while(halStatusDMA()){
 					/*halSleep(1);
@@ -107,7 +106,7 @@ int main(){
 				nmppsCrcAcc_32s(src, Heap_size + 18, &crcSrc);//compute crc code of source
 				if(crcDst != crcSrc){
 					printf("ERROR mismatch btw crc of src and dst\n");
-					printf("srcBankIndx = %d dstBankIndx = %d index = %d\n",srcBankIndx,dstBankIndx,i);
+					printf("src = 0x%x dst = 0x%x index = %d\n",src,dst,i);
 					halLed(9);
 					return 9;
 				}
@@ -123,9 +122,11 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				nm32s* src_loc = CheckIsExtMem(src,0,0xA0000);
-				nm32s* dst_loc = CheckIsExtMem(dst,0,0xA0000);
-				halInitDoubleDMA(src_loc,(nm32s*)((int)src_loc+i/2),dst_loc,(nm32s*)((int)dst_loc+i/2),i/2,i/2);
+				printf("i = %d Value of var coreID %d\n",i,halReadCoreID()); 
+				printf("i = %d DMA status is %d \n",i,halIsBusyDMA());
+				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
+				printf("after i = %d Value of var coreID %d\n",i,halReadCoreID()); 
+				printf("after i = %d DMA status is %d \n",i,halIsBusyDMA());
 				int time = 0;
 				while(halStatusDMA()){
 					time++;
@@ -140,7 +141,7 @@ int main(){
 				nmppsCrcAcc_32s(src-2, Heap_size + 18, &crcSrc);//compute crc code of source
 				if(crcDst != crcSrc){
 					printf("ERROR mismatch btw crc of src and dst\n");
-					printf("srcBankIndx = %d dstBankIndx = %d index = %d\n",srcBankIndx,dstBankIndx,i);
+					printf("src = 0x%x dst = 0x%x index = %d\n",src,dst,i);
 					halLed(9);
 					return 9;
 				}

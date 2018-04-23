@@ -5,7 +5,7 @@
 #include "hal.h"
 #include "stdio.h"
 #include <string.h>
-
+#include "cache.h"
 void initChain7707(int *buf);
 
 #define MAX_NUM_BUFFERS 16 // Maximum buffers in packet
@@ -19,7 +19,7 @@ void InitArr(nm32s* arr, int amm, int start){
 	}
 }
 
-void InitArrChain(void** src_arr, int* size_buff){
+void InitArrInChain(void** src_arr, int* size_buff){
 	int i = 0;
 	int start = 0;
 	while(size_buff[i]){
@@ -80,22 +80,38 @@ int callback(){
 	return 0;
 }
 
-nm32s* CheckIsExtMem(nm32s* addr, int min, int max){
-	if((int)addr > min && (int)addr < max){
-		return (nm32s*)((int)addr + MIRROR);
-	}else{
-		return addr; 
+void PrintChaine(void** srcAddrList, void** dstAddrList, int* bufSizeList){
+	int* ptr_src  = (int*)srcAddrList;
+	int* ptr_dst  = (int*)dstAddrList;
+	int* ptr_size = bufSizeList; 
+	int  index = 0;
+	while(ptr_size[index]){
+		printf("chaine[%d] src = 0x%x, dst = 0x%x, amm = %d\n",index,ptr_src[index],ptr_dst[index],ptr_size[index]);
+		index++;
 	}
+		printf("chaine[%d] src = 0x%x, dst = 0x%x, amm = %d\n",index,ptr_src[index],ptr_dst[index],ptr_size[index]);
 }
 
-int main(){ 
+extern "C"{
+
+extern SyncBuf halSyncro;
+
+int main(){
+	//halInstrCacheEnable();
+	printf("turn = %d\n",halSyncro.turn);
+	printf("flag 0 = %d\n",halSyncro.flag0); 
+	printf("flag 1 = %d\n",halSyncro.flag1);
+	*(int*)(40001000) = 0x10;
+	printf("system integrator CSR = 0x%x\n",*(int*)(40001000)); 
 	int call_counter = 0;
+	//return 0;
 	clock_t t0,t1;
 	ret loop_out;
 	nm32s* srcAddrList[MAX_NUM_BUFFERS];
 	nm32s* dstAddrList[MAX_NUM_BUFFERS];
 	int    bufSizeList[MAX_NUM_BUFFERS + 1];
-		
+	//halLed(0xaa);
+	//halSleep(1000);	
 	halEnbExtInt();
 	halMaskIntContMdma_mc12101();
 	halInitDMA();
@@ -109,26 +125,29 @@ int main(){
 			nm32s* dst = nmppsMalloc_32s(MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20);
 			printf("src: %x dst:%x \n", src, dst);
 			if (src == 0 || dst == 0){
-				printf("ERROR : one of mallocs was not created heap\n");
+				printf("ERROR : one of mallocs did't creat heap\n");
 				return -1;
 			}
 			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
 			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE + 20,0xcccccccc);
 			nm32s* src_loc = AlignAddr(src);
 			nm32s* dst_loc = AlignAddr(dst);
-			printf("Aligned address src = %x dst = %x\n",src_loc,dst_loc);
+			printf("Aligned address src = 0x%x dst = 0x%x \n",src_loc,dst_loc);
 			bufSizeList[MAX_NUM_BUFFERS] = 0;
-			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
-				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
-					srcAddrList[i] = CheckIsExtMem(((nm32s*)((int)src_loc + offset)),0x0,0xA0000); 
-					dstAddrList[i] = CheckIsExtMem(((nm32s*)((int)dst_loc + offset)),0x0,0xA0000);
+			/////////////////////////
+			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++,size += 2){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += size){
+					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
+					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
+				bufSizeList[MAX_NUM_BUFFERS] = 0;
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
-				InitArrChain((void**)srcAddrList,(int*)bufSizeList);
-				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
+				//PrintChaine((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
+				InitArrInChain((void**)srcAddrList,(int*)bufSizeList);
+				halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
@@ -147,19 +166,23 @@ int main(){
 					goto PRINT;
 				}
 			}
+			///////////////////////////
+			
 			/////////////////////////// unaligned address
 			Memset(src,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20,0xcccccccc);
 			Memset(dst,MAX_NUM_BUFFERS*MAX_BUFFER_SIZE+20,0xcccccccc);
 			src_loc = UnalignAddr(src);
 			dst_loc = UnalignAddr(dst);
 			printf("Unaligned address src = %x dst = %x\n",src_loc,dst_loc);
-			for(int j = 0, size = 0; j<MAX_BUFFER_SIZE; j++,size += 2){
-				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += 2){
-					srcAddrList[i] = CheckIsExtMem(((nm32s*)((int)src_loc + offset)),0x0,0xA0000); 
-					dstAddrList[i] = CheckIsExtMem(((nm32s*)((int)dst_loc + offset)),0x0,0xA0000);
+			//for(int j = 0, size = 400; size < MAX_BUFFER_SIZE; j++,size += 10){
+			//	for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += size){
+			
+			for(int j = 0, size = 0; size < MAX_BUFFER_SIZE; j++,size += 2){
+				for(int i = 0, offset = 0; i < MAX_NUM_BUFFERS; i++, offset += size){
+					srcAddrList[i] = (nm32s*)((int)src_loc + offset); 
+					dstAddrList[i] = (nm32s*)((int)dst_loc + offset);
 					bufSizeList[i] = size;
 				}
-				//printf("Size = %d\n",j);
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
@@ -195,3 +218,5 @@ PRINT:
 	print_arr(srcAddrList,dstAddrList,bufSizeList);
 	return 9;
 }
+
+};

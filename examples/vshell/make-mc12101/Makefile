@@ -82,7 +82,7 @@ HEAPS    =  -heap=122000 -heap1=22000 -heap2=16384 -heap3=16384
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile 
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...                )
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling... $(TARGET))
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) -nmc4 $(OPT) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)

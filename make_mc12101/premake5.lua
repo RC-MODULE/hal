@@ -12,9 +12,9 @@ solution "hal-mc12101"
 		targetdir ("../lib")
       		files { 	"../src_mc12101_host/*.*",
 				"../src_x86/*.*",
-				"../src_host_io/*.*",
-				"../include/*.h"}
-
+				"../src_ringbuffer/*.*",
+				"../include/*.h",
+				"../src_host_io/*.*"}
 	  
 		configuration "Debug"
 			defines { "DEBUG","NM6405"}
@@ -31,6 +31,7 @@ solution "hal-mc12101"
 		targetdir ("../lib")
       	files {	"../src_mc12101_host/*.*",
 				"../src_x86/*.*",
+				"../src_ringbuffer/*.*",
 				"../include/*.h"}
 
 	  
@@ -49,6 +50,7 @@ solution "hal-mc12101"
 		files { "../src_1879vm6ya/*.cpp",
 				"../src_1879vm6ya/*.c",
 				"../src_1879vm6ya/*.asm",
+				"../src_ringbuffer/*.*",
 				"../include/*.h",
 				"Makefile" }
 	 

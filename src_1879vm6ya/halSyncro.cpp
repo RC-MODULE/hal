@@ -2,26 +2,12 @@
 #include "sleep.h"
 #include "hal_target.h"
 #include "led.h"
-#pragma data_section ".data_hal_syncro"
-struct SyncBuf {
-	//int		counter0;
-	//int		counter1;
-	//bool	locked0;
-	//bool	locked1;
-	//bool    flag[2];
-	//bool	turn;
-	//int		readFrom[2];
-	//int		writtenFrom[2];
-	//int     counter;
-	int		readCounter[2];
-	int		writeCounter[2];
-	int		sync0;
-	int		sync1;
+#include "hal.h"
 
-} halSyncro={0,0,0,0,0,0};
-
-#pragma data_section ".data"
 extern "C"{
+	#pragma data_section ".data_hal_syncro"
+	SyncBuf halSyncro={-5,0,0,0,0,0,0,0,0,0};
+	#pragma data_section ".data"
 	int procNo=-1;
 	void halSetProcessorNo(int number){
 		procNo=number;
@@ -84,13 +70,13 @@ int halSyncArray(
 {
 	int sync=halSync(value,procNo);
 	if (inAddress)
-		*inAddress=(void*)halSync((int)outAddress);
+		*inAddress=(void*)halSync((int)outAddress,procNo);
 	else 
-		halSync((int)outAddress);
+		halSync((int)outAddress,procNo);
 	if (inLen)
-		*inLen=halSync(outLen);
+		*inLen=halSync(outLen,procNo);
 	else 
-		halSync(outLen);
+		halSync(outLen,procNo);
 	return sync;
 }
 

@@ -40,6 +40,8 @@ kill: clean
 vs2005:	$(HOST).vcproj
 
 
-$(HOST).vcproj $(TARGET).vcproj   vs2015:	
+$(HOST).vcproj $(TARGET).vcproj:	
 	premake5 vs2005
 
+vs2015 $(HOST).vcproj $(TARGET).vcproj   :	
+	premake5 vs2015
