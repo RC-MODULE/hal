@@ -5,18 +5,22 @@ static void** pSrc;
 static void** pDst; 
 static int*   pSize;
 static DmaCallback userCallback;
-
+//static int count_ = 0;
 	DmaCallback readCallback();
-
 static int ownCallback(){
+	//halLedOn(6);
+	//count_++;
+	//halLedOn(count_);
 	pSrc++;
 	pDst++;
 	pSize++;
   if(*(int*)(pSize+1) == 0){
+		//halLedOn(7);
 		halSetCallbackDMA(userCallback);	
 		SetFlagDMA(0x0);
 	}
 	halInitSingleDMA(*pSrc,*pDst,*pSize);
+	//halLedOff(count_);
 	return 0;
 }
 

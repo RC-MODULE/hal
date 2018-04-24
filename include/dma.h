@@ -61,6 +61,19 @@ typedef int(*DmaCallback2)();
 
 	int  halInitSingleDMA(void*  src,  void*  dst,  int  size32);
 	/**
+	 *  \brief функция инициализирует модуль ПДП для использования без прерываний
+	 *  \param [in] адрес источника
+	 *  \param [in] адрес приемника
+	 *  \param [in] колличество 32 битных слов для перессылки
+	 *	\restr 
+	 *  src адрес должен быть четным в противном случае ПДП зависнет
+	 *	<p>dst адрес должен быть четным в противном случае ПДП зависнет 
+	 *	<p>size32 должен быть четным в противном случае ПДП скопирует на 1 меньше (ближайший наименший четный) 
+	 */
+	int halInitStatusSingleDMA(void*  src,  void*  dst,  int  size32);
+
+
+	/**
 	 *  \brief функция инициализирует модуль ПДП для записи двух массивов
 	 *  \param [in] адрес первого источника
 	 *  \param [in] адрес второго источника
@@ -232,6 +245,11 @@ typedef int(*DmaCallback2)();
 	int halWereMirror();
 	void halSetMirror(); 	
 	int halReadCoreID();
+	
+	void halEnterCriticalSection();
+  void halExitCriticalSection();
+  void halInitStatusDMA();
+
 #ifdef __cplusplus
 		};
 #endif

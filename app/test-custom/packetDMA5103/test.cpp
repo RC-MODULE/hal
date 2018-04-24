@@ -25,8 +25,8 @@ int main(){
 	
 	int size32 = 512;
 	nmppsMallocSetRoute16(0xF01);
-	nm32s* src = nmppsMalloc_32s(size32 + 20);
 	nm32s* dst = nmppsMalloc_32s(size32 + 20);
+	nm32s* src = nmppsMalloc_32s(size32 + 20);
     nm32s* src1 = src + 100;
     nm32s* dst1 = dst + 100;
 	nm32s* src2 = src + 200;
@@ -82,8 +82,10 @@ if (src==0 || dst==0)	return -1;
 	halSleep(1000);
 	
 	for(int i=0;i<3; i++)
-		for(int j=0;j<psize[i]; j++)
-			printf("%x %x \n ", ((int*)psrc[i])[j], ((int*)pdst[i])[j]);
+	  {   if(i) printf("----------------\n");
+	     for(int j=0;j<psize[i]; j++)    
+	    printf("%x %x \n ", ((int*)psrc[i])[j], ((int*)pdst[i])[j]);
+	  }
 	return index;
 
 	return 777;		

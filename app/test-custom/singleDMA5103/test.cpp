@@ -14,10 +14,11 @@ extern "C"{
 	int user_callback()
 	{
 		index =999;
-		printf("CallBack\n");
+//		printf("CallBack\n");
 		return 777;
 	}
 };
+int *src, *dst, ret;
 int main(){ 
 	
 	printf("******************* \n");
@@ -25,8 +26,8 @@ int main(){
 	
 	int size32 = 512;
 	nmppsMallocSetRoute16(0xF01);
-	nm32s* src = nmppsMalloc_32s(size32 + 20);
-	nm32s* dst = nmppsMalloc_32s(size32 + 20);
+	dst = nmppsMalloc_32s(size32 + 20);
+	src = nmppsMalloc_32s(size32 + 20);
 	if (src==0 || dst==0)	return -1;
 	
 	printf("src  =%x \n",src);
@@ -40,7 +41,6 @@ int main(){
 		dst[i]=0;
 	}
 	dmaopen5103();
-	int ret;
 	
 	halSetCallbackDMA(user_callback);
 	
@@ -49,16 +49,11 @@ int main(){
 	ret=halInitSingleDMA((void*)src,(void*)dst, 20);
 	printf("exitCode of halInitSingleDMA=%d \n",ret);
 	
-	if (ret!=0)
-		return ret;
-	
 	ret=halStatusDMA();
 	printf("status dma=%d \n",ret);
-	//return ret;
 	
 	while (ret!=0){
 		ret=halStatusDMA();
-		//ret=dmac0();
 		printf("status dma=%d \n",ret);
 		halSleep(1000);
 	}

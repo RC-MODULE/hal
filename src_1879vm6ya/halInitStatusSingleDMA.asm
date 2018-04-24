@@ -1,26 +1,14 @@
-global _halInitSingleDMA 	: label;
+global _halInitStatusSingleDMA 	: label;
 
 extern mirror_offset      : word;
-extern coreID             : word;
-extern _halSyncro					: word;
 
-extern _halEnterCriticalSection : label;
-extern _halExitCriticalSection  : label;
 
 
 begin ".text"
-<_halInitSingleDMA>
+<_halInitStatusSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
 	ar5 = ar7 - 2;
 	push ar0,gr0;
-	gr0 = [coreID];
-<WAIT_DMA>	
-call _halEnterCriticalSection;	
-	gr7 = [_halSyncro];
-	gr7;
-	if >= goto WAIT_DMA;
-	[_halSyncro] = gr0;
-call _halExitCriticalSection;		
 	push ar1,gr1 with gr7 = false;
 	push ar2,gr2;
 	///init 
@@ -80,6 +68,7 @@ call _halExitCriticalSection;
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
 	[10010012h] = ar2;//wrt address to wrt data into dst
 	///interruption mask
+	gr7 = true;
 	[1001000Ch] = gr7;//MDAM interruption are both enable
 	[1001001Ch] = gr7;//MDAM interruption are both enable
 	
