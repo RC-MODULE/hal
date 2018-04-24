@@ -17,6 +17,7 @@
 #include "dma.h"	
 #include "nmpp.h"
 #include "stdio.h"
+#include "string.h"
 
 //#define IN_MIRROR(addr) addr
 

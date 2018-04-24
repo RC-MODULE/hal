@@ -1,6 +1,7 @@
 #ifndef HAL_RING_INCLUDED
 #define HAL_RING_INCLUDED
 
+#include "stdlib.h"
 #include "dma.h"
 #include "hal.h"
 
@@ -21,15 +22,17 @@
 //typedef  void (*memcpy_ptr)(const void *, void *, size_t) ;
 //typedef  void *(*t_bytecpy)(void *to, int toIndex, void const *from, int fromIndex, size_t size) ;
 
+
+
 //extern int statusDMA;
 struct HalRingBuffer{
-	int* 	data;			///<  физический адрес кольцевого буфера входных данных 
-	size_t 	maxCount;		///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
-	size_t 	maxCountMinus1;	///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
-	size_t 	size;			///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
-	size_t 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
-	size_t 	tail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
-	size_t  pendingCount;
+	int* 		data;			///<  физический адрес кольцевого буфера входных данных 
+	size_t 		maxCount;		///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
+	size_t 		maxCountMinus1;	///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
+	size_t 		size;			///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
+	unsigned 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
+	unsigned	tail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
+	size_t		pendingCount;
 
 	FuncSingleCopy singleCopy;
 	FuncDoubleCopy doubleCopy;
