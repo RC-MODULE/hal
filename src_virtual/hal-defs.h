@@ -1,4 +1,4 @@
-
+#include "hal.h"
 //TCHAR sMallocRegestryName[]=TEXT(REGISTRY_BUFFER_MAPPNING_NAME);
 //TCHAR sSharedMemName[]     =TEXT(SYNC_BUFFER_MAPPING_NAME);
 
