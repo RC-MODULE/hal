@@ -1,6 +1,6 @@
 global _halSetCallbackDMA :label;
 global _readCallback      :label;
-global _halInitDMA        :label;
+global _halOpenDMA        :label;
 global _halStatusDMA      :label;
 global _haltest						:label;
 global _halEnbExtInt			:label;
@@ -17,7 +17,7 @@ global _halWereMirror     :label;
 global _halGetCoreId			:label;
 global _halSetMirror      :label;
 global _halReadCoreID 		:label;
-global _halInitStatusDMA  :label;
+global _halOpenStatusDMA  :label;
 extern _halSyncro					:word;
 
 
@@ -100,7 +100,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		pswr clear 01e0h;
 		nop;
 ////////////////////////////////////////////////////
-<_halInitDMA>
+<_halOpenDMA>
 	////this function write the programm at Lint_6407 label 
 	////into interruption vector of interruption controller
 	gr7 = [40000000h];
@@ -134,6 +134,11 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	[ar1++] = ar0,gr0;
 	gr1 = dummy;
 	[callback_addr] = gr1;
+//turn on mask in interruption controller
+	gr7 = 1;
+	[40000448h] = gr7;
+//enable extern interruptions at core
+	pswr set 040h;	
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
@@ -227,7 +232,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		[mirror_offset] = gr7;
 		nop;
 
-<_halInitStatusDMA>
+<_halOpenStatusDMA>
 	gr7 = [40000000h];
 	gr7 >>= 24;
 	if =0 delayed goto SKIP_;

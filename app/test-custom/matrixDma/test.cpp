@@ -101,9 +101,7 @@ struct params_of_run_2save
 
 int main(){ 
 	int call_counter = 0;
-	halEnbExtInt();
-	halMaskIntContMdma_mc12101();
-	halInitDMA();
+	halOpenDMA();
 	halSetCallbackDMA((DmaCallback)callback);
 	int count = 0;
 	params_of_run_2save output;	

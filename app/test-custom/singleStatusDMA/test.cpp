@@ -40,7 +40,7 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 
 int main(){ 
 	printf("were mirror 0x%x\n",halWereMirror()	);
-	halInitStatusDMA();	
+	halOpenStatusDMA();	
 	//error code check
 	clock_t t0,t1;
 	int count = 0;
