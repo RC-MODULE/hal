@@ -9,7 +9,9 @@ extern "C"
   int xdmacChain( int* TBL );
   int xdmacChainN( int* TBL, int channel );
   int xdmacinitn( int dst, int src, int size32, int channel);	
-  int xdmacinit( int dst, int src, int size32);	
+  int xdmacinit( int dst, int src, int size32);
+  int xdmac0();
+
 
 
 //int add2Chain(int dst,int src,int size);
@@ -71,5 +73,10 @@ int  halInitPacketDMA(void** src,  void** dst,  int* size32)
    return k;
 }
 
+int halStatusDma()
+{  
+	return xdmac0();
+}
 };
+
 #endif
