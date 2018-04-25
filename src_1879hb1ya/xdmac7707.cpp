@@ -10,9 +10,9 @@ extern "C"
   int xdmacChainN( int* TBL, int channel );
   int xdmacinitn( int dst, int src, int size32, int channel);	
   int xdmacinit( int dst, int src, int size32);	
-}
 
-int add2Chain(int dst,int src,int size);
+
+//int add2Chain(int dst,int src,int size);
 SpecDMA7707* halInitDMA7707 (void** src, void** dst,  int* size32, void* specBuffer)
 {   int *q,n,*asrc,*adst,*sz;
       openDma(specBuffer);
@@ -24,11 +24,18 @@ SpecDMA7707* halInitDMA7707 (void** src, void** dst,  int* size32, void* specBuf
    q=chain_7707.root;
    return (SpecDMA7707*)chain_7707.root;
 }
-
+/*
 int halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallback* func, int channel=0)
 {  
 	return xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);
 } 
+*/
+int halInitSingleDMA(void*  src,  void*  dst,  int  size32)
+{  
+	int channel=0;
+	return xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);
+} 
+
 int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1)
 { int *q,k; 
    add2Chain(((int)dst0)<<2,((int)src0)<<2,intSize0<<2);
@@ -63,4 +70,6 @@ int  halInitPacketDMA(void** src,  void** dst,  int* size32)
    k=xdmacChain( q );
    return k;
 }
+
+};
 #endif

@@ -1,7 +1,9 @@
 #include "chain7707.h"
+extern "C"{ 
 SpecDMA7707 chain_7707;
 void openDma(void *buf)
-{  unsigned int uu;
+{  
+	unsigned int uu;
     chain_7707.root=(int*)buf;
     uu=(unsigned int)(chain_7707.root);
     uu=(uu+3)&0xfffffffc;
@@ -25,3 +27,5 @@ int add2Chain( int armdst, int armsrc, int bytecnt)
    *chain_7707.current++=0;  // non using
  	return 0; 	
 } // add2Chain
+
+};
