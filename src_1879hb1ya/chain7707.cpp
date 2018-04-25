@@ -1,35 +1,27 @@
-#ifndef chain7707tools
-#define  chain7707tools
-struct chain7707
-{
-    int *root;
-    int *prev;
-    int *current;
-}; // chain7707
-unsigned int  first7707chain=0;
-chain7707  chain;
-void initChain7707(int *buf)
+#include "chain7707.h"
+SpecDMA7707 chain_7707;
+void openDma(void *buf)
 {  unsigned int uu;
-    chain.root=buf;
-    uu=(unsigned int)(chain.root);
+    chain_7707.root=(int*)buf;
+    uu=(unsigned int)(chain_7707.root);
     uu=(uu+3)&0xfffffffc;
-    chain.root=(int*)uu;	
-    chain.prev=chain.root; chain.current=chain.root;
+    chain_7707.root=(int*)uu;	
+    chain_7707.prev=chain_7707.root; chain_7707.current=chain_7707.root;
 }
 int add2Chain( int armdst, int armsrc, int bytecnt)
-{ unsigned int u;
-   u=((unsigned int)chain.current)<<2; // Это уже армовый адрес
+{ unsigned int u;//chain_7707.current может к этому времени измениться
+   u=((unsigned int)chain_7707.current)<<2; // Это уже армовый адрес
    u &= 0xfffffff0;   // сносим 4 младших
    u |= 1;     // и добавляем бит DCN "next valid chain"
-   if (chain.current==chain.root) first7707chain=u; else chain.prev[5]=u;
-   *chain.current++=bytecnt-1;	
-   *chain.current++=armsrc;
-   *chain.current++=armdst;	
-   *chain.current++=0x30f00;	
-   *chain.current++=0x30f00;	
-   *chain.current++=0; // terminate chain	
-   chain.current+=2;
-   chain.prev=chain.current-8;	
+   if (chain_7707.current-chain_7707.root) chain_7707.prev[5]=u;
+     chain_7707.prev=chain_7707.current;	
+   *chain_7707.current++=bytecnt-1;	
+   *chain_7707.current++=armsrc;
+   *chain_7707.current++=armdst;	
+   *chain_7707.current++=0x30f00;	
+   *chain_7707.current++=0x30f00;	
+   *chain_7707.current++=0; // terminate chain	
+   *chain_7707.current++=0;  // non using
+   *chain_7707.current++=0;  // non using
  	return 0; 	
 } // add2Chain
-#endif
