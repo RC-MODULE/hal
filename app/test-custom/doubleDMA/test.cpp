@@ -83,11 +83,8 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				printf("before i = %d Value of var coreID %d\n",i,halReadCoreID()); 
-				printf("before i = %d DMA status is %d \n",i,halIsBusyDMA());
+				//printf("call_counter = %d\n",call_counter );
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
-				printf("after i = %d Value of var coreID %d\n",i,halReadCoreID()); 
-				printf("after i = %d DMA status is %d \n",i,halIsBusyDMA());
 				int time = 0;
 				while(halStatusDMA()){
 					/*halSleep(1);
@@ -95,7 +92,7 @@ int main(){
 						break;
 					}*/
 					time++;
-					if(time > (i<<1)){
+					if(time > (i<<1) + 1000){
 						printf("ERROR time is over\n");
 						printf("DMA size %d\n",i);
 						halLed(3);
@@ -122,15 +119,11 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
-				printf("i = %d Value of var coreID %d\n",i,halReadCoreID()); 
-				printf("i = %d DMA status is %d \n",i,halIsBusyDMA());
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
-				printf("after i = %d Value of var coreID %d\n",i,halReadCoreID()); 
-				printf("after i = %d DMA status is %d \n",i,halIsBusyDMA());
 				int time = 0;
 				while(halStatusDMA()){
 					time++;
-					if(time > (i<<1)){
+					if(time > (i<<1) + 1000){
 						printf("ERROR time is over\n");
 						printf("DMA size %d\n",i);
 						halLed(3);
