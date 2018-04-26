@@ -103,7 +103,7 @@ typedef int(*DmaCallback2)();
 	 *	<p>dst1 адрес должен быть четным в противном случае ПДП зависнет
 	 *	<p>size32 должен быть четным в противном случае ПДП скопирует на 1 меньше (ближайший четный) 
 	 */
-	int  halInitPacketDMA(void** src,  void** dst,  int* size32);
+	int  halInitPacketDMA(void** src,  void** dst,  int* size32, int  amm);
 	/**
 	 *  \brief функция инициализирует модуль ПДП для копирования матрицы
 	 *  \param [in] адрес массива, содержащего адреса источников
@@ -137,7 +137,8 @@ typedef int(*DmaCallback2)();
 		* \return
 		* Если внешние прерывания разрешены на ядре возвращает 0 в противном случае 1
 	*/
-	int  halInitDMA();
+	int  halOpenDMA();
+	//int  halOpenDMA();
 	/**
 		* \brief Функция разрешает обработку внешних прерывания у процессорного ядра на котором она (функция) была вызвана
 	*/
@@ -248,7 +249,7 @@ typedef int(*DmaCallback2)();
 	
 	void halEnterCriticalSection();
   void halExitCriticalSection();
-  void halInitStatusDMA();
+  void halOpenStatusDMA();
 
 #ifdef __cplusplus
 		};

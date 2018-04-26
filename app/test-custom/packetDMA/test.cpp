@@ -110,11 +110,7 @@ int main(){
 	nm32s* srcAddrList[MAX_NUM_BUFFERS];
 	nm32s* dstAddrList[MAX_NUM_BUFFERS];
 	int    bufSizeList[MAX_NUM_BUFFERS + 1];
-	//halLed(0xaa);
-	//halSleep(1000);	
-	halEnbExtInt();
-	halMaskIntContMdma_mc12101();
-	halInitDMA();
+	halOpenDMA();
 	halSetCallbackDMA((DmaCallback)callback);
 	int step_count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {
@@ -147,7 +143,7 @@ int main(){
 				call_counter++;
 				//PrintChaine((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				InitArrInChain((void**)srcAddrList,(int*)bufSizeList);
-				halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
+				halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList ,MAX_NUM_BUFFERS);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
@@ -186,7 +182,7 @@ int main(){
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
-				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
+				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList, MAX_NUM_BUFFERS);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
