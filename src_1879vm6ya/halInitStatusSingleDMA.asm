@@ -31,7 +31,7 @@ begin ".text"
 	[10010010h] = gr1;//wrt ammnt of data to receiver mdma
 	gr0 = ar2;
 	gr0 = gr0 >> 29;//check is the address to wrt data DDR or not
-	if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;
+	//if =0 delayed goto PASS_DOUBLE_DEMENTION_SETUP;
 	//check arguments for are they aligned or not
 		gr0 = ar2;
 		gr7 = ar0;
