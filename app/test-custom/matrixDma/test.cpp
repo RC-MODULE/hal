@@ -12,7 +12,7 @@ int arr_ref[Heap_size];
 int index = 0;
 int callback(){
 	index++;
-	halLed(index);
+	halLed(0xaa);
 	return 0;
 }
 

@@ -2,20 +2,30 @@ global _halInitMatrixDMA_asm : label;
 
 extern _flag_of_pack_DMA 	: word;
 extern mirror_offset      : word;
-extern _locked_DMA        : word;
+extern coreID             : word;
+extern _halSyncro					: word;
 
+extern _halEnterCriticalSection : label;
+extern _halExitCriticalSection  : label;
 
 begin ".text"
 <_halInitMatrixDMA_asm>
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
-	push ar0,gr0 with gr7 = false;
+	push ar0,gr0;
+	gr0 = [coreID];
+<WAIT_DMA>	
+call _halEnterCriticalSection;	
+	gr7 = [_halSyncro];
+	gr7;
+	if >= goto WAIT_DMA;
+	[_halSyncro] = gr0;
+call _halExitCriticalSection;
 	///init 
-	[1001000Ah] = gr7;
-	[1001001Ah] = gr7;
+	push ar1,gr1 with gr7 = false;
+	[1001000Ah] = gr7;//clear controll register
+	[1001001Ah] = gr7;//clear controll register
 	[_flag_of_pack_DMA] = gr7;
-	push ar1,gr1 with gr7 = true;
-	[_locked_DMA] = gr7;
 	push ar2,gr2;
 	push ar3,gr3;
 	push ar4,gr4;

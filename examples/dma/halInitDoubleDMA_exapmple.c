@@ -1,96 +1,68 @@
 #include <stdio.h>
 #include <hal.h>
-#include <sleep.h>
-#include "time.h"
-#define SIZE_MEM   32000
-#define MEM_OFFSET 0x40000
-#define IASH       0x40000458
-#define IASH_CLR   0x4000045C
-#define IRRH       0x40000440
-#define IMRH       0x40000448
-#define WIDTH 		512
-#define HEIGHT 		60
-#define STRIDE 		WIDTH
+#include <hal.h>
 
-#pragma data_section ".data_imu1"
-	int arr2read_0[32000];
-#pragma data_section ".data_imu2"
-	int arr2read_1[32000];
-#pragma data_section ".data_shared"
-	int buff_0[SIZE_MEM+16]; 	
-	int buff_1[SIZE_MEM+16]; 	
- 	int buff_ref_0[SIZE_MEM+16];
- 	int buff_ref_1[SIZE_MEM+16];
- 	int status;
- 	
+//this example shows how to use DoubleDma
+
+#pragma data_section ".data_imu0"
+	int src_arr_1[100];
+	int src_arr_2[100];
+#pragma data_section ".data_shared"	
+	int dst_arr_1[100];
+	int dst_arr_2[100]; 
+
 int user_callback(){
- 		status = 1;
- 		halLed(0xaa);
- 		return 0;
- } 
+	halLed(0xaa);
+}
+int done = 1;
+int user_callback_to_stop(){
+	halLed(0xbb);
+	done = 0;
+}
 
 int main(){
-	halEnbExtInt();
-	halMaskIntContMdma_mc12101();
-	halInitDMA();
-	halSetCallbackDMA((DmaCallback)user_callback);
-	int i;
-	clock_t t0,t1;
+	for(int i = 0; i < 1000; i++){
+		src_arr[i] = i;
+	}	
+	// 3 functions below serve to initialise environment and variables for dma
+	//pay attention that in case useing dma with interruptions thiese functions has to be called 
+	halEnbExtInt();//this function enable extern interruptions for core (write into pswr register)
+	halMaskIntContMdma_mc12101();//this function set mask into interruption controller unit to allow signals from dma
+	halInitDMA();//this function writes the interruption vector into interruption controller and initialise some variables needed to provide a functionnality of dma on both core 
 
-	for(i=0;i<SIZE_MEM;i++){
-		arr2read_0[i] = i;
-		arr2read_1[i] = i;
-		buff_0[i] = 0;
-		buff_1[i] = 0;
-		buff_ref_0[i] = 0;
-		buff_ref_1[i] = 0;
-	}
-	for(i=SIZE_MEM;i<SIZE_MEM+16;i++){
-		buff_0[i] = 0;
-		buff_1[i] = 0;
-		buff_ref_0[i] = 0;
-		buff_ref_1[i] = 0;
-	}
-	printf("SRC_0: %x DST_0: %x\n",arr2read_0,buff_0);
-	printf("SRC_1: %x DST_1: %x\n",arr2read_1,buff_1);
-	printf("Case unaligned \n");
+	halSetCallBack((DmaCallback)user_callback);//set callback function to be called after dma is done. 
+	//Pay attention that once set up call back will call after dma has finished forever untill it flashed or changhed 
+	// to flash the last callback function call halSetCallBack(0);
 
-	status = 0;
-	t0=clock();
-	halInitDoubleDMA(arr2read_0 + MEM_OFFSET, arr2read_1 + MEM_OFFSET, buff_0, buff_1,32000,32000);
-	while(1){
-		if(status){
-			t1 = clock();
-			break;
-		}
+	
+	//load the paramentrs into DMA
+	halInitDoubleDMA(src_arr_1,src_arr_2,dst_arr_1,dst_arr_2,10,10);
+
+	//an aproach to get known dma had finished
+	//halStatusDMA return 0 in case dma had finished
+	while(halStausDMA()){
+
 	}
-	printf("DMA has finished correctly\n");
-	printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",WIDTH*HEIGHT,(t1-t0));
 	
-	//aligning addresses
-	int temp = int(buff_0 + 15)>>4;
-	temp<<=4;
-	int* ptr2buff_0 = (int*)temp;
-	temp = (int)(buff_1 + 15)>>4;
-	temp<<=4;
-	int* ptr2buff_1 = (int*)temp;	
-	
-	printf("\n");
-	printf("Case aligned \n");
-	printf("SRC_0: %x DST_0: %x\n",arr2read_0,ptr2buff_0);
-	printf("SRC_1: %x DST_1: %x\n",arr2read_1,ptr2buff_1);
-	
-	status = 0;
-	t0=clock();
-	halInitDoubleDMA(arr2read_0 + MEM_OFFSET,arr2read_1 + MEM_OFFSET,ptr2buff_0,ptr2buff_1,32000,32000);
-	while(1){
-		if(status){
-			t1 = clock();
-			break;
-		}
+	printf("DMA had finished relays on halStausDMA\n", );
+	for(int i = 0; i < 10; i++){
+		printf("dst_arr_1[%d] = %d\n",i,dst_arr_1[i]);
+		printf("dst_arr_2[%d] = %d\n",i,dst_arr_2[i]);
 	}
-	printf("DMA has finished correctly\n");
-	printf("full time used to coppy %d int32 form SRC to DST is %d clk\n",WIDTH*HEIGHT,(t1-t0));
-	
+
+	// next one way to get know dma had finished
+	//use the callback and varable to set it up in callback
+	halSetCallBack((DmaCallback)user_callback_to_stop);
+	halInitDoubleDMA(src_arr_1+10,src_arr_2+10,dst_arr_1,dst_arr_2,10,10);
+	while(done){
+
+	}
+
+	printf("DMA had finished relays on CallBack function\n", );
+	for(int i = 0; i < 10; i++){
+		printf("dst_arr_1[%d] = %d\n",i,dst_arr_1[i]);
+		printf("dst_arr_2[%d] = %d\n",i,dst_arr_2[i]);
+	}
+
 	return 0;
 }

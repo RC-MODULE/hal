@@ -36,7 +36,6 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 		return 1;
 	}
 	SetFlagDMA(0x0);
-	halLockDMA();
 	if(width < 16){
 		if(height == 1){
 			halInitSingleDMA(src,dst,width);
