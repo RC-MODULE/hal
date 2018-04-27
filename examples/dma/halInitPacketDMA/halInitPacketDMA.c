@@ -51,7 +51,7 @@ int main(){
 	}
 	int* arr = arr_src[2];
 	for(int i = 0; i < SIZE; i++){
-		arr[i] = 12;
+		arr[i] = 123;
 	}
 	arr = arr_src[3];
 	for(int i = 0; i < SIZE; i++){

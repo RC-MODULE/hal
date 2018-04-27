@@ -5,10 +5,10 @@
 #define SIZE 100
 #pragma data_section ".data_imu0"
 	int src_arr_1[SIZE];
-	int src_arr_2[SIZE];
-#pragma data_section ".data_shared"	
-	int dst_arr_1[SIZE];
 	int dst_arr_2[SIZE]; 
+#pragma data_section ".data_shared"	
+	int src_arr_2[SIZE];
+	int dst_arr_1[SIZE];
 
 int user_callback(){
 	halLed(0xaa);
