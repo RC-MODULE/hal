@@ -147,7 +147,7 @@ int main(){
 				call_counter++;
 				//PrintChaine((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
 				InitArrInChain((void**)srcAddrList,(int*)bufSizeList);
-				halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
+				halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList ,MAX_NUM_BUFFERS);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
@@ -186,7 +186,7 @@ int main(){
 				unsigned crcDst = 0;
 				unsigned crcSrc = 0;
 				call_counter++;
-				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList);
+				int err = halInitPacketDMA((void**)srcAddrList, (void**)dstAddrList, (int*)bufSizeList, MAX_NUM_BUFFERS);
 				while(halStatusDMA()){
 					int count = 0;
 					halSleep(1);
