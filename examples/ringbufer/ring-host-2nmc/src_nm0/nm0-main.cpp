@@ -17,7 +17,7 @@
 #include "dma.h"	
 #include "nmpp.h"
 #include "stdio.h"
-
+#include "string.h"
 
 #define MEM_OFFSET 0x40000
 #if defined(MC12101)

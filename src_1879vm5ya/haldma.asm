@@ -32,7 +32,7 @@ begin "text"
 //   [10000041h]=gr0; // src
    push ar2,gr2 with gr0 and gr5;// is src in global memory ?
    if =0 delayed goto localdma;
-   gr2=7fff8000h with gr5=gr5 >> 9; //gr2=mask for test on global inner memory, gr5=400000h
+   gr2=7fff0000h with gr5=gr5 >> 9; //gr2=mask for test on global inner memory, gr5=400000h
 //=====================================
 <globaldma>
    ar0=[ar5++] with gr0 and gr2;  // ar0=dmadst, is src=inner ?

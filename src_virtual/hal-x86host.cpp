@@ -30,9 +30,13 @@ MirrorRegistry mirrorRegistry[MAX_COUNT_PROCESSORS];
 extern int procNo=0;
 extern "C"{
 
-void halSetActiveHeap(){
-	
+
+void halSetActiveHeap(int heap) {
+	//activeHeap=heap;
 }
+
+
+
 int halSync(int val,int processor){
 	//printf ("HOST[%d]:Sync[%d] (%8xh)...",processor,pSyncBuf[processor].counter0,val);
 

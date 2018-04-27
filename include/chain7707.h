@@ -1,8 +1,9 @@
-struct chain7707
+struct SpecDMA7707
 {
   int *root;
   int *prev;
   int *current;
-}; // chain7707
-void initChain7707(int *buf);
+}; // SpecDMA7707
+void openDma(void *buf);
 int add2Chain( int armdst, int armsrc, int bytecnt);
+extern SpecDMA7707 chain_7707;

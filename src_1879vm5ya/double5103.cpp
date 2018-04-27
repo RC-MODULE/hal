@@ -23,11 +23,12 @@ int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1,
    if (nonfirst==0)
    {  SetCallBack(0x58, (int)doubleCBF);
       SetCallBack(0x60, (int)doubleCBF);
+      chain[3]=0;      chain[8]=0;
    }
    nonfirst=1;
    k=(int)chain;
-   chain[0]=intSize0;  chain[1]=(int)src0; chain[2]=(int)dst0; chain[3]=0;   chain[4]=k+5;
-   chain[5]=intSize1;  chain[6]=(int)src1; chain[7]=(int)dst1;  chain[8]=0;  chain[9]=0;
+   chain[0]=intSize0;  chain[1]=(int)src0; chain[2]=(int)dst0;    chain[4]=k+5;
+   chain[5]=intSize1;  chain[6]=(int)src1; chain[7]=(int)dst1;    chain[9]=0;
    statusFunc=halDmaStart( chain );
    return 0;
 } // halInitDoubleDMA
