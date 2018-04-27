@@ -83,6 +83,7 @@ int main(){
 			for(int i=0; i<2000; i+=4){
 				InitArr(src,i);
 				call_counter++;
+				//printf("call_counter = %d\n",call_counter );
 				halInitDoubleDMA(src,(nm32s*)((int)src+i/2),dst,(nm32s*)((int)dst+i/2),i/2,i/2);
 				int time = 0;
 				while(halStatusDMA()){
@@ -91,7 +92,7 @@ int main(){
 						break;
 					}*/
 					time++;
-					if(time > (i<<1)){
+					if(time > (i<<1) + 1000){
 						printf("ERROR time is over\n");
 						printf("DMA size %d\n",i);
 						halLed(3);
@@ -122,7 +123,7 @@ int main(){
 				int time = 0;
 				while(halStatusDMA()){
 					time++;
-					if(time > (i<<1)){
+					if(time > (i<<1) + 1000){
 						printf("ERROR time is over\n");
 						printf("DMA size %d\n",i);
 						halLed(3);
