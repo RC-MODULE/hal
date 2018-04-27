@@ -69,11 +69,11 @@ int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32
 	return 0;
 }
 
-int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32){
+int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32, int amm){
 	int pntr = 0;
 	int error_code = 0;
 	int test;
-	while(size32[pntr]){
+	for(pntr = 0; pntr < amm; pntr++){
 		test = (int)src[pntr] << 31;//test src is even or not
 		if(test){
 			error_code = 1;
@@ -89,7 +89,6 @@ int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32){
 			error_code = 4;
 			break;
 		}
-		pntr++;
 	}
 	if(error_code == 0){
 		pntr = 0;
