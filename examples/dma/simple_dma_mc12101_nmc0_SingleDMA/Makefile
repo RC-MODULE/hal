@@ -14,7 +14,7 @@ CFG         = my_mc12101brd1.cfg
 C_example  	= halInitSingleDMA_example
 LIB_DIRS    = -l"$(MC12101)/lib"  -l"$(NEURO)/lib" -l$(ROOT)/lib -l$(HAL)/lib  -l.
 LIBS        = mc12101lib_nm.lib libc4f.lib libc4.lib  hal-mc12101.lib cppnew4.lib libint_6407.lib
-INC 		    = -I"$(MC12101)/include" -I$(HAL)/include -I"$(NEURO)/include"
+INC 		    = -I$(MC12101)/include -I$(HAL)/include -I$(NEURO)/include
 ifeq ($(NMCC),y)
 $(TARGET):  ../$(C_example).c Makefile $(CFG) 
 	nmcc ../$(C_example).c -Sc -g -nmc4 -Tc99 $(INC)
