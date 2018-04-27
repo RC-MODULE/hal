@@ -1,4 +1,4 @@
-extern "C"{
+extern "C" {
 
 
 int halCheckParamsSingleDMA(void* src, void* dst, int size){
