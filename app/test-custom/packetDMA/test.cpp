@@ -110,11 +110,7 @@ int main(){
 	nm32s* srcAddrList[MAX_NUM_BUFFERS];
 	nm32s* dstAddrList[MAX_NUM_BUFFERS];
 	int    bufSizeList[MAX_NUM_BUFFERS + 1];
-	//halLed(0xaa);
-	//halSleep(1000);	
-	halEnbExtInt();
-	halMaskIntContMdma_mc12101();
-	halInitDMA();
+	halOpenDMA();
 	halSetCallbackDMA((DmaCallback)callback);
 	int step_count = 0;
 	for (int srcBankIndx = 0; srcBankIndx < 4; srcBankIndx++) {

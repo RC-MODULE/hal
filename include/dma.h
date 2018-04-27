@@ -137,7 +137,7 @@ typedef int(*DmaCallback2)();
 		* \return
 		* Если внешние прерывания разрешены на ядре возвращает 0 в противном случае 1
 	*/
-	int  halInitDMA();
+	int  halOpenDMA();
 	//int  halOpenDMA();
 	/**
 		* \brief Функция разрешает обработку внешних прерывания у процессорного ядра на котором она (функция) была вызвана
@@ -249,7 +249,7 @@ typedef int(*DmaCallback2)();
 	
 	void halEnterCriticalSection();
   void halExitCriticalSection();
-  void halInitStatusDMA();
+  void halOpenStatusDMA();
 
 #ifdef __cplusplus
 		};

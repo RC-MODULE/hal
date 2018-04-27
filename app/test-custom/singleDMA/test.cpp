@@ -54,9 +54,9 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 int main(){ 
 	printf("Were mirror check : Mirror at 0x%x\n",halWereMirror());	
 	printf("Core ID : %d\n",halGetCoreId());
-	halEnbExtInt();
-	halMaskIntContMdma_mc12101();
-	halInitDMA();
+	//halEnbExtInt();
+	//halMaskIntContMdma_mc12101();
+	halOpenDMA();
 	printf("Value of var coreID %d\n",halReadCoreID()); 
 	printf("DMA status is %d \n",halIsBusyDMA());
 	halSetCallbackDMA((DmaCallback)callback);
