@@ -7,8 +7,7 @@ DEBUG =y
 ifdef DEBUG
 CONFIGURATION =Debug
 else
-CONFIGURATION =Release
-$(error Release configuration cause bug in printf. Run with flag DEBUG=y )
+
 endif
 
 
@@ -39,7 +38,7 @@ TARGET           =$(OUT_DIR)/$(PROJECT).lib
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
 CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 AS_FLAGS        +=-ga
-BUILDER_FLAGS   +=-d0
+BUILDER_FLAGS   +=-d0 -full_names
 endif 
 
 # collecting of objects
@@ -69,6 +68,10 @@ $(TARGET): $(TMP_DIR) $(OBJECTS)
 	@echo **                                   Build OK!                               **
 	@echo **                                                                           **
 	@echo *******************************************************************************
+
+# custom build of printf.c because of error with -O2 optimization compiling
+$(TMP_DIR)/printf.o: ../src_nmc_all/printf.c
+	nmcc ../src_nmc_all/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0
 
 $(TMP_DIR):
 	-mkdir "$(@)"

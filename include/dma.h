@@ -3,6 +3,11 @@
 #define DMA_READY 0 
 #define DMA_OK    0 
 
+#ifndef MAX_CHAIN_BUF_SIZE
+#define MAX_CHAIN_BUF_SIZE 256
+#endif 
+
+
 typedef int(*DmaCallback2)();
 
 #ifdef __cplusplus
@@ -20,7 +25,7 @@ typedef int(*DmaCallback2)();
 	 *  
 	 *  \details Details
 	 */
-	int xdmacinit( int* dstptr,  int* srcptr, int n ); // в адресах ARM
+	//int xdmacinit( int* dstptr,  int* srcptr, int n ); // в адресах ARM
 	
 	/**
 	 *  \brief Brief

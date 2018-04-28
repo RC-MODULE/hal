@@ -6,6 +6,8 @@ PROJECT  = hal-mb7707
 CONFIGURATION ?= Release
 ifdef DEBUG
 CONFIGURATION =Debug
+else
+
 endif
 
 
@@ -66,6 +68,10 @@ $(TARGET): $(TMP_DIR) $(OBJECTS)
 	@echo **                                   Build OK!                               **
 	@echo **                                                                           **
 	@echo *******************************************************************************
+
+# custom build of printf.c because of error with -O2 optimization compiling
+$(TMP_DIR)/printf.o: ../src_nmc_all/printf.c
+	nmcc ../src_nmc_all/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0
 
 $(TMP_DIR):
 	-mkdir "$(@)"

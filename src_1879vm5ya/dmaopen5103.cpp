@@ -1,7 +1,7 @@
 extern "C"{
 int nonfirst, chain[10], matrixcnt, packetcnt;
 int ofdmainit;
-void halInitDMA()
+void halOpenDMA()
 { 
 	nonfirst=0; 
 	chain[9]=0;

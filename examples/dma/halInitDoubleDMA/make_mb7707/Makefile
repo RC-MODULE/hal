@@ -147,7 +147,7 @@ vs2015:    	$(PROJECT).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
 #========================= test & run ===================
 run: $(TARGET) 
-	mb7707run ./$(TARGET) 
+	mb7707run -i ./$(TARGET) 
 
 test: .exitcode 
 	

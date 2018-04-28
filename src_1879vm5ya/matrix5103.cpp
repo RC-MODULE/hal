@@ -8,12 +8,13 @@ extern "C"
   //typedef int(*DmaCallback)();
   void SetCallBack( int vectoraddr, int ProcAddress);
   //int halDmaStart( int *q );
-}
+
 extern int ofdmainit;
 int zzzMatrix[6];
 extern int matrixcnt;
 void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
-{  if (zzzMatrix[3])
+{  
+	if (zzzMatrix[3])
    { zzzMatrix[3]--;
      zzzMatrix[1]+=zzzMatrix[4];
      zzzMatrix[2]+=zzzMatrix[5];
@@ -23,7 +24,8 @@ void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
 
 int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
      void* dst, int dstStride32, bell_func DmaCallback, int channel)
-{ int i,srcrow,dstrow,asrc,adst,sz, *q;
+{ 
+	int i,srcrow,dstrow,asrc,adst,sz, *q;
     q=(int*)0x10000050;
     i=channel; // only to avoid warning
     if(matrixcnt==0)
@@ -46,3 +48,4 @@ int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
    return 0;
 } //  halInitMatrixDMA
 
+};

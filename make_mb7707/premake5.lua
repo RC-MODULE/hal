@@ -44,6 +44,7 @@ solution "hal-mb7707"
 	-- NeuroMatrix project ---------------------------------		
 	project "hal-mb7707"
 		kind "Makefile"
+		includedirs { "../include","$(MB7707)/libload","../src_1879hb1ya"}
 		files {	"../src_1879hb1ya/*.cpp",
 				"../src_1879hb1ya/*.asm",
 				"../src_ringbuffer/*.*",

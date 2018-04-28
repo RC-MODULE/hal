@@ -27,7 +27,9 @@ int main(){
 	//Pay attention that once set up call back will call after dma has finished forever untill it flashed or changhed 
 	// to flash the last callback function call halSetCallBack(0);
 	//load the paramentrs into matrix DMA
-	halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
+	int ret=halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
+	if (ret)
+		return ret;
 
 	while(done){
 

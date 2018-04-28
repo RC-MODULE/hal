@@ -7,61 +7,57 @@
 #include "dma5103.h"
 #define Heap_size 8000
 #define DDR_add_beging 0x20000000;
-extern "C"{
-	
-	int index = 1;
 
+int index = 777;
+
+extern "C"{
 	int user_callback()
 	{
 		index =999;
-//		printf("CallBack\n");
 		return 777;
 	}
 };
-int *src, *dst, ret;
+//#define printf(a,b)
 int main(){ 
 	
-	printf("******************* \n");
+	int size32 = 100;
 	
-	
-	int size32 = 512;
 	nmppsMallocSetRoute16(0xF01);
-	dst = nmppsMalloc_32s(size32 + 20);
-	src = nmppsMalloc_32s(size32 + 20);
+	
+	
+	int* dst = nmppsMalloc_32s(size32 + 20);
+	
+	int* src = nmppsMalloc_32s(size32 + 20);
+	
 	if (src==0 || dst==0)	return -1;
 	
-	printf("src  =%x \n",src);
-	printf("dst  =%x \n",dst);
 	
-	//printf("dmac0=%x \n",dmac0);
-	//printf("dmac1=%x \n",dmac1);
+	//printf("src = %x \n",src);
+	//printf("dst = %x \n",dst);
 	
 	for(int i=0;i<size32; i++){
 		src[i]=i;
 		dst[i]=0;
 	}
-	//dmaopen5103();
+	
 	halOpenDMA();
-	//halSetCallbackDMA(user_callback);
+	halSetCallbackDMA(user_callback);
+	int ret=halInitSingleDMA(src, dst, size32);
+	if (ret){
+		//printf("Error in halInitSingleDMA. %d \n",ret);
+		return ret;
+	}
+
 	
-	printf("set  \n");
 	
-	ret=halInitSingleDMA((void*)src,(void*)dst, 20);
-	printf("exitCode of halInitSingleDMA=%d \n",ret);
-	
-	ret=halStatusDMA();
-	printf("status dma=%d \n",ret);
-	
-	while (ret!=0){
+	do {
 		ret=halStatusDMA();
 		printf("status dma=%d \n",ret);
-		halSleep(1000);
-	}
-	printf("%d \n",index);
-	halSleep(1000);
-	for(int i=0;i<20; i++)
-		printf("%x %x \n ", src[i], dst[i]);
-	return index;
+		//halSleep(1);
+	} while (ret);
+	
+	//for(int i=0; i<20; i++)
+		//printf("%x %x \n ", src[i], dst[i]);
 
-	return 777;		
+	return index;
 }
