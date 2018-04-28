@@ -21,6 +21,9 @@ extern "C"
 
 	int halInitPacketDMA(void** src,  void** dst,  int* size32, int N)
 	{
+		for(int i=0; i<N ; i++){
+			if (((int)src[i] ^ (int)dst[i])<0) return -i-2;
+		}
 		if(packetcnt==-1)
 		{  SetCallBack(0x58, (int)BellFromDmaPacket);
 		   SetCallBack(0x60, (int)BellFromDmaPacket);

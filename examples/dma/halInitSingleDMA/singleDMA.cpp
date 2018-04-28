@@ -44,7 +44,7 @@ int main(){
 	halSetCallbackDMA(user_callback);
 	int ret=halInitSingleDMA(src, dst, size32);
 	if (ret){
-		//printf("Error in halInitSingleDMA. %d \n",ret);
+		printf("Error in halInitSingleDMA. %d \n",ret);
 		return ret;
 	}
 
@@ -56,8 +56,8 @@ int main(){
 		//halSleep(1);
 	} while (ret);
 	
-	//for(int i=0; i<20; i++)
-		//printf("%x %x \n ", src[i], dst[i]);
+	for(int i=0; i<16; i++)
+		printf("%x %x \n ", src[i], dst[i]);
 
 	return index;
 }

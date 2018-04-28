@@ -58,7 +58,9 @@ int main(){
 		arr[i] = 23;
 	}
 
-	halInitPacketDMA((void**)arr_src,(void**)arr_dst,arr_size,4);
+	if (int ret=halInitPacketDMA((void**)arr_src,(void**)arr_dst,arr_size,4)){
+		return ret;
+	};
 
 	int time = 0;
 	while(done){
