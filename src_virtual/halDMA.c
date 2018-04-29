@@ -1,14 +1,46 @@
-	void halInitDoubleDMA(int*  src0, int*  src1, int* dst0,  int* dst1, int intSize0, int intSize1){
+typedef int(*DmaCallback)();
+
+int dummy_function(){
+	return 0;
+}
+static DmaCallback user_callback = dummy_function;
+
+int halStatusDMA(){
+	return 0;
+}
+
+void halOpenDMA(){
+
+}
+
+void halOpenStatusDMA(){
+	
+}
+
+void halSetCallbackDMA(DmaCallback funct){
+	if(funct == 0){
+		user_callback = dummy_function;
+	}else{
+		user_callback = funct;
+	}
+}
+
+	void halInitDoubleDMA(void*  src0, void*  src1, void* dst0,  void* dst1, int intSize0, int intSize1){
  		int i;
+ 		int* ptr_src0 = (int*)src0;
+ 		int* ptr_src1 = (int*)src1;
+ 		int* ptr_dst0 = (int*)dst0;
+ 		int* ptr_dst1 = (int*)dst1;
  		for(i=0;i<intSize0;i++){
- 			dst0[i] = src0[i];
+ 			ptr_dst0[i] = ptr_src0[i];
  		}
  		for(i=0;i<intSize1;i++){
- 			dst1[i] = src1[i];
+ 			ptr_dst1[i] = ptr_src1[i];
  		}
+ 		user_callback();
  	};
 
- 	int  halInitMatrixDMA(int src,  int  width,int  height, int srcStride32,  int dst, int dstStride32){
+ 	int  halInitMatrixDMA(void* src,  int  width,int  height, int srcStride32, void* dst, int dstStride32){
 		int i,j;
 		int* ptr2src = (int*)src;
 		int* ptr2dst = (int*)dst;
@@ -19,22 +51,18 @@
 			ptr2dst+=dstStride32;
 			ptr2src+=srcStride32;
 		}
+		user_callback();
 		return 0;
  	};
 
- 	void halInitPacketDMA(void** src_arr, void** dst_arr, int* size_arr){
+ 	void halInitPacketDMA(void** src_arr, void** dst_arr, int* size_arr, int amm){
 		int i=0;
 		int src,dst;
 		int* ptr_src;
 		int* ptr_dst;
 
-		while(1){
+		for(int i = 0; i < amm; i++){
 			int j;
-			//printf("index = %d size = %d\n",i,size_arr[i]);
-			if(size_arr[i] == 0){
-				break;
-			}
-			
 			src = (int)*(src_arr + i); 
 			dst = (int)*(dst_arr + i);
 			ptr_src = (int*)src;
@@ -42,11 +70,26 @@
 			for(j=0;j<size_arr[i];j++){
 				ptr_dst[j] = ptr_src[j]; 
 			}
-			i++;
 		}
+		user_callback();
 	}
 
-void halInitSingleDMA(int  src,  int  dst,  int  size32){
+void halInitSingleDMA(void* src, void* dst,int size32){
+ 		int i;
+		int* pntr_src;
+		int* pntr_dst;
+
+ 		int amm = size32>>1;
+ 		amm<<=1;
+ 		pntr_src  = (int*)src;
+ 		pntr_dst  = (int*)dst;
+ 		for(i=0;i<amm;i++){
+ 			pntr_dst[i] = pntr_src[i];
+ 		}
+ 		user_callback();
+ 	}
+
+void halInitStutusSingleDMA(void* src,void* dst,int size32){
  		int i;
 		int* pntr_src;
 		int* pntr_dst;
@@ -59,17 +102,6 @@ void halInitSingleDMA(int  src,  int  dst,  int  size32){
  			pntr_dst[i] = pntr_src[i];
  		}
  	}
-
-// 	void halSetCallbackDMA(DmaCallback user_callback){
-//
-//	};
-
-	void halInitDMA(){};
-	int  halStatusDMA(){return 0;};
-	void halEnbExtInt(){};
-	void halDisExtInt(){};
-	void halMaskIntContMdma_mc12101(){};
-
 
 int halTestParamSingleDMA(void* src, void* dst, int size){
 	int temp = (int)src;
@@ -86,7 +118,7 @@ int halTestParamSingleDMA(void* src, void* dst, int size){
 	return 0;
 };
 
-int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1){
+int halTestParamDoubleDMA(void*  src0, void* src1, void* dst0, void* dst1, int intSize0, int intSize1){
 	int temp = (int)src0;
 	if(temp << 31){
 		return 1;
@@ -112,7 +144,7 @@ int halTestParamDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, in
 	return 0;
 };
 
-int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+int halTestParamMatrixDMA(void* src, int width, int height, int srcStride32, void* dst, int dstStride32){
 	int temp = (int)src;
 	if(temp << 31){
 		return 1;
@@ -133,38 +165,29 @@ int halTestParamMatrixDMA(void*  src,  int  width,int  height, int srcStride32, 
 	return 0;
 };
 
-int halTestParamPacketDMA(void** src,  void** dst,  int* size32){
-	int pntr = 0;
+int halTestParamPacketDMA(void** src, void** dst, int* size32, int amm){
 	int error_code = 0;
 	int test;
-	while(size32[pntr]){
-		test = (int)src[pntr] << 31;//test src is even or not
+	int ptr;
+	for(ptr = 0; ptr < amm; ptr++){
+		test = (int)src[ptr] << 31;//test src is even or not
 		if(test){
 			error_code = 1;
 			break;
 		}
-		test = (int)dst[pntr] << 31;//test dst is even or not
+		test = (int)dst[ptr] << 31;//test dst is even or not
 		if(test){
 			error_code = 2;
 			break;
 		}
-		test = (int)size32[pntr] << 31;//test size32 is even or not
+		test = (int)size32[ptr] << 31;//test size32 is even or not
 		if(test){
 			error_code = 4;
 			break;
 		}
-		pntr++;
 	}
 	if(error_code == 0){
-		pntr = 0;
+		ptr = 0;
 	}
-	return error_code | (pntr << 4);
+	return error_code | (ptr << 4);
 };
-
-
-int halIsBusyDMA(){
-	return 0;
-}
-
-
-
