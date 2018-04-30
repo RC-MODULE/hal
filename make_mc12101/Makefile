@@ -73,7 +73,7 @@ $(TARGET): $(TMP_DIR) $(OBJECTS)
 
 # custom build of printf.c because of error with -O2 optimization compiling
 $(TMP_DIR)/printf.o: ../src_nmc_all/printf.c
-	nmcc ../src_nmc_all/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0
+	nmcc ../src_nmc_all/printf.c -Sc -nmc4 -o$(TMP_DIR)/printf.o -O0
 
 $(TMP_DIR):
 	-mkdir "$(@)"
