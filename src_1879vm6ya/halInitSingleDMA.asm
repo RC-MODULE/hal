@@ -53,8 +53,8 @@ call _halExitCriticalSection;
 	////// double demention mode was set up to prevent user from hardwaer bug in MDMA,
 	////// becoze of error in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 
 	////// otherwise mode is double demention with bias = 2 rowcounter 1 to emulate sigle demention mode use double demention mode
-	////// this trick allows to escape reminder/quotient mode swith inside FSM
-	////// this bug takes effect only when dst address belows DDR
+	////// this trick allows to escape reminder/quotient mode switching inside FSM
+	////// this bug takes effect only when dst address belows DDR but in some case we nouted bug can take effect even if dst address is shmem
 	//address mode is double demention
 	ar1 = 1 with gr7 = true;
 	[10010008h] = gr7;//double dimention mode

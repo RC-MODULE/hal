@@ -21,7 +21,8 @@
 		int 	stateDMA;	// -1  free	
 							// 0 used by core 0
 							// 1 used by core 1
-		int 	turn;
+		//3 varibels below use for peterson algorithm in critical section
+		int 	turn; 
 		int 	flag0;
 		int 	flag1;
 		int		readCounter[2];

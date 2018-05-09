@@ -97,11 +97,8 @@ extern "C"{
 extern SyncBuf halSyncro;
 
 int main(){
-	//halInstrCacheEnable();
-	printf("turn = %d\n",halSyncro.turn);
-	printf("flag 0 = %d\n",halSyncro.flag0); 
-	printf("flag 1 = %d\n",halSyncro.flag1);
-	*(int*)(40001000) = 0x10;
+	printf("stateDMA = %d\n",halSyncro.stateDMA); 
+	printf("mirror = 0x%x\n",halWhereMirror());
 	printf("system integrator CSR = 0x%x\n",*(int*)(40001000)); 
 	int call_counter = 0;
 	//return 0;

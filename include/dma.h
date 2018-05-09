@@ -248,7 +248,7 @@ typedef int(*DmaCallback2)();
 	*/
 	int halIsBusyDMA();
 	int halGetCoreId();
-	int halWereMirror();
+	int halWhereMirror();
 	void halSetMirror(); 	
 	int halReadCoreID();
 	
