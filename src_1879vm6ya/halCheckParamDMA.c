@@ -69,6 +69,36 @@ int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32
 	return 0;
 }
 
+int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+	int temp = (int)src << 28;
+	if(temp){
+		return 1;
+	}
+	temp = (int)width << 28;
+	if(temp){
+		return 2;
+	}
+	temp = (int)srcStride32 << 28;
+	if(temp){
+		return 3;
+	}
+	temp = (int)dst << 28;
+	if(temp){
+		return 4;
+	}
+	temp = (int)dstStride32 << 28;
+	if(temp){
+		return 5;
+	}
+	if(width > srcStride32){
+		return 6;
+	}
+	if(width > dstStride32){
+		return 7;
+	}
+	return 0;
+}
+
 int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32, int amm){
 	int pntr = 0;
 	int error_code = 0;

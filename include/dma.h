@@ -136,8 +136,9 @@ typedef int(*DmaCallback2)();
 	 *  \param [in] растояние между соседними сторками матрицы в массиве приемника (dst stride в 32 биьных словах)
 	 *	\restr 
 	 *  Ограничения функции halInitStatusMatrixDMA включают в себя ограничения для функции halInitMatrixDMA, но кроме них есть так же другие ограничения
-	 *	<p>Все параметры функцииб кроме height, должны быть выровнены так, что последние 4 бита = 0 (другими словами при 32-битной адресации все параметры должны быть кратны 16 32-битным словам)	
+	 *	<p>Все параметры функции кроме height, должны быть выровнены так, что последние 4 бита = 0 (другими словами при 32-битной адресации все параметры должны быть кратны 16 32-битным словам)	
 	 *	в противном случаии возможно зависание канала ПДП (особенно если dst адрес принадлежит DDR)
+	 *   
 	 */
 	int  halInitStatusMatrixDMA(void* src, int width, int height, int srcStride32, void* dst, int dstStride32);
 
@@ -235,6 +236,20 @@ typedef int(*DmaCallback2)();
 	// 5 stands for dstStride32 is odd
 	// 6 stands for address overlap wdth more than stride
 	int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
+	/**
+		* \brief Функция возвращает код ошибки для параметров функции halInitStatusMatrixDMA() 
+		* \return
+		* Возвращает код ошибки
+		* <p>1 - невыровненный по 16 32 битных слов адрес массива источника
+		* <p>2 - длина строки матрицы не выровненна
+		* <p>3 - растояние между строками у матрицы источника (srcStride32) невыровненно по 16 32-битных слов
+		* <p>4 - невыровненный по 16 32 битных слов адрес массива приемника
+		* <p>5 - растояние между строками у матрицы приемника (dstStride32) невыровненно по 16 32-битных слов
+		* <p>6 - width > srcStride32 перекрытие адресов
+		* <p>7 - width > dstStride32 перекрытие адресов
+	*/
+	int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32)
+
 	//error code description
 	///// packet DMA
 	//// function returns error code in 4 LSB and from 4th bits number of chaine were erroneous parametr was detected
