@@ -152,14 +152,16 @@ typedef int(*DmaCallback2)();
 	*/
 	void halSetCallbackDMA(DmaCallback user_callback);
 	/**
-		* \brief Функция выполняет инициализацию программы обработки прерывания и должна быть вызвана один раз перед запуском ПДП 
+		* \brief Функция выполняет инициализацию переменных для работы ПДП и программы обработки прерывания, должна быть вызвана один раз перед запуском ПДП 
 		* в случаи необходимости использования callBack. 
-		*	<p>Данная функция анализирует регистр pswr и в случае если он запрещает внешние прерывания возвращает 1 
-		* \return
-		* Если внешние прерывания разрешены на ядре возвращает 0 в противном случае 1
 	*/
 	int  halOpenDMA();
-	//int  halOpenDMA();
+	/**
+		* \brief Функция выполняет инициализацию переменных для работы ПДП и должна быть вызвана один раз перед запуском ПДП 
+		* без работы с переываниями. Если до этого была вызвана функция halOpenDMA() то вызывать эту функцию не нужно. 
+	*/
+	void halOpenStatusDMA();
+	
 	/**
 		* \brief Функция разрешает обработку внешних прерывания у процессорного ядра на котором она (функция) была вызвана
 	*/
@@ -178,26 +180,21 @@ typedef int(*DmaCallback2)();
 		* \brief Функция разрешает обработку прерывания от ПДП (MDMA) в обработчике прерывания на плате 12101 
 	*/
 	void halMaskIntContMdma_mc12101();
-	// test of params
-	// error code description
-	////////single DMA
-	// 1 stands for src is odd 
-	// 2 stands for dst is odd
-	// 3 stands for size is odd
-	
 	/**
-		* \brief Функция возвращает код ошибки для параметров функции halInitSingleDMA() 
+		* \brief Функция провереят корректность параметров для функции halInitSingleDMA() 
 		* \return 
 		* Возвращает код ошибки
+		* <p>0 - параметры корректны
 		* <p>1 - нечетный адрес массива источника
 		* <p>2 - нечетный адрес массива приемника
 		* <p>3 - нечетное количество 32 битных слов для копирования
 	*/
 	int halCheckParamsSingleDMA(void* src, void* dst, int size);
 	/**
-		* \brief Функция возвращает код ошибки для параметров функции halInitDoubleDMA() 
+		* \brief Функция провереят корректность параметров для функции halInitDoubleDMA() 
 		* \return
 		* Возвращает код ошибки
+		* <p>0 - параметры корректны
 		* <p>1 - нечетный адрес массива первого источника
 		* <p>2 - нечетный адрес массива второго источника
 		* <p>3 - нечетный адрес массива первого приемника
@@ -206,19 +203,12 @@ typedef int(*DmaCallback2)();
 		* <p>6 - нечетное количество 32 битных слов для копирования первой второй массивов
 	*/
 
-	// error code description
-	///// double dma
-	// 1 stands for src0 is odd
-	// 2 stands for src1 is odd
-	// 3 stands for dst0 is odd
-	// 4 stands for dst1 is odd
-	// 5 stands for intSize0 is odd
-	// 6 stands for intSize1 is odd
 	int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
 	/**
-		* \brief Функция возвращает код ошибки для параметров функции halInitMatrixDMA() 
+		* \brief Функция провереят корректность параметров для функции halInitMatrixDMA() 
 		* \return
 		* Возвращает код ошибки
+		* <p>0 - параметры корректны
 		* <p>1 - нечетный адрес массива первого источника
 		* <p>2 - длина строки матрицы не четное число
 		* <p>3 - нечетное расстояние между строками у матрицы источника (srcStride32)
@@ -227,19 +217,12 @@ typedef int(*DmaCallback2)();
 		* <p>6 - width > srcStride32 перекрытие адресов
 		* <p>7 - width > dstStride32 перекрытие адресов
 	*/
-	// error code descriptoin 
-	///// matrix DMA
-	// 1 stands for src is odd
-	// 2 stands for width is odd
-	// 3 stands for srcStride32 is odd
-	// 4 stands for dst is odd
-	// 5 stands for dstStride32 is odd
-	// 6 stands for address overlap wdth more than stride
 	int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	/**
-		* \brief Функция возвращает код ошибки для параметров функции halInitStatusMatrixDMA() 
+		* \brief Функция провереят корректность параметров для функции halInitStatusMatrixDMA() 
 		* \return
 		* Возвращает код ошибки
+		* <p>0 - параметры корректны
 		* <p>1 - невыровненный по 16 32 битных слов адрес массива источника
 		* <p>2 - длина строки матрицы не выровнена
 		* <p>3 - расстояние между строками у матрицы источника (srcStride32) не выровнено по 16 32-битных слов
@@ -249,18 +232,12 @@ typedef int(*DmaCallback2)();
 		* <p>7 - width > dstStride32 перекрытие адресов
 	*/
 	int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
-
-	//error code description
-	///// packet DMA
-	//// function returns error code in 4 LSB and from 4th bits number of chaine were erroneous parametr was detected
- 	// 1 stands for odd address of src array
- 	// 2 stands for odd address of dst array
- 	// 4 stands for odd size32 of array 
 	/**
-		* \brief Функция возвращает код ошибки для параметров функции halInitPacketDMA().
+		* \brief Функция провереят корректность параметров для функции halInitPacketDMA().
 		* <p>Сам код ошибки находится непосредственно в первых 4х битах (LSB), а индекс цепочки хранится в битах начиная с 4 (нумерация битов начинается с 0)   
 		* /return
 		* Возвращает код ошибки
+		* <p>0 - параметры корректны
 		* <p>1 - нечетный адрес массива источника
 		* <p>2 - нечетный адрес массива приемника
 		* <p>2 - нечетное количество 32 битных слов для копирования
@@ -278,13 +255,22 @@ typedef int(*DmaCallback2)();
 	*/
 	int halIsBusyDMA();
 	int halGetCoreId();
+	/**
+		* \brief Функция позволяет узнать смещение по адресам памяти для DMA.
+		* /return
+		* Memory offset
+	*/ 	
 	int halWhereMirror();
-	void halSetMirror(); 	
+	void halSetMirror();
+	/**
+		* \brief Функция позволяет узнать номер ядра.
+		* /return
+		* CoreID
+	*/ 	
 	int halReadCoreID();
 	
 	void halEnterCriticalSection();
   void halExitCriticalSection();
-  void halOpenStatusDMA();
 
 #ifdef __cplusplus
 		};

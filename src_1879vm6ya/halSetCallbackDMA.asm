@@ -116,7 +116,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	[_flag_of_pack_DMA] = gr7;
 	ar5 = Lint_6407;
 	ar1 = 00000120h;
-	gr7 = pswr;
+	//gr7 = pswr;
 	//simular lines of code below 
 	//are copping the programm to interruption vector of interruption controller
 	//the programm is next
@@ -125,9 +125,9 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//delayed goto CALL_BACK;
 	//	[GR7] = gr7;
 	ar0,gr0 = [ar5++]; 
-	[ar1++] = ar0,gr0 with gr7 >>= 5;//extract the bit of external interruption is enabled
-	ar0,gr0 = [ar5++] with gr7 <<= 31;//
-	[ar1++] = ar0,gr0 with gr7 >>= 31;//
+	[ar1++] = ar0,gr0;//
+	ar0,gr0 = [ar5++];//
+	[ar1++] = ar0,gr0;//
 	ar0,gr0 = [ar5++];
 	[ar1++] = ar0,gr0;
 	ar0,gr0 = [ar5++];
