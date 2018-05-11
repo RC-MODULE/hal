@@ -152,13 +152,12 @@ typedef int(*DmaCallback2)();
 	*/
 	void halSetCallbackDMA(DmaCallback user_callback);
 	/**
-		* \brief Функция выполняет инициализацию переменных для работы ПДП и программы обработки прерывания, должна быть вызвана один раз перед запуском ПДП 
-		* в случаи необходимости использования callBack. 
+		* \brief Функция выполняет инициализацию переменных для работы ПДП с callBack функцией и должна быть вызвана 1 раз перед запуском ПДП 
 	*/
 	int  halOpenDMA();
 	/**
-		* \brief Функция выполняет инициализацию переменных для работы ПДП и должна быть вызвана один раз перед запуском ПДП 
-		* без работы с переываниями. Если до этого была вызвана функция halOpenDMA() то вызывать эту функцию не нужно. 
+		* \brief Функция выполняет инициализацию переменных для работы ПДП без callBack функцией и должна быть вызвана 1 раз перед запуском ПДП.
+		* Если до этого была вызвана функция halOpenDMA, то вызывать функцию halOpenStatusDMA не нужно
 	*/
 	void halOpenStatusDMA();
 	
@@ -181,7 +180,7 @@ typedef int(*DmaCallback2)();
 	*/
 	void halMaskIntContMdma_mc12101();
 	/**
-		* \brief Функция провереят корректность параметров для функции halInitSingleDMA() 
+		* \brief Функция проверяет корректность параметров для функции halInitSingleDMA() 
 		* \return 
 		* Возвращает код ошибки
 		* <p>0 - параметры корректны
@@ -191,7 +190,7 @@ typedef int(*DmaCallback2)();
 	*/
 	int halCheckParamsSingleDMA(void* src, void* dst, int size);
 	/**
-		* \brief Функция провереят корректность параметров для функции halInitDoubleDMA() 
+		* \brief Функция проверяет корректность параметров для функции halInitDoubleDMA() 
 		* \return
 		* Возвращает код ошибки
 		* <p>0 - параметры корректны
@@ -205,7 +204,7 @@ typedef int(*DmaCallback2)();
 
 	int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1);
 	/**
-		* \brief Функция провереят корректность параметров для функции halInitMatrixDMA() 
+		* \brief Функция проверяет корректность параметров для функции halInitMatrixDMA() 
 		* \return
 		* Возвращает код ошибки
 		* <p>0 - параметры корректны
@@ -219,7 +218,7 @@ typedef int(*DmaCallback2)();
 	*/
 	int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	/**
-		* \brief Функция провереят корректность параметров для функции halInitStatusMatrixDMA() 
+		* \brief Функция проверяет корректность параметров для функции halInitStatusMatrixDMA() 
 		* \return
 		* Возвращает код ошибки
 		* <p>0 - параметры корректны
