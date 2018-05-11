@@ -44,13 +44,11 @@ int main(){
 	halSetCallbackDMA(user_callback);
 	int ret = halCheckParamsSingleDMA(src, dst, size32);
 	if (ret){
-		printf("Error in halInitSingleDMA. %d \n",ret);
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
 	}
+	
 	halInitSingleDMA(src, dst, size32);
-	
-
-	
 	
 	do {
 		ret=halStatusDMA();

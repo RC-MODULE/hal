@@ -4,12 +4,6 @@
 
 //this example shows how to use DoubleDma
 #define SIZE 100
-#pragma data_section ".data_imu0"
-	int src_arr_1[SIZE];
-	int dst_arr_2[SIZE]; 
-#pragma data_section ".data_shared"	
-	int src_arr_2[SIZE];
-	int dst_arr_1[SIZE];
 
 int user_callback(){
 	halLed(0xaa);
@@ -55,8 +49,10 @@ int main(){
 	ret = halCheckParamsDoubleDMA(src0,src1,dst0,dst1,size0,size1);
 	
 	//load the parameters into DMA
-	if (ret)
+	if (ret){
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
+	}
 	//if (ret= halInitDoubleDMA((void*)(4*(int)src0),(void*)(4*(int)src1),(void*)(4*(int)dst0),(void*)(4*(int)dst1),size0,size1))
 	halInitDoubleDMA(src0,src1,dst0,dst1,size0,size1);
 

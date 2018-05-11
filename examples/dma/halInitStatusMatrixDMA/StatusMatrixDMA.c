@@ -21,9 +21,15 @@ int main(){
 	}
 
 	halOpenStatusDMA();//this function initialises some variables needed to provide a functionality of dma on both core 
-	
+	int ret = halCheckParamsStausMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
+	if (ret){
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
+		return ret;
+	}
+
 	printf("src = 0x%x\n",(int)src_matrix);
 	printf("dst = 0x%x\n",(int)dst_matrix);
+	
 	halInitStatusMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
 	
 	while(halStatusDMA()){}

@@ -57,10 +57,11 @@ int main(){
 	for(int i = 0; i < SIZE; i++){
 		arr[i] = 23;
 	}
-
-	if (int ret=halInitPacketDMA((void**)arr_src,(void**)arr_dst,arr_size,4)){
+	int ret = halInitPacketDMA((void**)arr_src,(void**)arr_dst,arr_size,4);
+	if (ret){
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
-	};
+	}
 
 	int time = 0;
 	while(done){

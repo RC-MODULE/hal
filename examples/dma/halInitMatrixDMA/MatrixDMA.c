@@ -27,9 +27,11 @@ int main(){
 	//Pay attention that once set up call back will call after dma has finished forever until it flashed or changed 
 	// to flash the last callback function call halSetCallBack(0);
 	//load the parameters into matrix DMA
-	int ret=halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
-	if (ret)
+	int ret = halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
+	if (ret){
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
+	}
 
 	while(done){
 

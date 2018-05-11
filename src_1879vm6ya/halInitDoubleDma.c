@@ -4,7 +4,6 @@ static int pntr2src_2dma;
 static int pntr2dst_2dma; 
 static int size1_dma;
 static DmaCallback user_callback_loc;
-static int temp = 0;
 	DmaCallback readCallback();
 
 static int ownCallback(){
