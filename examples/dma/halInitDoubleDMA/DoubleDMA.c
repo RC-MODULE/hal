@@ -43,7 +43,7 @@ int main(){
 	
 	halSetCallbackDMA((DmaCallback)user_callback);//устанавливает адрес callback функции 
 	
-	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или пеереписан другим вызовом halSetCallbackDMA()
+	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или переписан другим вызовом halSetCallbackDMA()
 	//или сброшен при помощи halSetCallbackDMA(0);
 
 	ret = halCheckParamsDoubleDMA(src0,src1,dst0,dst1,size0,size1);

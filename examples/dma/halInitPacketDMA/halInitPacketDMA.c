@@ -17,7 +17,7 @@ int main(){
 
 	halSetCallbackDMA((DmaCallback)user_callback);//устанавливает адрес callback функции 
 	
-	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или пеереписан другим вызовом halSetCallbackDMA()
+	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или переписан другим вызовом halSetCallbackDMA()
 	//или сброшен при помощи halSetCallbackDMA(0);
 
 	int* arr_src[4];

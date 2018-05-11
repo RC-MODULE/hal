@@ -25,7 +25,7 @@ int main(){
 
 	halSetCallbackDMA((DmaCallback)callback);//устанавливает адрес callback функции 
 	
-	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или пеереписан другим вызовом halSetCallbackDMA()
+	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или переписан другим вызовом halSetCallbackDMA()
 	//или сброшен при помощи halSetCallbackDMA(0);
 
 	int ret = halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
