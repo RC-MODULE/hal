@@ -23,24 +23,28 @@ int user_callback(){
 
 
 int main(){
-	halOpenDMA();//this function writes the interruption vector into interruption controller and initialise some variables needed to provide a functionality of dma on both core 
+	halOpenDMA();//функция инициализирует окружение для работы DMA вызывается 1 раз для всех DMA
 
-	halSetCallbackDMA((DmaCallback)user_callback);//set callback function to be called after dma is done. 
-	//Pay attention that once set up call back will call after dma has finished forever until it flashed or changed 
-	// to flash the last callback function call halSetCallBack(0);
+	halSetCallbackDMA((DmaCallback)user_callback);//устанавливает адрес callback функции 
+	
+	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или пеереписан другим вызовом halSetCallbackDMA()
+	//или сброшен при помощи halSetCallbackDMA(0);
+
 	int* arr_src[4];
 	int* arr_dst[4];
 	int arr_size[4] = {SIZE,SIZE,SIZE,SIZE};
-	//array of source addresses 
-	arr_src[0] = src_1;
-	arr_src[1] = src_2;
-	arr_src[2] = (int*)malloc1(SIZE);
-	arr_src[3] = (int*)malloc2(SIZE);
-	//array of dst addresses 
-	arr_dst[0] = dst_1;
-	arr_dst[1] = dst_2;
-	arr_dst[2] = (int*)dst_3;
-	arr_dst[3] = (int*)malloc0(SIZE);
+	//массив адресов источника
+	nmppsMallocSetRoute16(0xF0101); 
+	arr_src[0] = nmppsMalloc_32s(SIZE);
+	arr_src[1] = nmppsMalloc_32s(SIZE);
+	arr_src[2] = nmppsMalloc_32s(SIZE);
+	arr_src[3] = nmppsMalloc_32s(SIZE);
+	nmppsMallocSetRoute16(0xF1010);
+	//массив адресов приемника 
+	arr_dst[0] = nmppsMalloc_32s(SIZE);
+	arr_dst[1] = nmppsMalloc_32s(SIZE);
+	arr_dst[2] = nmppsMalloc_32s(SIZE);
+	arr_dst[3] = nmppsMalloc_32s(SIZE);
 
 
 	for(int i = 0; i < SIZE; i++){
@@ -71,10 +75,7 @@ int main(){
 			return 3;
 		}
 	}
-	
-//also user can sure is dma finished or not by code like 
-	//while(halStatusDMA()){}
-	
+
 	printf("ARRAY 1\n");
 	for(int i = 0; i < 10; i++){
 		printf("[%d] = %d \n",i,*(arr_dst[0] + i));

@@ -2,7 +2,7 @@
 #include <hal.h>
 #include "nmpp.h"
 
-//this example shows how to use DoubleDma
+//этот пример показывает как использовать doubleDMA
 #define SIZE 100
 
 int user_callback(){
@@ -39,26 +39,24 @@ int main(){
 		dst1[i] = 0;
 	}	
 	
-	halOpenDMA();//this function writes the interruption vector into interruption controller and initialise some variables needed to provide a functionality of dma on both core 
+	halOpenDMA();//функция инициализирует окружение для работы DMA вызывается 1 раз для всех DMA
 	
-	halSetCallbackDMA((DmaCallback)user_callback);//set callback function to be called after dma is done. 
+	halSetCallbackDMA((DmaCallback)user_callback);//устанавливает адрес callback функции 
 	
-	//Pay attention that once set up call back will call after dma has finished forever until it flashed or changed 
-	// to flash the last callback function call halSetCallBack(0);
+	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или пеереписан другим вызовом halSetCallbackDMA()
+	//или сброшен при помощи halSetCallbackDMA(0);
 
 	ret = halCheckParamsDoubleDMA(src0,src1,dst0,dst1,size0,size1);
 	
-	//load the parameters into DMA
 	if (ret){
 		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
 	}
-	//if (ret= halInitDoubleDMA((void*)(4*(int)src0),(void*)(4*(int)src1),(void*)(4*(int)dst0),(void*)(4*(int)dst1),size0,size1))
+	
 	halInitDoubleDMA(src0,src1,dst0,dst1,size0,size1);
 
 	
-	//an approach to get known dma had finished
-	//halStatusDMA return 0 in case dma had finished
+	//когда DMA закончит передачу halStatusDMA() вернет 0
 	while(halStatusDMA()){
 
 	}
@@ -81,12 +79,10 @@ int main(){
 		dst1[i] = 0;
 	}	
 	
-
-	// next one way to get know dma had finished
-	//use the callback and variable to set it up in callback
 	halSetCallbackDMA((DmaCallback)user_callback_to_stop);
 	halInitDoubleDMA(src0,src1,dst0,dst1,size0,size1);
-	
+	//ещё один способ узнать о завершение передачи это использовать функцию callback и переменную
+	//в которую в callback пишется определенное значение
 	while(done){
 
 	}

@@ -9,7 +9,7 @@
 
 int main(){
 	int counter = 0;
-	//to provide a right offset of address in any case
+	//код ниже обеспечивает гарантированное выравнивание по 16 32-битных слов
 	int* src_matrix = (int*)((int)src >> 4);
 	int* dst_matrix = (int*)((int)dst >> 4);
 	src_matrix = (int*)((int)src_matrix << 4);
@@ -20,7 +20,7 @@ int main(){
 		src_matrix[i + j] = counter++;
 	}
 
-	halOpenStatusDMA();//this function initialises some variables needed to provide a functionality of dma on both core 
+	halOpenStatusDMA();//функция инициализирует окружение для работы DMA вызывается 1 раз для всех DMA
 	int ret = halCheckParamsStausMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
 	if (ret){
 		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
