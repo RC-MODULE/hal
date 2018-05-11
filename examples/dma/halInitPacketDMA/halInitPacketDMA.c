@@ -1,18 +1,8 @@
 #include <stdio.h>
-#include <malloc.h>
+#include "nmpp.h"
 #include <hal.h>
 
 #define SIZE 100
-
-#pragma data_section ".data_imu0"
-	int src_1[SIZE];
-#pragma data_section ".data_imu1"
-	int src_2[SIZE];
-	int dst_1[SIZE];
-#pragma data_section ".data_ext"	
-	int dst_2[SIZE];
-	int dst_3[SIZE];
-
 
 int done = 1;
 int user_callback(){
@@ -46,14 +36,15 @@ int main(){
 	arr_dst[2] = nmppsMalloc_32s(SIZE);
 	arr_dst[3] = nmppsMalloc_32s(SIZE);
 
-
+	int* arr = arr_src[0];
 	for(int i = 0; i < SIZE; i++){
-		src_1[i] = i;
+		arr[i] = i;
 	}
+	arr = arr_src[1];
 	for(int i = 0; i < SIZE; i++){
-		src_2[i] = -i;
+		arr[i] = -i;
 	}
-	int* arr = arr_src[2];
+	arr = arr_src[2];
 	for(int i = 0; i < SIZE; i++){
 		arr[i] = 123;
 	}
