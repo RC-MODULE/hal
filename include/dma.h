@@ -248,7 +248,7 @@ typedef int(*DmaCallback2)();
 		* <p>6 - width > srcStride32 перекрытие адресов
 		* <p>7 - width > dstStride32 перекрытие адресов
 	*/
-	int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32)
+	int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 
 	//error code description
 	///// packet DMA

@@ -42,11 +42,13 @@ int main(){
 	
 	halOpenDMA();
 	halSetCallbackDMA(user_callback);
-	int ret=halInitSingleDMA(src, dst, size32);
+	int ret = halCheckParamsSingleDMA(src, dst, size32);
 	if (ret){
 		printf("Error in halInitSingleDMA. %d \n",ret);
 		return ret;
 	}
+	halInitSingleDMA(src, dst, size32);
+	
 
 	
 	

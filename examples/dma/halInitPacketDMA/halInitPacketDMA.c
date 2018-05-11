@@ -23,15 +23,15 @@ int user_callback(){
 
 
 int main(){
-	halOpenDMA();//this function writes the interruption vector into interruption controller and initialise some variables needed to provide a functionnality of dma on both core 
+	halOpenDMA();//this function writes the interruption vector into interruption controller and initialise some variables needed to provide a functionality of dma on both core 
 
 	halSetCallbackDMA((DmaCallback)user_callback);//set callback function to be called after dma is done. 
-	//Pay attention that once set up call back will call after dma has finished forever untill it flashed or changhed 
+	//Pay attention that once set up call back will call after dma has finished forever until it flashed or changed 
 	// to flash the last callback function call halSetCallBack(0);
 	int* arr_src[4];
 	int* arr_dst[4];
 	int arr_size[4] = {SIZE,SIZE,SIZE,SIZE};
-	//array of sourse addresses 
+	//array of source addresses 
 	arr_src[0] = src_1;
 	arr_src[1] = src_2;
 	arr_src[2] = (int*)malloc1(SIZE);
@@ -70,7 +70,10 @@ int main(){
 			return 3;
 		}
 	}
-
+	
+//also user can sure is dma finished or not by code like 
+	//while(halStatusDMA()){}
+	
 	printf("ARRAY 1\n");
 	for(int i = 0; i < 10; i++){
 		printf("[%d] = %d \n",i,*(arr_dst[0] + i));
