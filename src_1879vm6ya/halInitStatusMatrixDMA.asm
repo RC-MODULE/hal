@@ -1,26 +1,16 @@
-global _halInitMatrixDMA_asm : label;
+global _halInitStatusMatrixDMA : label;
 
 extern _flag_of_pack_DMA 	: word;
 extern mirror_offset      : word;
-extern coreID             : word;
-extern _halSyncro					: word;
 
 extern _halEnterCriticalSection : label;
 extern _halExitCriticalSection  : label;
 
 begin ".text"
-<_halInitMatrixDMA_asm>
+<_halInitStatusMatrixDMA>
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
 	push ar0,gr0;
-	gr0 = [coreID];
-<WAIT_DMA>	
-call _halEnterCriticalSection;	
-	gr7 = [_halSyncro];
-	gr7;
-	if >= goto WAIT_DMA;
-	[_halSyncro] = gr0;
-call _halExitCriticalSection;
 	///init 
 	push ar1,gr1 with gr7 = false;
 	[1001000Ah] = gr7;//clear controll register
@@ -72,13 +62,12 @@ call _halExitCriticalSection;
 	[10010014h] = gr2;//bias dst
 	//address modes is with bias (double demention)
 	gr7 = true;
-	[10010008h] = gr7;//double demention mode
-	[10010018h] = gr7;//double demention mode
-	///interaption mask
+	[10010008h] = gr7;
+	[10010018h] = gr7;
+	///interruption mask
 	gr7 = true;
-	[1001000Ch] = gr7;//both interruptions are on
-	gr7 = 2;
-	[1001001Ch] = gr7;//both interruptions are on
+	[1001000Ch] = gr7;// all interruption are off 	
+	[1001001Ch] = gr7;// all interruption are off 	
 	////start
 	gr7 = 1;
 	[1001000Ah] = gr7;
@@ -90,5 +79,5 @@ call _halExitCriticalSection;
 	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;
-	return;
+	delayed return;
 end ".text";

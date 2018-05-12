@@ -70,8 +70,8 @@ call _halExitCriticalSection;
 <PASS_DOUBLE_DEMENTION_SETUP>
 	//address mode is sequential
 	gr7 = false;
-	[10010008h] = gr7;
-	[10010018h] = gr7;
+	[10010008h] = gr7;//single demention mode
+	[10010018h] = gr7;//single demention mode
 	//counters
 	//[10010000h] = gr1;//wrt ammunt of data to mdma
 	//[10010010h] = gr1;//wrt ammunt of data to mdma
@@ -80,13 +80,15 @@ call _halExitCriticalSection;
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
 	[10010012h] = ar2;//wrt address to wrt data into dst
 	///interruption mask
-	[1001000Ch] = gr7;//MDAM interruption are both enable
-	[1001001Ch] = gr7;//MDAM interruption are both enable
+	gr7 = true;
+	[1001000Ch] = gr7;//MDAM interruptions are prohibited at this port
+	gr7 = 2;
+	[1001001Ch] = gr7;//one of MDMA interruptions is enable
 	
 	////start
 	gr7 = 1;
-	[1001001Ah] = gr7;
-	[1001000Ah] = gr7;
+	[1001001Ah] = gr7;//control register start
+	[1001000Ah] = gr7;//control register start
 
 <END>
 	pop ar2,gr2;
