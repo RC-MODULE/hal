@@ -60,8 +60,8 @@ void halSetCallbackDMA(DmaCallback funct){
 		int src,dst;
 		int* ptr_src;
 		int* ptr_dst;
-
-		for(int i = 0; i < amm; i++){
+	
+		for(i = 0; i < amm; i++){
 			int j;
 			src = (int)*(src_arr + i); 
 			dst = (int)*(dst_arr + i);
