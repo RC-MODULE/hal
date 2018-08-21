@@ -28,7 +28,7 @@ int halOpen(char* absfile=0,...){
 	abs[0] = absfile;
 	abs[1] = va_arg(args, char*);
 	va_end(args);
-	if (absfile==0)
+	if (absfile[0]==0)
 		absfile=abs[1];
 
 
