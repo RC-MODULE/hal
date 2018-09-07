@@ -42,13 +42,13 @@ int main(){
 	
 	halOpenDMA();
 	halSetCallbackDMA(user_callback);
-	int ret=halInitSingleDMA(src, dst, size32);
+	int ret = halCheckParamsSingleDMA(src, dst, size32);
 	if (ret){
-		//printf("Error in halInitSingleDMA. %d \n",ret);
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
 	}
-
 	
+	halInitSingleDMA(src, dst, size32);
 	
 	do {
 		ret=halStatusDMA();
@@ -56,8 +56,8 @@ int main(){
 		//halSleep(1);
 	} while (ret);
 	
-	//for(int i=0; i<20; i++)
-		//printf("%x %x \n ", src[i], dst[i]);
+	for(int i=0; i<16; i++)
+		printf("%x %x \n ", src[i], dst[i]);
 
 	return index;
 }

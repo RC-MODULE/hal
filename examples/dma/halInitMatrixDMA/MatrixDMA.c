@@ -21,15 +21,18 @@ int main(){
 		src_matrix[i][j] = counter++;
 	}
 
-	halOpenDMA();//this function writes the interruption vector into interruption controller and initialise some variables needed to provide a functionnality of dma on both core 
+	halOpenDMA();//функция инициализирует окружение для работы DMA вызывается 1 раз для всех DMA
 
-	halSetCallbackDMA((DmaCallback)callback);//set callback function to be called after dma is done. 
-	//Pay attention that once set up call back will call after dma has finished forever untill it flashed or changhed 
-	// to flash the last callback function call halSetCallBack(0);
-	//load the paramentrs into matrix DMA
-	int ret=halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
-	if (ret)
+	halSetCallbackDMA((DmaCallback)callback);//устанавливает адрес callback функции 
+	
+	//Устанавленный выше callback будет действовать всегда до тез пор пока он не будет или переписан другим вызовом halSetCallbackDMA()
+	//или сброшен при помощи halSetCallbackDMA(0);
+
+	int ret = halInitMatrixDMA((int*)src_matrix,32,32,32,(int*)dst_matrix,32);
+	if (ret){
+		printf("ERORR: wrong parametrs in DMA initialisation exit code is %d\n",ret);
 		return ret;
+	}
 
 	while(done){
 

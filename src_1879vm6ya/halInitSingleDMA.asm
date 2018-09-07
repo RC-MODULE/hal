@@ -53,8 +53,8 @@ call _halExitCriticalSection;
 	////// double demention mode was set up to prevent user from hardwaer bug in MDMA,
 	////// becoze of error in FSM inside of MDMA addresses have to be both align as 4 the last significant bits = 0 
 	////// otherwise mode is double demention with bias = 2 rowcounter 1 to emulate sigle demention mode use double demention mode
-	////// this trick allows to escape reminder/quotient mode swith inside FSM
-	////// this bug takes effect only when dst address belows DDR
+	////// this trick allows to escape reminder/quotient mode switching inside FSM
+	////// this bug takes effect only when dst address belows DDR but in some case we nouted bug can take effect even if dst address is shmem
 	//address mode is double demention
 	ar1 = 1 with gr7 = true;
 	[10010008h] = gr7;//double dimention mode
@@ -70,8 +70,8 @@ call _halExitCriticalSection;
 <PASS_DOUBLE_DEMENTION_SETUP>
 	//address mode is sequential
 	gr7 = false;
-	[10010008h] = gr7;
-	[10010018h] = gr7;
+	[10010008h] = gr7;//single demention mode
+	[10010018h] = gr7;//single demention mode
 	//counters
 	//[10010000h] = gr1;//wrt ammunt of data to mdma
 	//[10010010h] = gr1;//wrt ammunt of data to mdma
@@ -80,13 +80,15 @@ call _halExitCriticalSection;
 	[10010002h] = ar0;//wrt address to read data into mdma buffer
 	[10010012h] = ar2;//wrt address to wrt data into dst
 	///interruption mask
-	[1001000Ch] = gr7;//MDAM interruption are both enable
-	[1001001Ch] = gr7;//MDAM interruption are both enable
+	gr7 = true;
+	[1001000Ch] = gr7;//MDAM interruptions are prohibited at this port
+	gr7 = 2;
+	[1001001Ch] = gr7;//one of MDMA interruptions is enable
 	
 	////start
 	gr7 = 1;
-	[1001001Ah] = gr7;
-	[1001000Ah] = gr7;
+	[1001001Ah] = gr7;//control register start
+	[1001000Ah] = gr7;//control register start
 
 <END>
 	pop ar2,gr2;

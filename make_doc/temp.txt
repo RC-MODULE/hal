@@ -1,31 +1,89 @@
-var menudata={children:[
-{text:"Титульная страница",url:"index.html"},
-{text:"Группы",url:"modules.html"},
-{text:"Классы",url:"annotated.html",children:[
-{text:"Классы",url:"annotated.html"},
-{text:"Алфавитный указатель классов",url:"classes.html"},
-{text:"Члены классов",url:"functions.html",children:[
-{text:"Указатель",url:"functions.html"},
-{text:"Переменные",url:"functions_vars.html"}]}]},
-{text:"Файлы",url:"files.html",children:[
-{text:"Файлы",url:"files.html"},
-{text:"Список членов всех файлов",url:"globals.html",children:[
-{text:"Указатель",url:"globals.html",children:[
-{text:"a",url:"globals.html#index_a"},
-{text:"c",url:"globals.html#index_c"},
-{text:"d",url:"globals.html#index_d"},
-{text:"h",url:"globals.html#index_h"},
-{text:"i",url:"globals.html#index_i"},
-{text:"n",url:"globals.html#index_n"},
-{text:"s",url:"globals.html#index_s"},
-{text:"x",url:"globals.html#index_x"}]},
-{text:"Функции",url:"globals_func.html",children:[
-{text:"a",url:"globals_func.html#index_a"},
-{text:"d",url:"globals_func.html#index_d"},
-{text:"h",url:"globals_func.html#index_h"},
-{text:"i",url:"globals_func.html#index_i"},
-{text:"n",url:"globals_func.html#index_n"},
-{text:"s",url:"globals_func.html#index_s"},
-{text:"x",url:"globals_func.html#index_x"}]},
-{text:"Определения типов",url:"globals_type.html"},
-{text:"Макросы",url:"globals_defs.html"}]}]}]}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>hal: Шаблон класса HalRingBuffer&lt; T &gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">hal
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.8.13 -->
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',false,false,'search.php','Поиск');
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="#pub-attribs">Открытые атрибуты</a> &#124;
+<a href="class_hal_ring_buffer-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle">
+<div class="title">Шаблон класса HalRingBuffer&lt; T &gt;</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="ringbuffer_8h_source.html">ringbuffer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:a2164f0872107b218a013989320da7741"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a2164f0872107b218a013989320da7741">callback</a> ()</td></tr>
+<tr class="separator:a2164f0872107b218a013989320da7741"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac52fe07c0e0f5f3a7b93c0cc96914bd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#ac52fe07c0e0f5f3a7b93c0cc96914bd1">HalRingBuffer</a> ()</td></tr>
+<tr class="separator:ac52fe07c0e0f5f3a7b93c0cc96914bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaac9be91eb1ac809cc60c3cfd23d0ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#aeaac9be91eb1ac809cc60c3cfd23d0ca">HalRingBuffer</a> (T *buffer, size_t count, <a class="el" href="ringbuffer_8h.html#a7631beb638c57a41e2e349c33663bb4b">memcpy_ptr</a> pushmemcpy, <a class="el" href="ringbuffer_8h.html#a7631beb638c57a41e2e349c33663bb4b">memcpy_ptr</a> popmemcpy)</td></tr>
+<tr class="separator:aeaac9be91eb1ac809cc60c3cfd23d0ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d28a34c204e905b95cff3b0dd866e28"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a6d28a34c204e905b95cff3b0dd866e28">init</a> (T *buffer, size_t count, <a class="el" href="ringbuffer_8h.html#a7631beb638c57a41e2e349c33663bb4b">memcpy_ptr</a> pushmemcpy, <a class="el" href="ringbuffer_8h.html#a7631beb638c57a41e2e349c33663bb4b">memcpy_ptr</a> popmemcpy)</td></tr>
+<tr class="separator:a6d28a34c204e905b95cff3b0dd866e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8638bf28abf9db6d4d2ffcc7ccd8ea50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a8638bf28abf9db6d4d2ffcc7ccd8ea50">isFull</a> ()</td></tr>
+<tr class="separator:a8638bf28abf9db6d4d2ffcc7ccd8ea50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab01bf4f4d6595deb56089c7bcecad205"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#ab01bf4f4d6595deb56089c7bcecad205">isEmpty</a> ()</td></tr>
+<tr class="separator:ab01bf4f4d6595deb56089c7bcecad205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7ce9349d3c070d8ba126558ced20f00"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#af7ce9349d3c070d8ba126558ced20f00">writeAvail</a> ()</td></tr>
+<tr class="separator:af7ce9349d3c070d8ba126558ced20f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa846f793b72b78e4ccb831b5629dda6e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#aa846f793b72b78e4ccb831b5629dda6e">readAvail</a> ()</td></tr>
+<tr class="separator:aa846f793b72b78e4ccb831b5629dda6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3f6d7e15f7bcdd38086b2956d933fb4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#ad3f6d7e15f7bcdd38086b2956d933fb4">moveHead</a> (int numElements)</td></tr>
+<tr class="separator:ad3f6d7e15f7bcdd38086b2956d933fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2aff2ece12643038211e99b34358aba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#ae2aff2ece12643038211e99b34358aba">moveTail</a> (int numElements)</td></tr>
+<tr class="separator:ae2aff2ece12643038211e99b34358aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01f1111c7873380835af9ab7fcff1d1e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a01f1111c7873380835af9ab7fcff1d1e">write</a> (T *pSrcElements, size_t numElements)</td></tr>
+<tr class="separator:a01f1111c7873380835af9ab7fcff1d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d759a17a4ecf1dfc230122d73415b14"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a7d759a17a4ecf1dfc230122d73415b14">writedma</a> (T *pSrcElements, size_t numElements)</td></tr>
+<tr class="separator:a7d759a17a4ecf1dfc230122d73415b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5075c4a1a1226c88c4cc3ba47bcded6a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a5075c4a1a1226c88c4cc3ba47bcded6a">write</a> (T pSrcElement)</td></tr>
+<tr class="separator:a5075c4a1a1226c88c4cc3ba47bcded6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9bd44ca74e1081f311c0cfb3de6adfa"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#ac9bd44ca74e1081f311c0cfb3de6adfa">pushDMA</a> ()</td></tr>
+<tr class="separator:ac9bd44ca74e1081f311c0cfb3de6adfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d7f2608249ba2c0324ce935475412b0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a7d7f2608249ba2c0324ce935475412b0">read</a> (T *pDstElements, size_t numElements, int ExitMode=<a class="el" href="ringbuffer_8h.html#accdf4e500a022db87155e413e08bacbb">EXIT_ON_COMPLETED</a>)</td></tr>
+<tr class="separator:a7d7f2608249ba2c0324ce935475412b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6918544b6078b51e727eac4bce2d338a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a6918544b6078b51e727eac4bce2d338a">readdma</a> (T *pDstElements, size_t numElements, int ExitMode=<a class="el" href="ringbuffer_8h.html#accdf4e500a022db87155e413e08bacbb">EXIT_ON_COMPLETED</a>)</td></tr>
+<tr class="separator:a6918544b6078b51e727eac4bce2d338a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Открытые атрибуты</h2></td></tr>
+<tr class="memitem:a435b4524097a8c59babad30d8badb29a"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_hal_ring_buffer.html#a435b4524097a8c59babad30d8badb29a">data</a></td></tr>
+<tr class="memdesc:a435b4524097a8c59babad30d8badb29a"><td class="mdescLeft">&#160;</td><td class="mdescRight">

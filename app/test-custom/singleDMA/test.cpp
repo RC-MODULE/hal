@@ -52,7 +52,7 @@ void SetArr(nm32s* arr,int amm,int const2wrt){
 	}
 }*/
 int main(){ 
-	printf("Were mirror check : Mirror at 0x%x\n",halWereMirror());	
+	printf("Where mirror check : Mirror at 0x%x\n",halWhereMirror());	
 	printf("Core ID : %d\n",halGetCoreId());
 	//halEnbExtInt();
 	//halMaskIntContMdma_mc12101();

@@ -13,7 +13,7 @@ global _halLockDMA 				:label;
 global _halUnlockDMA 			:label;
 global _halIsBusyDMA 		  :label;
 
-global _halWereMirror     :label;
+global _halWhereMirror     :label;
 global _halGetCoreId			:label;
 global _halSetMirror      :label;
 global _halReadCoreID 		:label;
@@ -61,12 +61,12 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	[1001001Ch] = gr7;// mask interruptions of MDMA is masked to fall request of DMA to interruption controller
 	gr7 = [10010000h];//read any MDMA register
 	gr7 = gr7 << 1;//perform the arithmetic operation
-	[40000406h] = gr7;//write the result into any reserved register of interaption contorl unit
+	[40000406h] = gr7;//write the result into any reserved register of interruption contorll unit
 	gr7 = 1;
 	[4000045ch] = gr7;//clear the IAS for MDMA
 	ar5 = [callback_addr] with gr7 = true;//set callback address
 	[_halSyncro] = gr7;// write 0xffffffff to flag of DMA means DMA is free
-	call ar5;//be carreful call has to go after _halSyncro is -1
+	call ar5;//be carreful call has to go after _halSyncro uploaded -1
 	goto SKIP_CLEAR_IAS;
 <SKIP_CALLBACK>
 	gr7 = 1;
@@ -116,7 +116,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	[_flag_of_pack_DMA] = gr7;
 	ar5 = Lint_6407;
 	ar1 = 00000120h;
-	gr7 = pswr;
+	//gr7 = pswr;
 	//simular lines of code below 
 	//are copping the programm to interruption vector of interruption controller
 	//the programm is next
@@ -125,9 +125,9 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//delayed goto CALL_BACK;
 	//	[GR7] = gr7;
 	ar0,gr0 = [ar5++]; 
-	[ar1++] = ar0,gr0 with gr7 >>= 5;//extract the bit of external interruption is enabled
-	ar0,gr0 = [ar5++] with gr7 <<= 31;//
-	[ar1++] = ar0,gr0 with gr7 >>= 31;//
+	[ar1++] = ar0,gr0;//
+	ar0,gr0 = [ar5++];//
+	[ar1++] = ar0,gr0;//
 	ar0,gr0 = [ar5++];
 	[ar1++] = ar0,gr0;
 	ar0,gr0 = [ar5++];
@@ -200,7 +200,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 gr7 = [_halSyncro];
 	 nop;
 
-<_halWereMirror>
+<_halWhereMirror>
 	gr7 = [40000000h];
 	gr7 >>= 24;
 	if =0 delayed return;

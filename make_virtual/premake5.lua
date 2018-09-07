@@ -8,6 +8,7 @@ solution "hal-virtual-x86"
       kind "StaticLib"
       files { 	"../src_virtual/*.*",
 				"../src_x86/*.*",
+				"../src_ringbuffer/*.*",
 				"../include/*.h"}
 	  includedirs { "../include"}
 	  targetdir ("../lib")

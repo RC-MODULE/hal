@@ -25,6 +25,8 @@ void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
 int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
      void* dst, int dstStride32, bell_func DmaCallback, int channel)
 { 
+	if (((int)src ^ (int)dst)<0) return -2;
+
 	int i,srcrow,dstrow,asrc,adst,sz, *q;
     q=(int*)0x10000050;
     i=channel; // only to avoid warning

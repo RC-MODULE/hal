@@ -72,13 +72,13 @@ call _halExitCriticalSection;
 	[10010014h] = gr2;//bias dst
 	//address modes is with bias (double demention)
 	gr7 = true;
-	[10010008h] = gr7;
-	[10010018h] = gr7;
+	[10010008h] = gr7;//double demention mode
+	[10010018h] = gr7;//double demention mode
 	///interaption mask
 	gr7 = true;
-	[1001000Ch] = gr7;
+	[1001000Ch] = gr7;//both interruptions are on
 	gr7 = 2;
-	[1001001Ch] = gr7;
+	[1001001Ch] = gr7;//both interruptions are on
 	////start
 	gr7 = 1;
 	[1001000Ah] = gr7;
@@ -90,5 +90,5 @@ call _halExitCriticalSection;
 	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;
-	delayed return;
+	return;
 end ".text";

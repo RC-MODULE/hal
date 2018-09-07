@@ -20,6 +20,10 @@ void doubleCBF()
 int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1,
      int intSize0, int intSize1)
 { int k;
+
+	if (((int)src0 ^ (int)dst0)<0) return -2;
+	if (((int)src1 ^ (int)dst1)<0) return -3;
+	
    if (nonfirst==0)
    {  SetCallBack(0x58, (int)doubleCBF);
       SetCallBack(0x60, (int)doubleCBF);
