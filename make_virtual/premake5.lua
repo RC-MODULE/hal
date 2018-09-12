@@ -14,11 +14,11 @@ solution "hal-virtual-x86"
 	  targetdir ("../lib")
 	  
 	  configuration "Debug"
-         defines { "DEBUG" }
+         defines { "DEBUG","VIRTAUL_BOARD" }
          symbols  "On" 
 		 
       configuration "Release"
-         defines { "NDEBUG" }
+         defines { "NDEBUG","VIRTAUL_BOARD" }
          symbols  "Off" 
 		
 	 

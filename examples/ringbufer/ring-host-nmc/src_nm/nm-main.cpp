@@ -17,6 +17,7 @@
 #include "dma.h"	
 #include "nmpp.h"
 #include "stdio.h"
+#include "string.h"
 
 
 #define MEM_OFFSET 0x40000
@@ -27,10 +28,10 @@
 		#define IN_MIRROR(addr) ((int)addr<MEM_OFFSET?(void*)((int)addr+MEM_OFFSET):addr)
 	#endif
 #else 
-
+	#define IN_MIRROR(addr) addr
 #endif 
 
-//#define IN_MIRROR(addr) addr
+
 extern "C"{
 	int riscSingleCopy(void* src, void* dst, int size){
 #ifdef __NM__
@@ -60,9 +61,9 @@ int main()
 	halLedOn(0);
 	sync=halHostSync(0x6406);	// Handshake 
 	printf("Start\n");
-	halEnbExtInt();
-	halMaskIntContMdma_mc12101();
-	halInitDMA();
+	//halEnbExtInt();
+	//halMaskIntContMdma_mc12101();
+	//halInitDMA();
 
 	int itemSize= 1;
 	int count=1024;
@@ -73,34 +74,34 @@ int main()
 	int* src    = (int*)nmppsMalloc_32s(1024);
 	int* dst    = (int*)nmppsMalloc_32s(1024);
 
-	HalRingBuffer srcRing; 
-	HalRingBuffer dstRing; 
+	HalRingBuffer* srcRing = (HalRingBuffer*)halMalloc32(sizeof(HalRingBuffer));
+	HalRingBuffer* dstRing = (HalRingBuffer*)halMalloc32(sizeof(HalRingBuffer));
 	
 	if (srcBuffer==0 || dstBuffer==0 || src==0 || dst==0) 
 		halLedSOS(0);
 	
-	if (int ret=halRingBufferInit(&srcRing,IN_MIRROR(srcBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
+	if (int ret=halRingBufferInit(srcRing,IN_MIRROR(srcBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
 		halLed(ret);
 		return -1;
 	}
-	if (int ret=halRingBufferInit(&dstRing,IN_MIRROR(dstBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
+	if (int ret=halRingBufferInit(dstRing,IN_MIRROR(dstBuffer),itemSize,count, halInitSingleDMA, halInitDoubleDMA, halSetCallbackDMA)){
 		halLed(ret);
 		return -1;
 	}
 	
-	sync=halHostSync((unsigned)&srcRing);	// Gets array size, sends input buffer address
-	sync=halHostSync((unsigned)&dstRing);	// Gets increment (123), sends output buffer address
+	sync=halHostSync((unsigned)srcRing);	// Gets array size, sends input buffer address
+	sync=halHostSync((unsigned)dstRing);	// Gets increment (123), sends output buffer address
 	
 	while(1){
-		halRingBufferPop(&srcRing,IN_MIRROR(src),256);
+		halRingBufferPop(srcRing,IN_MIRROR(src),256);
 		halLed(1);
-		while(srcRing.pendingCount);
+		while(srcRing->pendingCount);
 		halLed(2);
 		for(int i=0; i<256;i++)
 			dst[i]=~src[i];
-		halRingBufferPush(&dstRing,IN_MIRROR(dst),256);
+		halRingBufferPush(dstRing,IN_MIRROR(dst),256);
 		halLed(3);
-		while(srcRing.pendingCount);
+		while(srcRing->pendingCount);
 		halLed(4);
 	}
 
