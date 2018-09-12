@@ -89,7 +89,7 @@ void halInitSingleDMA(void* src, void* dst,int size32){
  		user_callback();
  	}
 
-void halInitStutusSingleDMA(void* src,void* dst,int size32){
+void halInitStatusSingleDMA(void* src,void* dst,int size32){
  		int i;
 		int* pntr_src;
 		int* pntr_dst;
