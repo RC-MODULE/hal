@@ -40,6 +40,7 @@ struct HalRingBuffer{
 };
 
 
+
 	
 int 	halRingBufferInit(HalRingBuffer* ringBuffer, void* buffer, size_t size, size_t count, FuncSingleCopy singleMemCopy, FuncDoubleCopy doubleMemCopy,  FuncSetCallbackDMA setCallback);
 void 	halRingBufferPush(HalRingBuffer* ringBuffer, void* src, size_t count);
