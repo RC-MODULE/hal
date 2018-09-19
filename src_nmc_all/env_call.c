@@ -16,6 +16,11 @@
 #include "string.h"
 #include "host_duties.h"
 
+
+#ifndef __GNUC__
+typedef int _off_t;                /* file offset value */
+#endif
+
 typedef int _HANDLE;
 typedef int fpos_t;
 
@@ -23,7 +28,6 @@ typedef int fpos_t;
 
 typedef unsigned short _ino_t;      /* i-node number (not used on DOS) */
 typedef unsigned int _dev_t;        /* device code */
-typedef int _off_t;                /* file offset value */
 typedef long long __time64_t;     /* 64-bit time value */
 
 struct _stat64i32 {

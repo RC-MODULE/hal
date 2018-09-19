@@ -1,6 +1,10 @@
  #include "malloc.h"
  
- 
+void *malloc0(unsigned int size);
+void *malloc1(unsigned int size);
+void *malloc2(unsigned int size);
+void *malloc3(unsigned int size);
+
  extern "C"{
 	typedef void* (Malloc32Func)(unsigned int);	
 	Malloc32Func* pMallocFunc=malloc;	
