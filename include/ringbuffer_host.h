@@ -64,4 +64,6 @@ int		halHostRingBufferIsFull (HalHostRingBuffer* ringBuffer);
 int		halHostRingBufferIsEmpty(HalHostRingBuffer* ringBuffer);
 
 
+
+
 #endif

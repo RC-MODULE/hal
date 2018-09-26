@@ -8,6 +8,7 @@ extern "C"{
 	int halWriteMemBlock(void* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0);
 	int halGetResult(unsigned* result,  unsigned processor=0);
 	int halSetTimeout(int msec);
+	void halSelectBoard(int index);
 	int halClose();
 };
 

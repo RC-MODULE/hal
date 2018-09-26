@@ -37,6 +37,10 @@ int halSync(int val,int processor=0){
 	return ret;
 };
 
+static int boardIndex = 0;
+void halSelectBoard(int index) {
+	boardIndex = index;
+}
 
 int halOpen(char* absfile=0,...){
 
@@ -66,7 +70,7 @@ int halOpen(char* absfile=0,...){
 		return  (1);
 	}
 
-	if (PL_GetBoardDesc(0, &board))	{
+	if (PL_GetBoardDesc(boardIndex, &board))	{
 		TRACE( "ERROR: Can't open board 0 \n");
 		return  (1);
 	}

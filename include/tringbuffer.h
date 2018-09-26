@@ -5,7 +5,7 @@
 #include "hal.h"
 
 
-template<class T, int countOfT , int shieldSize=1> class tHalRingBuffer{
+template<class T, int countOfT , int shieldSize32=1> class tHalRingBuffer{
 public:
 
 	size_t 		maxCount;		///<  размер кольцевого буфера входных данных (в элементах; гарантируется что это степень двойки)
@@ -14,9 +14,9 @@ public:
 	unsigned 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
 	unsigned	tail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
 	size_t		pendingCount;
-	long long 	sheild0[(shieldSize +1)/2];
+	long long 	sheild0[(shieldSize32 +1)/2];
 	T			data[countOfT];			///<  физический адрес кольцевого буфера входных данных 
-	long long 	sheild1[(shieldSize +1)/2];
+	long long 	sheild1[(shieldSize32 +1)/2];
 	FuncSingleCopy singleCopy;
 	FuncDoubleCopy doubleCopy;
 	FuncSetCallbackDMA setCallback;
@@ -50,13 +50,13 @@ public:
 		}
 		*/
 		
-		size_t curTail = tail;
+		size_t fixTail = tail;
 		size_t posHead = head & maxCountMinus1;			
-		size_t posTail = curTail & maxCountMinus1;
+		size_t posTail = fixTail & maxCountMinus1;
 		T*    addrHead = data + posHead;
 		
 		// [.......<Tail>******<Head>.....]
-		if (posTail<posHead || head==tail){
+		if (posTail<posHead || head==fixTail){
 			size_t countToEnd = maxCount - posHead;
 			if (count <= countToEnd){
 				singleCopy(src, addrHead ,count*size);
