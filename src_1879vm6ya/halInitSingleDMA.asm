@@ -15,12 +15,12 @@ begin ".text"
 	push ar0,gr0;
 	gr0 = [coreID];
 <WAIT_DMA>	
-//call _halEnterCriticalSection;	
+call _halEnterCriticalSection;	
 	gr7 = [_halSyncro];
 	gr7;
 	if >= goto WAIT_DMA;
 	[_halSyncro] = gr0;
-//call _halExitCriticalSection;		
+call _halExitCriticalSection;		
 	push ar1,gr1 with gr7 = false;
 	push ar2,gr2;
 	///init 
