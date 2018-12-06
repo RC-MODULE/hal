@@ -2,7 +2,10 @@ ROOT = ..
 -include $(ROOT)/global.mk
 .SUFFIXES:
 
-DEBUG = y;
+ifdef RELEASE
+else
+DEBUG = y
+endif
 
 PROJECT  = hal-mc12101
 CONFIGURATION ?= Release

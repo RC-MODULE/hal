@@ -6,7 +6,7 @@ solution "libhal-mc12101"
 		
 		
 	-- x86  library with printf support  ---------------------------------	 
-	project "libhal-mc12101-x86"
+	project "hal-mc12101-x86"
       		kind "StaticLib"
 		includedirs { "../include","$(MC12101)/include","../src_host_io"}
 		targetdir ("../lib")
