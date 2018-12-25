@@ -18,7 +18,7 @@ vs2005: $(PROJECT_X86).vcproj
 
 vs2015:	$(PROJECT_X86).vcxproj
 	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Debug
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Release
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT_X86).vcxproj /p:Configuration=Release
 	
 $(PROJECT_X86).vcproj:	premake5.lua 
 	premake5 vs2005

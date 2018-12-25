@@ -73,7 +73,7 @@ int halOpen(char* absfile=0,...){
 		if (PL_LoadProgramFile(access, absfile)){
 			access=0;
 			TRACE( ": : ERROR: Can't load program into board.\n");
-			//return  (1);
+			return  (1);
 		}
 	}
 #ifndef SILENT	
