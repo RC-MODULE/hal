@@ -17,6 +17,7 @@ solution "hal-mc12101"
 				"../src_host_io/*.*"}
 	  
 		configuration "Debug"
+			targetsuffix ("d")
 			defines { "DEBUG","NM6405"}
 			symbols  "On" 
 		
@@ -36,6 +37,7 @@ solution "hal-mc12101"
 
 	  
 		configuration "Debug"
+			targetsuffix ("d")
 			defines { "DEBUG","SILENT","NM6405"}
 			symbols  "On" 
 		

@@ -14,8 +14,9 @@ solution "hal-virtual-x86"
 	  targetdir ("../lib")
 	  
 	  configuration "Debug"
-         defines { "DEBUG","VIRTAUL_BOARD" }
-         symbols  "On" 
+		targetsuffix ("d")
+        defines { "DEBUG","VIRTAUL_BOARD" }
+        symbols  "On" 
 		 
       configuration "Release"
          defines { "NDEBUG","VIRTAUL_BOARD" }

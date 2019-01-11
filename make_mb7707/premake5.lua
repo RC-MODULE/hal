@@ -17,6 +17,7 @@ solution "hal-mb7707"
 				"../src_host_io/*.*"}
 	  
 		configuration "Debug"
+			targetsuffix ("d") 
 			defines { "DEBUG","NM6405"}
 			symbols  "On" 
 		
