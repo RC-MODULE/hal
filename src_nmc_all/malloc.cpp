@@ -12,7 +12,7 @@
 	void halSetActiveHeap(int heapNo){
 		switch(heapNo){
 			case(0):
-				pMallocFunc=malloc;
+				pMallocFunc=malloc0;
 				break;
 			case(1):
 				pMallocFunc=malloc1;
