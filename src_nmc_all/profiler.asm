@@ -27,7 +27,7 @@
 //end ".init";
 
 
-begin ".text_profiler"
+begin ".text_nmprofiler"
 	//global _cache_enable: label;
 	//<_cache_enable>
 	//	CACHE_ENABLE();
@@ -317,7 +317,7 @@ global _nmprofiler_info_size:label;
 	
 
 			
-end ".text_profiler";
+end ".text_nmprofiler";
 
 
 

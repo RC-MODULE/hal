@@ -170,24 +170,24 @@ int profiler_read(unsigned head_addr, ProfilerData* profile, int count, int proc
 
 
 void halProfilerPrint2tbl(char* mapfile, int processor){
-	static unsigned head_addr = 0; 
-	int static profiler_size = 0;
-	if (head_addr == 0) {
+	static unsigned head_addr[4] = {0,0,0,0};
+	int static profiler_size[4] = { 0,0,0,0 };
+	if (head_addr[processor] == 0) {
 		//head_addr = map_symbol2address(mapfile, "_nmprofiler_head_addr"); 
-		head_addr = map_symbol2address(mapfile, "profileList");
-		head_addr += 12;
-		profiler_size = profiler_count(head_addr, processor);
+		head_addr[processor] = map_symbol2address(mapfile, "profileList");
+		head_addr[processor] += 12;
+		profiler_size[processor] = profiler_count(head_addr[processor], processor);
 	}
 
-	ProfilerData* profile = new ProfilerData[profiler_size];
-	profiler_read(head_addr, profile, profiler_size,  processor);
+	ProfilerData* profile = new ProfilerData[profiler_size[processor]];
+	profiler_read(head_addr[processor], profile, profiler_size[processor],  processor);
 
 	char format[]="%-12u| %-12u| %-12u| %08X| %s\n";
 	printf("SUMMARY     | CALLS       | AVERAGE     | ADDRESS | FUNCTION \n");
 	printf("------------+-------------+-------------+---------+----------\n");
 
 	char fullname[1024];
-	for (int i = 0; i < profiler_size; i++) {
+	for (int i = 0; i < profiler_size[processor]; i++) {
 		map_address2symbol(mapfile, profile[i].funcaddr, fullname);
 		demangle(fullname,fullname);
 		printf(format,	profile[i].summary, 
