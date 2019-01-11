@@ -1,0 +1,51 @@
+ROOT=../../../..
+
+
+include $(ROOT)/global.mk
+
+-include ../local.mk
+# BUILD AND RUN MAKEFILE
+# This makefile builds simple nmc-application containing single cpp-file  
+# Rule 'run' executes the application on MC5103 board and stores return code in ".exitcode"  file
+
+.SUFFIXES:
+
+NMPP?=
+
+PROJECT  = test_mc5103
+INC_DIRS = -I"$(MC5103)/include" -I"$(HAL)/include" 
+LIB_DIRS = -L"$(MC5103)/lib" -L$(HAL)/lib
+LIBS     = hal-mc5103.lib mc5103lib.lib libint05.lib  
+TARGET   = target0.abs
+CFG      = mc5103brd.cfg
+HEAP    ?= -heap=10485760 -heap1=16384 -heap2=16384 -heap3=16384
+#            [L00]:40MB   [L01]:64kB  [G00]:64kB   [G01]:64kB
+
+SRC_DIRS = . ../src_nm0
+
+SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
+SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
+
+
+VPATH    = $(subst -L,,$(LIB_DIRS)) $(NEURO)/lib
+
+$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile0 
+	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM) $(NEURO)/crt/clock.asm -6405 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAP)
+
+
+PATH:=$(MC5103)/bin;$(PATH)
+
+proflist:
+	tclsh $(HAL)/script/generate_proflist.tcl proflist_generated.asm   
+	$(MAKE) 
+	tclsh $(HAL)/script/generate_proflist.tcl proflist_generated.asm .main.map
+	
+
+
+	
+-include $(ROOT)/local.mk
+-include $(ROOT)/clean.mk
+
+
+	
+
