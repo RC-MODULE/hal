@@ -7,7 +7,7 @@ solution "hal-mb7707"
 	-- x86  library with printf support  ---------------------------------	 
 	project "hal-mb7707-x86"
 		kind "StaticLib"
-		flags { "StaticRuntime" }
+	--	flags { "StaticRuntime" }
 		includedirs { "../include","$(MB7707)/libload","../src_host_io"}
 		targetdir ("../lib")
 		files {	"../src_mb7707_host/*.*",
@@ -36,6 +36,7 @@ solution "hal-mb7707"
 				"../include/*.h"}
 		
 		configuration "Debug"
+			targetsuffix ("d") 
 			defines { "DEBUG","SILENT","NM6405"}
 			symbols  "On" 
       

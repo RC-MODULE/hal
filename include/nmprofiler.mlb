@@ -1,0 +1,220 @@
+//***************************************************************************/
+//*                     RC Module Inc., Moscow, Russia                      */
+//*                     NeuroMatrix(r) Software                             */
+//*                                                                         */
+//*   Profiler library                                                      */
+//*                                                                         */
+//*                                                                         */
+//*   Software design:  S.Mushkaev                                          */
+//*                                                                         */
+//*   Version           1.0                                                 */
+//*   Start date:       15.04.2015                                          */
+//*                                                                         */
+//*                                                                         */
+//***************************************************************************/
+
+
+
+
+//=======================================================================================================================
+
+// Конструктор. Макрос инициализации профилирования . Должен идти первым. 
+// MAXFUNCLEN - кол-во символов до которого будет урезаться имя функции при записи в таблицу профилирования
+// sizeof = 16
+macro PROFILE_BEGIN(MAXFUNCLEN)
+const MAX_FUNCNAME_LEN=MAXFUNCLEN;
+//begin ".text_nmprofiler"
+	
+	global profileList:label;
+	global _nmprofiler_init			:label;
+	global _halProfilerEnable		:label;
+	extern _clock					:label; 
+	extern  inject_goto				:label;
+	extern	profiler_check_jump_cop4:label; // функция проверяет наличия перехода в первых 4 командах (для таких функций профилирование невозможно)
+	extern _nmprofiler_enabled		:word;
+	extern _nmprofiler_infosize		:word;
+	extern _nmprofiler_head_addr	:word;
+	extern _nmprofiler_tail_addr	:word;
+	extern _nmprofiler_namesize		:word;
+	extern _nmprofiler_delay		:word;
+	own    next_init:label;
+	//global _nmprofiler_enable:	label;
+	//global _nmprofiler_disable: 	label;
+	//global _nmprofiler_last : 	label;
+
+	//[_nmprofiler_head]=gr7; // never used , only to force address assignment for  _nmprofiler_first if map-file
+	//[_nmprofiler_check]=gr7;
+	
+	<_halProfilerEnable>
+	<_nmprofiler_init>
+	push ar0,gr0;
+	push ar1,gr1;
+	ar0 = next_init+12 with	gr7 = false;	// gr7 =0
+	gr0 = MAXFUNCLEN+5;
+	[_nmprofiler_infosize] =gr0;
+	[_nmprofiler_head_addr]=ar0;
+	<next_init>
+	<profileList>
+end  PROFILE_BEGIN;
+
+// Деструктор
+macro PROFILE_END() 			// On enter: gr7=profiler
+
+	[_nmprofiler_tail_addr]=gr7 with gr7;
+	if =0 goto reset_head_addr;	// если нет ни одной функции обнуляем _nmprofiler_head_addr
+	gr0=false;			// gr0=0;
+	[gr7]=gr0;			// [_timer_next]=0;
+	pop ar1,gr1;
+	pop ar0,gr0;
+	return ;
+
+	<reset_head_addr>
+	pop ar1,gr1;
+	pop ar0,gr0;
+	delayed return;
+		nul;
+		[_nmprofiler_head_addr]=gr7;
+	goto profileList;
+			
+//end ".text_nmprofiler";
+	
+end PROFILE_END;		
+	
+	
+// disp =12	
+macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
+.branch;
+	ext funcname				:label; // указатель на профилируемую функцию
+	own timer_return			:label;
+	own timer_enter				:label;
+	own timer_replaced			:label;
+	own timer_skip				:label;
+	own next_init				:label;	
+	own initcode				:label;
+	own profiler_data			:label;
+	
+
+	//=============== инициализатор,  здесь осуществляем подмену кода =============================================
+	// sizeof =12
+	<initcode>								// должен быть длинной 12 слов
+	ar0 = funcname;						// адрес данных профилируемой функции
+	gr1 = timer_enter;					// вставляем goto на timer_enter в начала прфилируемой функции
+	delayed call inject_goto;
+		gr0 = timer_replaced;			// адрес куда сохраняем замещаемый код
+	
+	delayed goto next_init;				// идем в конец текущего макроса PROFILE_FUNC - на начало следуещего макроса PROFILE_FUNC
+		gr7 = profiler_data;			// запоминаем последний tail для деструктора PROFILE_END
+		
+	//---------------------------- структура данных для профирования функции -----------------------------------
+	// sizeof = 8+MAX_FUNCNAME_LEN
+	<profiler_data>
+		//own _timer_next	: word=next_init+12;		// указатель на следующую структуру данных profile_data в списке 
+		own _timer_next		: word=12+26+34+8+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
+		own _timer_funcaddr : word=funcname;			// адрес профилируемой функции
+		own _timer_calls	: word=0;					// кол-во вызовов
+		own _timer_summary	: word=0;					// сумарное накопленное время функции
+		//--------------------------------------------------------------------------------------------------------
+		own _funcname		: word[MAX_FUNCNAME_LEN]=funcinfo;	// имя профилируемой функции
+		own _funcname_end	: word=0;					// символ заврешения строки (для обрезанных имен)
+		//--------------------------------------------------------------------------------------------------------------
+		own _timer_stopwatch: word=0;					// текущее время в момент вызова проф. функии 
+		own _timer_ret_pswr	: long;						// тут сохраняем контекст возврата
+		
+	
+	//=============== замерщик (пуск) ===================================================
+	// sizeof =26
+	<timer_enter>							// сюда мы переходим по goto из профилируемой функции
+	
+		// сохраняем контекст возврата и подменяем точку возврата на timer_return (замерщик времени - стоп)
+		push ar0,gr0;
+		push ar5,gr5 with gr5=true noflags;	// gr5 =-1
+	.if master==0;
+		nul;
+		nul;
+	.endif;
+	.if master!=0;
+		[_nmprofiler_enabled]=gr5;			// разрешаем профилирование во всех подвызовах
+	.endif;
+	
+		ar5= sp-disp;						// ar5 - указывает на адрес возврата retaddr и pswr у профилируемой функции из которой пришли
+		ar0,gr0 = [ar5];	
+		nul;
+		[_timer_ret_pswr]=ar0,gr0;			// сохранияем контекст возврата
+		ar0 = timer_return;
+		delayed call _clock;				// засекаем время (пуск)
+			[ar5] = ar0,gr0;				// подменяем в стеке адрес возврата из проф функции на timer_return (замерщик времени - стоп)
+			gr0 = gr7 noflags;				// сохраняем gr7 (clock - портит gr7)
+		
+		[_timer_stopwatch]=gr7;				// сохраняем время
+		pop ar5,gr5 with gr7=gr0 noflags;	// восстанавливаем gr7
+		pop ar0,gr0;
+		
+		// выполняем исходный стартовый код профилируемой функции
+		<timer_replaced>					// место для хранения 4 команд заголовка проф. функции
+		nul;								// SELF-MODIFYING CODE
+		nul;								// SELF-MODIFYING CODE
+		delayed goto funcname+4;			// продолжаем выполнение проф. функции
+			nul;							// SELF-MODIFYING CODE
+			nul;							// SELF-MODIFYING CODE
+			
+		
+	//=============== замерщик (стоп) ===================================================
+	// sizeof =34
+	<timer_return>												// сюда мы переходим после return из профилируемой функции
+		push ar1,gr1;											// sp+=2 : отступаем стек, сюда мы потом подставим реальную(сохраненную) точку возврата из проф. функции
+		push ar0,gr0;	
+		ar0 = gr7;												// сохраняем gr7 
+		nul;
+		delayed call _clock;									// засекаем время (стоп) в gr7
+			gr0 = [_nmprofiler_enabled];
+	.if master==0; // обычная функция профилирования
+		with gr0;												
+		nul;
+		if =0 delayed goto timer_skip;							// если не разрешено профилирование - выход
+			gr0 = [_nmprofiler_delay];
+	.endif;
+	.if master!=0;												// if master (запрещает профилирование вне себя)
+		gr0 = false noflags;
+		nul;
+		[_nmprofiler_enabled]=gr0;								// запрещаем дальнейшее профилирование
+		gr0 = [_nmprofiler_delay];
+	.endif;
+		gr0 = [_timer_stopwatch] with gr7-= gr0 noflags;		// считываем время вызова / коррекция gr7
+		gr0 = [_timer_summary]   with gr7 = gr7 - gr0 noflags;	// считываем накопленное время | вычисляем время работы функции
+		gr7 = [_timer_calls]     with gr0+= gr7 noflags;		// добавляем текущий замер времени
+		[_timer_summary]=gr0     with gr7++ noflags;			// сохраняем суммарное время | увеличиваем счетчик вызовов
+		[_timer_calls]=gr7;										// сохраняем счетчик вызовов
+		<timer_skip>
+		gr7 = ar0;
+		nul;
+		ar0,gr0 = [_timer_ret_pswr];							// восстанавливаем контекст возврата
+		[sp-4] = ar0,gr0;
+		pop ar0,gr0;
+	delayed return;
+		nul;
+		nul;
+	<next_init>
+.wait;
+end PROFILE_FUNC_BASE;
+
+//=======================================================================================================================
+
+// макрос профилирования функции со стандартным С-вызывом  (стандартное соглашение о передачи параметров через стек)
+macro PROFILE_FUNC(funcname,funcinfo)
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,0);
+end   PROFILE_FUNC;
+
+// макрос разрещающий профилирование только в дочерних функциях
+macro PROFILE_MASTER_FUNC(funcname,funcinfo)
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,1);
+end   PROFILE_MASTER_FUNC;
+
+// макрос профилирования функции с нестандартным вызовом функций  (внутреннее соглашение о передаче параметров . MUL32, DIV32...)
+macro PROFILE_NONSTD_FUNC(funcname,funcinfo)
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,8,0);
+end   PROFILE_NONSTD_FUNC;
+
+
+	
+
+

@@ -2,6 +2,10 @@ ROOT = ..
 -include $(ROOT)/global.mk
 .SUFFIXES:
 
+LANG=C
+LC_ALL=C
+LANGUAGE=en_US
+
 PROJECT  = hal-mc5103
 CONFIGURATION ?= Release
 ifdef DEBUG

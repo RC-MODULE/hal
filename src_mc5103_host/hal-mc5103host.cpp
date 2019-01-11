@@ -99,11 +99,13 @@ int halOpen(char* absfile=0,...){
 	
 
 int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
-	return PL_ReadMemBlock(access, (PL_Word*)dstHostAddr, srcBoardAddr, size32);
+	int ret= PL_ReadMemBlock(access, (PL_Word*)dstHostAddr, srcBoardAddr, size32);
+	return ret;
 }
 
 int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
-	return PL_WriteMemBlock(access, (PL_Word*)srcHostAddr, dstBoardAddr, size32);
+	int ret = PL_WriteMemBlock(access, (PL_Word*)srcHostAddr, dstBoardAddr, size32);
+	return ret;
 }
 
 /*
