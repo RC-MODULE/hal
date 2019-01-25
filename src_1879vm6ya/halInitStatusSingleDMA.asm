@@ -20,7 +20,7 @@ begin ".text"
 	if <>0 delayed goto SKIP_SRC_MIRROR;	
 		gr7 = [--ar5];//dst
 		gr1 = [--ar5];//size
-		ar2 = ar2 + gr2;
+	ar2 = ar2 + gr2;
 	<SKIP_SRC_MIRROR>
 	ar0 = ar2;//ar0 is src
 	ar2 = gr7 with gr7 >>= 18;	
