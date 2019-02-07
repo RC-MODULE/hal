@@ -11,7 +11,7 @@
 # а также в секции из списка exclude_sections  будут исключены из профилирования.
 #************************************************************************************************
 
-
+#after 1000
 #======= список функций с нестандартным соглашанием о передаче параметров  (заключаются в PROFILE_NONSTD_FUNC )===========	
 set nonstd_funcs   "list FAdd Mul32 FMul IDiv32 UDiv32 FDiv IMod32 UMod32 LShift32 RShift32 ARShift32 ConvI64toF ConvU64toF"
 #======= функции из этих секций не будут профилироваться ===================
@@ -54,6 +54,7 @@ set exclude_funcs "
 					_void0._.0.8.8alloc_somewhere.1void._.0.9._unsigned._int.9._class.__heap_control_block._.0.2
 					_void._.8.8completeMessage.1enum._NM_IO_ServiceID.9._int.2
 					_halProfilerEnable
+					_free
 					profileList
 				"
 				

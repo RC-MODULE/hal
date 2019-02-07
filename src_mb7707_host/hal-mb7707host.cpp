@@ -5,6 +5,7 @@
 static PL_Board *board=0;
 static PL_Access *access=0;
 
+#define SILENT
 #ifndef SILENT
 #include "nm_io_host.h"
 static PL_Access* access_io=0;
