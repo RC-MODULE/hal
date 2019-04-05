@@ -13,7 +13,7 @@ const ADR_TimerMode1 = 4000_0806h;
 global _clock : label;
 global clock_initialize : label;
 
-begin text
+begin ".text_hal"
 
 <clock_initialize>
     with gr7 = false;
@@ -22,19 +22,19 @@ begin text
     delayed return;
     [ADR_TimerMode1] = gr7;
 
-end text;
+end ".text_hal";
 
     // called before main function.
 
-begin init
+begin ".init_hal"
         // call to initializing functions before the call to 'main'
     call clock_initialize;
-end init;
+end ".init_hal";
 
-begin text
+begin ".text_hal"
 
 <_clock>
 	delayed return;
     gr7 = [ADR_Timer1];
 
-end text;
+end ".text_hal";

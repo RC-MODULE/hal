@@ -6,7 +6,7 @@ extern _halSyncro    : word;
 const CS_TURN   =_halSyncro	+ 1;
 const CS_FLAG0  =_halSyncro	+ 2;
 
-begin ".text"
+begin ".text_hal"
 <_halEnterCriticalSection_asm>
 	push ar0,gr0;
 	push ar1,gr1;
@@ -52,4 +52,4 @@ begin ".text"
 	return;
 
 
-end  ".text";
+end  ".text_hal";

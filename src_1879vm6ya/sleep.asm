@@ -1,5 +1,5 @@
 import from rtmacro.mlb;
-begin ".text"
+begin ".text_hal"
 
 // gr0 - msecs
 global halSleep:label;
@@ -30,4 +30,4 @@ global _halSleep:label;
 	return;
 	
 	
-end ".text";
+end ".text_hal";

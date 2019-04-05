@@ -4,7 +4,7 @@ extern mirror_offset      : word;
 
 
 
-begin ".text"
+begin ".text_hal"
 <_halInitStatusSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
 	ar5 = ar7 - 2;
@@ -85,4 +85,4 @@ begin ".text"
 		gr7 = false;
 		nop;
 		nop;
-end ".text";
+end ".text_hal";

@@ -7,6 +7,12 @@ static int*   pSize;
 static int    Amm;
 static DmaCallback userCallback;
 	DmaCallback readCallback();
+	
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 static int ownCallback(){
 	pSrc++;
 	pDst++;
@@ -20,7 +26,11 @@ static int ownCallback(){
 	return 0;
 }
 
-
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32, int amm){
 	SetFlagDMA(0xffffffff);
 	if(amm == 0){
