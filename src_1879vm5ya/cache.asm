@@ -6,7 +6,7 @@
 //----------------------------------------------------------------
 
 
-begin text
+begin ".text_hal"
 
 global _halInstrCacheEnable : label;
 <_halInstrCacheEnable>
@@ -22,7 +22,7 @@ global _halInstrCacheDisable : label;
 		vnul;
         pcr_6405 clear 0000_0080h;
 	
-end text;
+end ".text_hal";
 
 
 

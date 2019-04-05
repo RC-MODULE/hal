@@ -9,7 +9,7 @@ global _xdmacn: label;
 global _xdmac0: label;
 global _xdmacChain: label;
 global _xdmacChainN: label;
-begin ".text"
+begin ".text_hal"
 .branch;
 <_xdmacinit> // dmainit( dst, src, N ); армовые адреса и байтовый счётчик
 intr clear 0fc000000h;
@@ -155,4 +155,4 @@ pop ar2,gr2;
    gr7=[ar5+gr5];  //gr7=status xdmacn;
    pop ar5,gr5;
    return;
-end ".text";
+end ".text_hal";

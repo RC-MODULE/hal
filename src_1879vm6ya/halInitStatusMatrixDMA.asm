@@ -6,7 +6,7 @@ extern mirror_offset      : word;
 extern _halEnterCriticalSection : label;
 extern _halExitCriticalSection  : label;
 
-begin ".text"
+begin ".text_hal"
 <_halInitStatusMatrixDMA>
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
@@ -80,4 +80,4 @@ begin ".text"
 	pop ar1,gr1;
 	pop ar0,gr0;
 	delayed return;
-end ".text";
+end ".text_hal";

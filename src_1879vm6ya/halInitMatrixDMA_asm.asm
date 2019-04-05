@@ -8,19 +8,19 @@ extern _halSyncro					: word;
 extern _halEnterCriticalSection : label;
 extern _halExitCriticalSection  : label;
 
-begin ".text"
+begin ".text_hal"
 <_halInitMatrixDMA_asm>
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
 	push ar0,gr0;
 	gr0 = [coreID];
 <WAIT_DMA>	
-//call _halEnterCriticalSection;	
+call _halEnterCriticalSection;	
 	gr7 = [_halSyncro];
 	gr7;
 	if >= goto WAIT_DMA;
 	[_halSyncro] = gr0;
-//call _halExitCriticalSection;
+call _halExitCriticalSection;
 	///init 
 	push ar1,gr1 with gr7 = false;
 	[1001000Ah] = gr7;//clear controll register
@@ -91,4 +91,4 @@ begin ".text"
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
-end ".text";
+end ".text_hal";

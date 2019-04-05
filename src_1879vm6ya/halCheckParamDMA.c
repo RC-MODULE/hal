@@ -1,6 +1,10 @@
 extern "C" {
 
-
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halCheckParamsSingleDMA(void* src, void* dst, int size){
 	int temp = (int)src;
 	if(temp << 31){
@@ -16,6 +20,11 @@ int halCheckParamsSingleDMA(void* src, void* dst, int size){
 	return 0;
 };
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1){
 	int temp = (int)src0;
 	if(temp << 31){

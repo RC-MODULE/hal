@@ -8,7 +8,7 @@ extern _halEnterCriticalSection : label;
 extern _halExitCriticalSection  : label;
 
 
-begin ".text"
+begin ".text_hal"
 <_halInitSingleDMA>
 	//int halInitSingleDMA(int  src,  int  dst,  int  size32);
 	ar5 = ar7 - 2;
@@ -98,4 +98,4 @@ call _halExitCriticalSection;
 		gr7 = false;
 		nop;
 		nop;
-end ".text";
+end ".text_hal";

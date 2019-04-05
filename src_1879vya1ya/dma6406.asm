@@ -11,7 +11,7 @@ global _dmainit: label;
 global _dmaInit: label;
 global _dmac0: label;
 global _dmac1: label;
-begin "text"
+begin ".text_hal"
 .branch;
 <_dmaInit>
 <_dmainit>
@@ -131,5 +131,5 @@ begin "text"
 	pop ar5,gr5;
 return;
 
-end "text";
+end ".text_hal";
 

@@ -11,7 +11,7 @@ const CSR_CLR=4000_0C04h;	//CSR_CLR	ЧТ/ЗП	Побитовый сброс ре
 const PDA    =4000_0C08h;  //PDA	ЧТ/ЗП	Регистр адреса гиперстраницы
 const CEN    =1;
 
-begin text
+begin ".text_hal"
 
 global _halInstrCacheEnable : label;
 <_halInstrCacheEnable>
@@ -27,4 +27,4 @@ global _halInstrCacheDisable : label;
 		vnul;
         [CSR_CLR]=gr7;
 	
-end text;
+end ".text_hal";

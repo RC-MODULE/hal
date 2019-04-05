@@ -13,7 +13,7 @@ global _halDmaStart: label;
 global _dmainit: label;
 global _dmac0: label;
 global _dmac1: label;
-begin "text"
+begin ".text_hal"
 .branch;
 <_halDmaStart>//по таблице
    push ar5,gr5 with gr7=false;
@@ -131,5 +131,5 @@ begin "text"
    pop ar0,gr0;
    pop ar5,gr5;
    return;
-end "text";
+end ".text_hal";
 

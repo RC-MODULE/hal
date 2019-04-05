@@ -1,7 +1,7 @@
 
 
 
-begin ".text"
+begin ".text_hal"
 
 	
 global _halLedCount:label;
@@ -9,4 +9,4 @@ global _halLedCount:label;
 	gr7 = 0;
 	return;
 	
-end ".text";
+end ".text_hal";

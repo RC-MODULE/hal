@@ -35,7 +35,7 @@ extern _halEnterCriticalSection : label;
 extern _halExitCriticalSection  : label;
 
 
-begin ".text"
+begin ".text_hal"
 
 import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -245,7 +245,7 @@ import from led;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		[_flag_of_pack_DMA] = gr7;
 		nop;
 
-end ".text";	
+end ".text_hal";	
 
 	
 
