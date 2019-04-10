@@ -5,6 +5,11 @@ extern "C"{
 
 extern SyncBuf halSyncro;
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 void halEnterCriticalSection(){
 	int id = halGetCoreId(); 
 	int* flag = &(halSyncro.flag0);
@@ -15,7 +20,11 @@ void halEnterCriticalSection(){
 	while( flag[opid] && (halSyncro.turn == opid));
 }
 
-
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 void halExitCriticalSection(){
 	int id = halGetCoreId();
 	int* flag = &(halSyncro.flag0);

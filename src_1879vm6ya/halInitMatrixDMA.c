@@ -16,7 +16,11 @@ static DmaCallback user_callback_loc;
 	DmaCallback readCallback();	
 
 	
-
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 static int own_callback(){
 	if(--height_loc){
 		halInitSingleDMA(src_loc,dst_loc,size32_loc);
@@ -31,6 +35,11 @@ static int own_callback(){
 	return 0;
 }
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	if((srcStride32 - width) < 0){
 		return 1;
