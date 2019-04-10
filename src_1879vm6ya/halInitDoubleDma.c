@@ -1,11 +1,21 @@
 #include <hal.h>
 extern "C"{
-static int pntr2src_2dma; 
-static int pntr2dst_2dma; 
-static int size1_dma;
-static DmaCallback user_callback_loc;
-	DmaCallback readCallback();
+	
+#ifdef __GNUC__
+__attribute__((section(".data_hal"))) static int pntr2src_2dma; 
+__attribute__((section(".data_hal"))) static int pntr2dst_2dma; 
+__attribute__((section(".data_hal"))) static int size1_dma;
+__attribute__((section(".data_hal"))) static DmaCallback user_callback_loc;
+#else
+#pragma data_section ".data_hal"
+	static int pntr2src_2dma; 	
+	static int pntr2dst_2dma; 
+	static int size1_dma;
+	static DmaCallback user_callback_loc;
+#pragma data_section ".data"
+#endif
 
+	DmaCallback readCallback();
 #ifdef __GNUC__
 __attribute__((section(".text_hal")))
 #else

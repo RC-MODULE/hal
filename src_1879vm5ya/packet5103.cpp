@@ -10,6 +10,12 @@ extern "C"
 	extern int ofdmainit;
 	int *packet[4];
 	extern int packetcnt;
+	
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 	void BellFromDmaPacket()// Обработчик DMA прерывания (векторы 58h,60h)
 	{   if (packetcnt>1)    
 	    {	packetcnt--;
@@ -18,7 +24,12 @@ extern "C"
 		dmainit(0,(int*)*packet[2],(int*)*packet[1], *packet[0]);//OK
 	    } else packetcnt=0;		
 	}
-
+	
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 	int halInitPacketDMA(void** src,  void** dst,  int* size32, int N)
 	{
 		for(int i=0; i<N ; i++){

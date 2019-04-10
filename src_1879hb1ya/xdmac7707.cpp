@@ -25,6 +25,11 @@ extern "C"
 	
 	
 //int add2Chain(int dst,int src,int size);
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 SpecDMA7707* halInitDMA7707 (void** src, void** dst,  int* size32, void* specBuffer)
 {   
 	int *q,n,*asrc,*adst,*sz;
@@ -40,12 +45,18 @@ SpecDMA7707* halInitDMA7707 (void** src, void** dst,  int* size32, void* specBuf
 	q=chain_7707.root;
 	return (SpecDMA7707*)chain_7707.root;
 }
+
 /*
 int halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallback* func, int channel=0)
 {  
 	return xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);
 } 
 */
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halInitSingleDMA(void*  src,  void*  dst,  int  size32)
 {  
 	int channel=0;
@@ -53,6 +64,11 @@ int halInitSingleDMA(void*  src,  void*  dst,  int  size32)
 	return 0; 
 } 
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1)
 { 
 	int *q,k; 
@@ -63,6 +79,11 @@ int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int in
 	return 0;
 }
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,  void* dst, int dstStride32 )
 { 
 	int channel = 0;
@@ -82,6 +103,11 @@ int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,  v
 	return 0;
 }	
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int  halInitPacketDMA(void** src,  void** dst,  int* size32, int packets)
 { 
 	int *q,k,n,*asrc,*adst,*sz;
@@ -100,6 +126,11 @@ int  halInitPacketDMA(void** src,  void** dst,  int* size32, int packets)
 	return 0;
 }
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halStatusDMA()
 {  
 	return xdmac0();

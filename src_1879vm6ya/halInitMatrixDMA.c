@@ -4,13 +4,25 @@
 		extern "C" {
 #endif
 
-static int size32_loc;
-static int height_loc;
-static int* src_loc;
-static int* dst_loc;
-static int stride_src_loc;
-static int stride_dst_loc;
-static DmaCallback user_callback_loc;
+#ifdef __GNUC__
+__attribute__((section(".data_hal"))) static int size32_loc;
+__attribute__((section(".data_hal"))) static int height_loc;
+__attribute__((section(".data_hal"))) static int* src_loc;
+__attribute__((section(".data_hal"))) static int* dst_loc;
+__attribute__((section(".data_hal"))) static int stride_src_loc;
+__attribute__((section(".data_hal"))) static int stride_dst_loc;
+__attribute__((section(".data_hal"))) static DmaCallback user_callback_loc;
+#else 
+#pragma data_section ".data_hal"
+	static int size32_loc;
+	static int height_loc;
+	static int* src_loc;
+	static int* dst_loc;
+	static int stride_src_loc;
+	static int stride_dst_loc;
+	static DmaCallback user_callback_loc;
+#pragma data_section ".data"
+#endif
 
 	void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	DmaCallback readCallback();	
