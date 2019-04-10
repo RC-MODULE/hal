@@ -1,11 +1,23 @@
 #include "hal.h"
 #include "led.h"
 extern "C"{
-static void** pSrc; 
-static void** pDst; 
-static int*   pSize;
-static int    Amm;
-static DmaCallback userCallback;
+#ifdef __GNUC__
+__attribute__((section(".data_hal"))) static void** pSrc; 
+__attribute__((section(".data_hal"))) static void** pDst; 
+__attribute__((section(".data_hal"))) static int*   pSize;
+__attribute__((section(".data_hal"))) static int    Amm;
+__attribute__((section(".data_hal"))) static DmaCallback userCallback;
+#else
+#pragma code_section ".data_hal"
+	static void** pSrc; 
+	static void** pDst; 
+	static int*   pSize;
+	static int    Amm;
+	static DmaCallback userCallback;
+#pragma data_section ".data"
+#endif
+
+
 	DmaCallback readCallback();
 	
 #ifdef __GNUC__

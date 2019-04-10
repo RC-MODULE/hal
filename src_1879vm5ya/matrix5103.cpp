@@ -12,6 +12,12 @@ extern "C"
 extern int ofdmainit;
 int zzzMatrix[6];
 extern int matrixcnt;
+
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
 {  
 	if (zzzMatrix[3])
@@ -22,6 +28,11 @@ void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
    }
 }  // BellFromDmaMatrix
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
      void* dst, int dstStride32, bell_func DmaCallback, int channel)
 { 

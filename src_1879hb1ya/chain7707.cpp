@@ -1,6 +1,12 @@
 #include "chain7707.h"
 extern "C"{ 
 SpecDMA7707 chain_7707;
+
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 void openDma(void *buf)
 {  
 	unsigned int uu;
@@ -10,6 +16,12 @@ void openDma(void *buf)
     chain_7707.root=(int*)uu;	
     chain_7707.prev=chain_7707.root; chain_7707.current=chain_7707.root;
 }
+
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int add2Chain( int armdst, int armsrc, int bytecnt)
 { unsigned int u;//chain_7707.current может к этому времени измениться
    u=((unsigned int)chain_7707.current)<<2; // Это уже армовый адрес

@@ -51,6 +51,11 @@ int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, 
 	return 0;
 };
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	int temp = (int)src;
 	if(temp << 31){
@@ -78,6 +83,11 @@ int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32
 	return 0;
 }
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	int temp = (int)src << 28;
 	if(temp){
@@ -108,6 +118,11 @@ int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStr
 	return 0;
 }
 
+#ifdef __GNUC__
+__attribute__((section(".text_hal")))
+#else
+#pragma code_section ".text_hal"
+#endif
 int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32, int amm){
 	int pntr = 0;
 	int error_code = 0;

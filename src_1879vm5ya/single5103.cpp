@@ -18,16 +18,30 @@ extern "C"
 	void openDma();
 	void BellFromDma();// Обработчик DMA прерывания (векторы 58h,60h)
 
+	#ifdef __GNUC__
+	__attribute__((section(".text_hal")))
+	#else
+	#pragma code_section ".text_hal"
+	#endif
 	void halSetCallbackDMA(DmaCallback user_callback){
 		SetCallBack(0x58, (int)user_callback);
 		SetCallBack(0x60, (int)user_callback);	
 	}
 	
-
+	#ifdef __GNUC__
+	__attribute__((section(".text_hal")))
+	#else
+	#pragma code_section ".text_hal"
+	#endif
 	int  halStatusDMA(){
 		return statusFunc();
 	}
 	
+	#ifdef __GNUC__
+	__attribute__((section(".text_hal")))
+	#else
+	#pragma code_section ".text_hal"
+	#endif
 	int halInitSingleDMA(void*  src,  void*  dst,  int  size32 ) //,  DmaCallback* func, int channel)
 	{ 
 		int i;
