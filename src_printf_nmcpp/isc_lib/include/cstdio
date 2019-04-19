@@ -1,0 +1,37 @@
+//==============================================================================
+//  Component:
+//      STD (C++ Standard Library)
+//
+//  Library:
+//      $KW; $FN; $EKW;
+//      $KW; $Own; $Ver; $ChkD; $EKW;
+//
+//  Purpose:
+//
+//  Copyright (C) 1998-2001, Interstron, Ltd.
+//  All rights reserved.
+//==###=========================================================================
+#ifndef _CSTDIO
+#define _CSTDIO
+
+#include <cstdarg>
+
+#ifdef  __cplusplus
+namespace std{
+    extern "C" {
+#endif
+
+#define _INTERNAL_IN_STD
+    #include "internal\_stdio.h"
+#undef _INTERNAL_IN_STD
+
+#ifdef  __cplusplus
+    }
+}
+#endif
+
+#endif
+//==###=========================================================================
+//  End of module:
+//      $KW; $FN; $EKW;
+//==============================================================================

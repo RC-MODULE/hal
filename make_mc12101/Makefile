@@ -16,9 +16,9 @@ else
 endif
 
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya -I../src_printf_nmcpp
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_nmc_all ../src_ringbuffer
+SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
@@ -75,8 +75,8 @@ $(TARGET): $(TMP_DIR) $(OBJECTS)
 	@echo *******************************************************************************
 
 # custom build of printf.c because of error with -O2 optimization compiling
-$(TMP_DIR)/printf.o: ../src_nmc_all/printf.c
-	nmcc ../src_nmc_all/printf.c -Sc -nmc4 -o$(TMP_DIR)/printf.o -O0
+$(TMP_DIR)/printf.o: ../src_printf_nmcpp/printf.c
+	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc4 -o$(TMP_DIR)/printf.o -O0
 
 $(TMP_DIR):
 	-mkdir "$(@)"
@@ -103,10 +103,13 @@ vs2005: $(PROJECT).sln
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
 	
 
-vs2015:	$(PROJECT).sln
+vs2015:
+	premake5 $(MAKECMDGOALS) 
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=x64
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=x64
 #"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
 
 	
 $(PROJECT).sln:	premake5.lua 

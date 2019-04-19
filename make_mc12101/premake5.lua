@@ -2,52 +2,52 @@
 
 -- A solution contains projects, and defines the available configurations
 solution "hal-mc12101"
-   configurations { "Debug", "Release" }
+    configurations { "Debug", "Release" }
+	platforms { "Win32","x64"}	
 		
+	-- x86 static library project  ---------------------------------	 
+	project "hal-mc12101"
 		
-	-- x86  library with printf support  ---------------------------------	 
-	project "hal-mc12101-x86"
-      		kind "StaticLib"
+		kind "StaticLib"
+	
 		includedirs { "../include","$(MC12101)/include","../src_host_io"}
+		
 		targetdir ("../lib")
-      		files { 	"../src_mc12101_host/*.*",
+      	
+		files { 	"../src_mc12101_host/*.*",
 				"../src_x86/*.*",
 				"../src_ringbuffer/*.*",
 				"../include/*.h",
 				"../src_host_io/*.*"}
 	  
-		configuration "Debug"
-			targetsuffix ("d")
+		configuration {"Debug","Win32"}
+			targetsuffix ("-x86d")
+			architecture "x32"
 			defines { "DEBUG","NM6405"}
 			symbols  "On" 
 		
-		configuration "Release"
+		configuration {"Release","Win32"}
+			targetsuffix ("-x86")
+			architecture "x32"
 			defines { "NDEBUG","NM6405"}
 			symbols  "Off" 
 		
-	-- x86  library without printf support  ---------------------------------	 
-	project "hal-mc12101silent-x86"
-      		kind "StaticLib"
-		includedirs { "../include","$(MC12101)/include"}
-		targetdir ("../lib")
-      	files {	"../src_mc12101_host/*.*",
-				"../src_x86/*.*",
-				"../src_ringbuffer/*.*",
-				"../include/*.h"}
-
-	  
-		configuration "Debug"
-			targetsuffix ("d")
-			defines { "DEBUG","SILENT","NM6405"}
+		configuration {"Debug","x64"}
+			targetsuffix ("-x64d")
+			architecture "x64"
+			defines { "DEBUG","NM6405"}
 			symbols  "On" 
 		
-		configuration "Release"
-			defines { "NDEBUG","SILENT","NM6405"}
+		configuration {"Release","x64"}
+			targetsuffix ("-x64")
+			architecture "x64"
+			defines { "NDEBUG","NM6405"}
 			symbols  "Off" 
 		
 		
+		
 	-- NeuroMatrix project ---------------------------------
-	project "hal-mc12101"
+	project "hal-mc12101-nmc3"
       	kind "Makefile"
 		files { "../src_1879vm6ya/*.cpp",
 				"../src_1879vm6ya/*.c",

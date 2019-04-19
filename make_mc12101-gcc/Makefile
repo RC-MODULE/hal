@@ -15,7 +15,7 @@ endif
 
 INC_DIRS = -I$(ROOT)/include -I../src_1879vm6ya
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_ringbuffer ../src_nmc_all
+SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_ringbuffer ../src_nmc_all ../src_printf_nmgcc
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
