@@ -3,6 +3,10 @@ ROOT=../../..
 # This makefile builds simple nmc-application containing single cpp-file  
 # Rule 'run' executes the application on MC12101 board 
 
+ifeq ($(OS),Windows_NT)
+SHELL 			 = cmd
+endif
+
 -include nmc4vars_win.mk
 
 .SUFFIXES:
@@ -34,6 +38,7 @@ run: $(TARGET)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+	
 rund:
 	-$(MAKE) run
 	pause

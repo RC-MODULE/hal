@@ -3,6 +3,10 @@ ROOT=../../..
 # This makefile builds simple nmc-application containing single cpp-file  
 # Rule 'run' executes the application on MC12101 board 
 
+ifeq ($(OS),Windows_NT)
+SHELL 			 = cmd
+endif
+
 -include nmc4vars_win.mk
 
 .SUFFIXES:
