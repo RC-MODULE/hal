@@ -11,7 +11,7 @@
 //#define MAX_FUNCNAME_LENGTH 64
 //#define MAX_FUNCNAME_LENGTH 16
 
-
+extern "C"{
  
 // Функция выводит результат профилирования одной функции в stdout в форматированном виде
 // \param prof указатель структуру профилирования 
@@ -83,3 +83,5 @@ void  nmprofiler_print2xml(ProfilerData* head)
 	printf("</profiling>\n");
 }
 
+
+};
