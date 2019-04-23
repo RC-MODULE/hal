@@ -54,14 +54,18 @@ HAL = $(ROOT)
 PROJECT          = main0
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I"$(NMPP)/include" -I$(HAL)/include 
+INC_DIRS         = -I$(HAL)/include -Ig:/hal/include
 SRC_DIRS         = .. .
 LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
-AS               = nmc-gcc 				 
-AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
+#AS               = nmc-as-gnu 				 
+AS               = nmc-gcc				 
+#AS_FLAGS    	 = -nmc4  --traditional-format
+AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float 
+#AS               = asm 				 
+#AS_FLAGS    	 = -nmc4
 LIBS             = -lnmpp-nmc4f -lhal-mc12101
 LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-cmc12101brd-nmpu0.cfg" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 
@@ -71,7 +75,8 @@ LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-cmc1
 
 # regular search of *.c *.cpp,*.asm sources in all $(SRC_DIRS)
 ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
-ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS)))
+ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS))) 
+ALL_S   =$(wildcard $(addsuffix /*.s, $(SRC_DIRS)))
 ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
 ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
 
@@ -79,9 +84,10 @@ VPATH   = $(SRC_DIRS)
 
 # collecting of objects
 OBJECTS_CPP = $(notdir $(patsubst %.cpp,%.o,$(ALL_CPP)))
-OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM)))
+OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM))) 
+OBJECTS_S   = $(notdir $(patsubst %.s,%.o,$(ALL_S)))
 OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
-OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM))
+OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM) $(OBJECTS_S))
 
 #======================== BUILD RULES ====================================
 .PHONY:all  clean skip
@@ -110,6 +116,9 @@ $(OUT_DIR):
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm 
+	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+
+$(TMP_DIR)/%.o: %.s 
 	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
 	
 $(TMP_DIR)/%.o: %.cpp 

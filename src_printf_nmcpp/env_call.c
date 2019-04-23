@@ -15,7 +15,7 @@
 #include <cassert>
 #include "string.h"
 #include "host_duties.h"
-
+#icnlude "section-printf.h"
 
 #ifndef __GNUC__
 typedef int _off_t;                /* file offset value */
@@ -63,25 +63,25 @@ extern volatile int backBuffer[ backBufferSize ];
 extern volatile int backBufferReady;
 extern int errno;
 
-int _putchar(int ch){
+INSECTION(".text-printf.h") int _putchar(int ch){
     char* buf= (char*)beginMessage();
 	*buf++ =ch;
 	completeMessage( INDEX_PUTCHAR, 1 );
     return 0;
 }
 
-int fff( volatile int i)//  for volatile bug
+INSECTION(".text-printf.h") int fff( volatile int i)//  for volatile bug
 {
     return i;
 }
 
-void wait_for_host()
+INSECTION(".text-printf.h") void wait_for_host()
 {
 	while ( fff( backBufferReady )==0 )
 		;
 }
 
-int _getchar(void){
+INSECTION(".text-printf.h") int _getchar(void){
     beginMessage();
 	completeMessage( INDEX_GETCHAR, 0 );
     wait_for_host();
@@ -90,7 +90,7 @@ int _getchar(void){
     return backBuffer[0];
 }
 
-_HANDLE _open(const char* fileName, unsigned int oflags){
+INSECTION(".text-printf.h") _HANDLE _open(const char* fileName, unsigned int oflags){
     int* buf= beginMessage();
     int* end= buf;
     do
@@ -105,7 +105,7 @@ _HANDLE _open(const char* fileName, unsigned int oflags){
     return backBuffer[0];
 }
 
-int _close(_HANDLE file){
+INSECTION(".text-printf.h") int _close(_HANDLE file){
     char* buf= (char*)beginMessage();
 	*buf++ =file;
 	completeMessage( INDEX_CLOSE, 1 );
@@ -116,7 +116,7 @@ int _close(_HANDLE file){
     return backBuffer[0];
 }
 
-int _read(_HANDLE file, void* dst, int size){
+INSECTION(".text-printf.h") int _read(_HANDLE file, void* dst, int size){
     char* buf= (char*)beginMessage();
     *buf++= file;
     *buf++= reinterpret_cast<int>( dst);
@@ -137,7 +137,7 @@ int _read(_HANDLE file, void* dst, int size){
     return backBuffer[0];
 }
 
-int _write(_HANDLE file, const void* content, int size){
+INSECTION(".text-printf.h") int _write(_HANDLE file, const void* content, int size){
 //    exit (115);
     int* buf= (int*)beginMessage();
     *buf++= file;
@@ -155,7 +155,7 @@ int _write(_HANDLE file, const void* content, int size){
     return backBuffer[0];
 }
 
-int _flush( _HANDLE ){
+INSECTION(".text-printf.h") int _flush( _HANDLE ){
     //  параметр игнорируем, поскольку делать будем _flushall:
     //  _flush(_HANDLE) на хосте нету
     beginMessage();
@@ -163,7 +163,7 @@ int _flush( _HANDLE ){
     return 0;
 }
 
-int _getpos(_HANDLE file, fpos_t* pos){
+INSECTION(".text-printf.h") int _getpos(_HANDLE file, fpos_t* pos){
     int* buf= (int*)beginMessage();
     *buf++= file;
 	completeMessage( INDEX_GETPOS, 1 );
@@ -178,7 +178,7 @@ int _getpos(_HANDLE file, fpos_t* pos){
     return 0;
 }
 
-int _setpos(_HANDLE file, const fpos_t* pos){
+INSECTION(".text-printf.h") int _setpos(_HANDLE file, const fpos_t* pos){
     int* buf= (int*)beginMessage();
     *buf++= file;
     *buf++= *pos;
@@ -190,7 +190,7 @@ int _setpos(_HANDLE file, const fpos_t* pos){
     return backBuffer[0]!=-1 ? -1:0;
 }
 
-int _rename(const char* oldName, const char* newName){
+INSECTION(".text-printf.h") int _rename(const char* oldName, const char* newName){
     char* buf= (char*)beginMessage();
     int len1= strlen( oldName );
     int len2= strlen( newName );
@@ -204,7 +204,7 @@ int _rename(const char* oldName, const char* newName){
     return backBuffer[0];
 }
 
-int _remove(const char* path){
+INSECTION(".text-printf.h") int _remove(const char* path){
     char* buf= (char*)beginMessage();
     int len= strlen( path );
     strcpy( buf, path );
@@ -216,7 +216,7 @@ int _remove(const char* path){
     return backBuffer[0];
 }
 
-size_t _getenv(const char *name, char *p_buf, size_t bufsize){
+INSECTION(".text-printf.h") size_t _getenv(const char *name, char *p_buf, size_t bufsize){
     char* buf= (char*)beginMessage();
     int len= strlen( name );
     strcpy( buf, name );
@@ -237,7 +237,7 @@ size_t _getenv(const char *name, char *p_buf, size_t bufsize){
     return i;
 }
 
-int system(const char *command){
+INSECTION(".text-printf.h") int system(const char *command){
     char* buf= (char*)beginMessage();
     int len= strlen( command );
     strcpy( buf, command );
@@ -250,7 +250,7 @@ int system(const char *command){
 }
 //int printf(const char *format, ...);
 
-int _fstat(_HANDLE handle, struct _stat *buffer){
+INSECTION(".text-printf.h") int _fstat(_HANDLE handle, struct _stat *buffer){
 
 #ifdef _USE_32BIT_TIME_T
 #error _USE_32BIT_TIME_T is unsupported
@@ -301,7 +301,7 @@ int _fstat(_HANDLE handle, struct _stat *buffer){
 //}
 
 /* Function to get system information*/
-size_t _sys_info (int /*operation*/, void* buf, size_t bufsize)
+INSECTION(".text-printf.h") size_t _sys_info (int /*operation*/, void* buf, size_t bufsize)
 {
     int i;
     for ( i=0; i<bufsize; i++ ){
@@ -312,7 +312,7 @@ size_t _sys_info (int /*operation*/, void* buf, size_t bufsize)
 }
 
 
-fpos_t _getf_size(_HANDLE file){
+INSECTION(".text-printf.h") fpos_t _getf_size(_HANDLE file){
     struct _stat buffer;
     _fstat( file, &buffer );
     return buffer.st_size;

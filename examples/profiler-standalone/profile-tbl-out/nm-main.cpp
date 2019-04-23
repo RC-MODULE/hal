@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 //#define DISABLE_STOPWATCH
-//#include "stopwatch.h"
+#include "stopwatch.h"
 #include "nmprofiler.h"
 
 int g=1;
@@ -27,7 +27,7 @@ extern "C"{
 
 
 
-//STOPWATCH_INIT();
+STOPWATCH_INIT();
 int  main(){
 	
 	
@@ -38,6 +38,8 @@ int  main(){
 	nmprofiler_init();
 	
 	//STOPWATCH_START(tmr_all,"tmr_all");			// Запускаем таймер tmr_all.	
+	
+	static Stopwatch StopwatchID("StopwatchName");	
 	
 	
 	for(int i=0; i<10; i++){

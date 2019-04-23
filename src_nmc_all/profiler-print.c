@@ -7,6 +7,7 @@
 #include "time.h"
 #include <stdio.h>
 #include "nmprofiler.h"
+#include "section-nmprofiler.h"
 //#include "nmprofiler_nmcout.h"
 //#define MAX_FUNCNAME_LENGTH 64
 //#define MAX_FUNCNAME_LENGTH 16
@@ -16,14 +17,14 @@ extern "C"{
 // Функция выводит результат профилирования одной функции в stdout в форматированном виде
 // \param prof указатель структуру профилирования 
 // \param format формат вывода аналогичный printf 
-void nmprofiler_printf(ProfilerData* prof, char* format){
+INSECTION(".text_nmprofiler") void nmprofiler_printf(ProfilerData* prof, char* format){
 	printf(format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) , prof->funcaddr, prof->funcname);
 }	
 
 // Функция форматрирует в результат профилирования одной функции в dststr
 // \param prof указатель структуру профилирования 
 // \param format формат вывода аналогичный sprintf 
-void nmprofiler_sprintf(char* dststr, ProfilerData* prof, char* format, char* full_func_name){
+INSECTION(".text_nmprofiler") void nmprofiler_sprintf(char* dststr, ProfilerData* prof, char* format, char* full_func_name){
 	if (full_func_name==0)
 		full_func_name=(char*)prof->funcname;
 	sprintf(dststr, format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) , prof->funcaddr, full_func_name);
@@ -52,7 +53,7 @@ void nmprofiler_sprintf(char* dststr, ProfilerData* prof, char* format, char* fu
 
 // Функция выводит результаты профилирования в stdout в табличном-формате по списку начиная с head. Для форматированного отображения xml-файла прилагается xsl-преобразование: profile.xsl.
 // \param head указатель на первую структуру в списке.
-void  nmprofiler_print2tbl(ProfilerData* head)
+INSECTION(".text_nmprofiler") void  nmprofiler_print2tbl(ProfilerData* head)
 {
 	if (head==0)
 		head=nmprofiler_head();
@@ -69,7 +70,7 @@ void  nmprofiler_print2tbl(ProfilerData* head)
 
 //! Функция выводит результаты профилирования в stdout в xml-формате по списку начиная с head. Для форматированного отображения xml-файла прилагается xsl-преобразование: profile.xsl.
 //! \param head указатель на первую структуру в списке.
-void  nmprofiler_print2xml(ProfilerData* head)
+INSECTION(".text_nmprofiler") void  nmprofiler_print2xml(ProfilerData* head)
 {
 	if (head==0)
 		head=nmprofiler_head();

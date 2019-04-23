@@ -83,7 +83,7 @@ end PROFILE_END;
 	
 // disp =12	
 macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
-.branch;
+//.branch;
 	ext funcname				:label; // указатель на профилируемую функцию
 	own timer_return			:label;
 	own timer_enter				:label;
@@ -194,7 +194,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		nul;
 		nul;
 	<next_init>
-.wait;
+//.wait;
 end PROFILE_FUNC_BASE;
 
 //=======================================================================================================================
