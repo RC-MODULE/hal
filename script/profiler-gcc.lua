@@ -1,9 +1,33 @@
 
 -- use %. to define .
 max_funcname_length = 16
-exclude_section_prefix ={ '%.text%.', "%.text_nmprofiler" }
+exclude_section_prefix ={ '%.text%.',"%.data","%.nobits","%.bss","%.rodata","%.init","%.fini","%.heap","%.rpc_","%.text_nmprofiler", "%.text_hal", "%.text_nmvcore" }
+
+
+
 -- exclude_section_prefix ={  }
 include_section = {  }
+nonstd_name = {
+"UDiv32",
+"IDiv32",
+"LShift32",
+"Mul32Ex",
+"ARShift32",
+"DAdd",
+"DFrExp",
+"DResult",
+"DCmp",
+"DDiv",
+"DMul",
+"ConvDtoI32",
+"ConvI32toD",
+"UMod32",
+"IMod32",
+"Mul32",
+"RShift32",
+"ConvU32toD"
+}
+
 exclude_name = { 
 "_result_code"                 ,
 "loadStackAddr"                ,
@@ -126,18 +150,20 @@ print("PROFILE_BEGIN("..max_funcname_length..");")
 print('')
 	
 -- print(arg[1])
-
+prevaddr = ""
 if #arg==1 then
 if file_exists(arg[1]) then
 	for line in io.lines(arg[1]) do 
 		-- search of section ------------------------------------
-		idx=string.find(line,"^%.text[%.%a_%d]*%s?");
+		-- idx=string.find(line,"^%.text[%.%a_%d]*%s?");
+		idx=string.find(line,"^%s?%.[%.%a_%d]*%s?");
 		if idx<>nil then
-			section=string.sub(line,string.find(line,"%.text[%.%a_%d]*"));
+			section=string.sub(line,string.find(line,"%.[%.%a_%d]*"));
 		end
 		-- search of function ------------------------------------
 		idx=string.find(line,"^%s+0x%x+%s+[_%a][_%a%d]+$");
 		if idx<>nil then
+			prevaddr=func.addr;
 			idx0,idx1=string.find(line,"0x%x+"); -- find address
 			func.addr=string.sub(line,idx0,idx1); -- extract address
 			func.name=string.sub(line, string.find(line,"[_%a%d]+",idx1+1)); -- extract name
@@ -149,7 +175,21 @@ if file_exists(arg[1]) then
 					if not contains(exclude_name, func.name) then
 						len = string.len(func.name);
 						sss=space_wagon(max_funcname_length-len);
-						print("PROFILE_FUNC("..func.name..","..sss.."\""..func.name..sss.."\");// "..func.addr.." ["..func.sect.."]");
+						comment="";
+						if (func.addr==prevaddr) then
+							comment='//';
+						end
+
+						if contains(nonstd_name, func.name) then
+							print(comment.."NONCFUNC("..func.name..","..sss.."\""..func.name..sss.."\");// "..func.addr.." ["..func.sect.."]");
+							--print(count,func.addr,func.name,func.sect);
+							--print("\""..func.name.."\",");
+						else
+							print(comment.."FUNCTION("..func.name..","..sss.."\""..func.name..sss.."\");// "..func.addr.." ["..func.sect.."]");
+							--print("\""..func.name.."\",");
+							--print(count,func.addr,func.name,func.sect);
+						end
+						
 						--print("\""..func.name.."\",");
 						--print(count,func.addr,func.name,func.sect);
 					end
