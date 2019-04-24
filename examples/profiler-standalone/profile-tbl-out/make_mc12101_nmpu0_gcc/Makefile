@@ -61,11 +61,11 @@ TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
 CC 				 = nmc-g++
 #AS               = nmc-as-gnu 				 
-AS               = nmc-gcc				 
 #AS_FLAGS    	 = -nmc4  --traditional-format
-AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float 
-#AS               = asm 				 
-#AS_FLAGS    	 = -nmc4
+#AS               = nmc-gcc				 
+#AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float 
+AS               = asm 				 
+AS_FLAGS    	 = -nmc4
 LIBS             = -lnmpp-nmc4f -lhal-mc12101
 LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-cmc12101brd-nmpu0.cfg" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 

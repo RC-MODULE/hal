@@ -39,7 +39,7 @@ int  main(){
 	
 	//STOPWATCH_START(tmr_all,"tmr_all");			// Запускаем таймер tmr_all.	
 	
-	static Stopwatch StopwatchID("StopwatchName");	
+	Stopwatch StopwatchID("StopwatchName");	
 	
 	
 	for(int i=0; i<10; i++){

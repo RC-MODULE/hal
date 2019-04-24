@@ -54,7 +54,7 @@ struct HalRingBuffer{
 	FuncSetCallbackDMA setCallback;
 };
 
-static HalRingBuffer* activeRingBuffer=0;
+INSECTION(".data_hal") static HalRingBuffer* activeRingBuffer=0;
 
 INSECTION(".text_hal") int halRingBufferCount(HalRingBuffer* ringBuffer) {
 	return ringBuffer->head - ringBuffer->tail;

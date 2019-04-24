@@ -1,13 +1,14 @@
-extern "C"{
-int nonfirst, chain[10], matrixcnt, packetcnt;
-int ofdmainit;
+#include "section-hal.h"
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
+#ifdef __cplusplus
+		extern "C" {
 #endif
-void halOpenDMA()
+
+	
+INSECTION(".data_hal") int nonfirst, chain[10], matrixcnt, packetcnt;
+INSECTION(".data_hal") int ofdmainit;
+
+INSECTION(".text_hal") void halOpenDMA()
 { 
 	nonfirst=0; 
 	chain[9]=0;
@@ -16,4 +17,6 @@ void halOpenDMA()
 	ofdmainit=0;
 }
 
-};
+#ifdef __cplusplus
+		};
+#endif

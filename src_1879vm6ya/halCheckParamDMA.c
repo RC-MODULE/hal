@@ -1,11 +1,11 @@
-extern "C" {
+#include "section-hal.h"
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
+#ifdef __cplusplus
+		extern "C" {
 #endif
-int halCheckParamsSingleDMA(void* src, void* dst, int size){
+
+
+INSECTION(".text_hal") int halCheckParamsSingleDMA(void* src, void* dst, int size){
 	int temp = (int)src;
 	if(temp << 31){
 		return 1;
@@ -20,12 +20,7 @@ int halCheckParamsSingleDMA(void* src, void* dst, int size){
 	return 0;
 };
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1){
+INSECTION(".text_hal") int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1){
 	int temp = (int)src0;
 	if(temp << 31){
 		return 1;
@@ -51,12 +46,7 @@ int halCheckParamsDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, 
 	return 0;
 };
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+INSECTION(".text_hal") int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	int temp = (int)src;
 	if(temp << 31){
 		return 1;
@@ -83,12 +73,7 @@ int halCheckParamsMatrixDMA(void*  src,  int  width,int  height, int srcStride32
 	return 0;
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+INSECTION(".text_hal") int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	int temp = (int)src << 28;
 	if(temp){
 		return 1;
@@ -118,12 +103,7 @@ int halCheckParamsStausMatrixDMA(void*  src,  int  width,int  height, int srcStr
 	return 0;
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32, int amm){
+INSECTION(".text_hal") int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32, int amm){
 	int pntr = 0;
 	int error_code = 0;
 	int test;
@@ -150,4 +130,6 @@ int halCheckParamsPacketDMA(void** src,  void** dst,  int* size32, int amm){
 	return error_code | (pntr << 16);
 }
 
-};
+#ifdef __cplusplus
+		};
+#endif

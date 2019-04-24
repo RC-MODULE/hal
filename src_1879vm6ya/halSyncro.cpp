@@ -1,10 +1,14 @@
-
 #include "sleep.h"
 #include "hal_target.h"
 #include "led.h"
 #include "hal.h"
+#include "section-hal.h"
 
-extern "C" {
+#ifdef __cplusplus
+		extern "C" {
+#endif
+
+
 #ifdef __GNUC__
 /**************************NMC-GCC************************/
 __attribute__((section(".data_hal_syncro"))) SyncBuf halSyncro={-1,0,0,0,0,0,0,0,0,0};
@@ -17,14 +21,18 @@ __attribute__((section(".data_hal_syncro"))) SyncBuf halSyncro={-1,0,0,0,0,0,0,0
 #pragma data_section ".data"
 
 #endif
-    static int procNo=-1;
-	void halSetProcessorNo(int number){
+    
+
+#include "section-hal.h"
+	
+INSECTION(".data_hal")	static int procNo=-1;
+	
+INSECTION(".text_hal")	void halSetProcessorNo(int number){
 		procNo=number;
 	};
 
 
-
-int halSync(int val,int processor){
+INSECTION(".text_hal") int halSync(int val,int processor){
 
 	if (procNo==-1)
 		procNo=ncl_getProcessorNo();
@@ -66,10 +74,12 @@ int halSync(int val,int processor){
 
 
 }
-void* halSyncAddr(void* addr,int processor){
+
+INSECTION(".text_hal") void* halSyncAddr(void* addr,int processor){
 	return (void*)halSync((int)addr,processor);
 }
-int halSyncArray(
+
+INSECTION(".text_hal") int halSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
 					 size_t outLen,    // Sended array length (can be 0)
@@ -88,4 +98,8 @@ int halSyncArray(
 		halSync(outLen,procNo);
 	return sync;
 }
+
+#ifdef __cplusplus
 };
+#endif
+
