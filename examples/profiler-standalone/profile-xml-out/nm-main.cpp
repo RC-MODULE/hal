@@ -8,7 +8,6 @@ int g=1;
 extern "C"{
 	 int mysin(){
 		
-		printf("--");
 		for (int i=0; i<1000; i++){
 			g++;
 			
@@ -32,7 +31,6 @@ int  main(){
 	
 	
 //for(int i=0; i<10000;i ++)
-	printf("***************Profiler-output****************:\n");
 
 	//nmprofiler_enable();
 	nmprofiler_init();
@@ -54,7 +52,7 @@ int  main(){
 		mycos();
 		mycos();
 		//STOPWATCH_STOP(tmr_cos);					// Останавливаем таймер tmr_cos.
-		printf("%d\n",i);
+		//printf("%d\n",i);
 		//test();
 	}
 	
@@ -62,7 +60,7 @@ int  main(){
 	
 	//profiler_reset();
 
-	nmprofiler_print2tbl();				// выводим результат профилирования в std формате 
+	nmprofiler_print2xml();				// выводим результат профилирования в std формате 
 
 	//STOPWATCH_PRINT2TBL();			// выводим результат замеров по таймеру 
 	
