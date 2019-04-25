@@ -1,0 +1,105 @@
+
+// Any arguments except gr5 are possible
+
+macro PRINT_MATRIX_32X(text, matrix, height, width)
+	extern _printMatrix_32x:label;
+	own _text		: word[32]=text;	
+	push ar5,gr5;
+	ar5 = sp;
+    sp += 4;
+	
+	gr5 = width;
+    [ ar5++ ] = gr5;	// width
+	
+	gr5 = height; 
+	[ ar5++ ] = gr5;	// height
+	
+	gr5 = matrix;
+	[ ar5++ ] = gr5;	// matrix
+	
+	gr5 = _text;
+	[ ar5++ ] = gr5;	// dummy
+	
+	call _printMatrix_32x;
+	
+	sp -=4;
+	pop ar5,gr5;
+end PRINT_MATRIX_32X;
+
+
+macro PRINT_MATRIX_32S(text, matrix, height, width)
+	extern _printMatrix_32s:label;
+	own _text		: word[32]=text;	
+	push ar5,gr5;
+	ar5 = sp;
+    sp += 4;
+	
+	gr5 = width;
+    [ ar5++ ] = gr5;	// width
+	
+	gr5 = height; 
+	[ ar5++ ] = gr5;	// height
+	
+	gr5 = matrix;
+	[ ar5++ ] = gr5;	// matrix
+	
+	gr5 = _text;
+	[ ar5++ ] = gr5;	// dummy
+	
+	call _printMatrix_32s;
+	
+	sp -=4;
+	pop ar5,gr5;
+end PRINT_MATRIX_32S;
+
+
+macro PRINT_MATRIX_16X(text, matrix, height, width)
+	extern _printMatrix_16x:label;
+	own _text		: word[32]=text;	
+	push ar5,gr5;
+	ar5 = sp;
+    sp += 4;
+	
+	gr5 = width;
+    [ ar5++ ] = gr5;	// width
+	
+	gr5 = height; 
+	[ ar5++ ] = gr5;	// height
+	
+	gr5 = matrix;
+	[ ar5++ ] = gr5;	// matrix
+	
+	gr5 = _text;
+	[ ar5++ ] = gr5;	// dummy
+	
+	call _printMatrix_16x;
+	
+	sp -=4;
+	pop ar5,gr5;
+end PRINT_MATRIX_16X;
+
+
+macro PRINT_MATRIX_16S(text, matrix, height, width)
+	extern _printMatrix_16s:label;
+	own _text		: word[32]=text;	
+	push ar5,gr5;
+	ar5 = sp;
+    sp += 4;
+	
+	gr5 = width;
+    [ ar5++ ] = gr5;	// width
+	
+	gr5 = height; 
+	[ ar5++ ] = gr5;	// height
+	
+	gr5 = matrix;
+	[ ar5++ ] = gr5;	// matrix
+	
+	gr5 = _text;
+	[ ar5++ ] = gr5;	// dummy
+	
+	call _printMatrix_16s;
+	
+	sp -=4;
+	pop ar5,gr5;
+end PRINT_MATRIX_16S;

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="WINDOWS-1251"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 	<xsl:template match="/profiling">
+	<html>
+	<body>
 		<table border="1">
 		  <tr bgcolor="#CCCCCC">
 			<!--<td align="center"><strong>N</strong></td>-->
@@ -20,6 +22,8 @@
 			<xsl:sort select="@name" order="ascending"/>
 		  </xsl:apply-templates>
 		</table>
+		</body>
+</html>
 	</xsl:template>
 
 	<xsl:template match="prof">

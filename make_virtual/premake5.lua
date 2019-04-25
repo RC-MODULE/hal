@@ -10,7 +10,7 @@ solution "hal-virtual-x86"
 				"../src_x86/*.*",
 				"../src_ringbuffer/*.*",
 				"../include/*.h"}
-	  includedirs { "../include"}
+	  includedirs { "../include", "$(NMPP)/include"}
 	  targetdir ("../lib")
 	  
 	  configuration "Debug"
