@@ -1,6 +1,9 @@
 #include "dma5103.h"
-extern "C"
-{
+#include "section-hal.h"
+
+#ifdef __cplusplus
+		extern "C" {
+#endif
     //cnt_func statusFunc;
  // typedef int(*DmaCallback)();
   void SetCallBack( int vectoraddr, int ProcAddress);
@@ -11,24 +14,15 @@ extern int ofdmainit;
 extern int chain[8];
 extern int nonfirst;
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-void doubleCBF()
+
+INSECTION(".text_hal") void doubleCBF()
 { if (nonfirst<2)
   { halDmaStart( chain+5 );
     nonfirst=2;
   }
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1,
+INSECTION(".text_hal") int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1,
      int intSize0, int intSize1)
 { int k;
 
@@ -49,4 +43,6 @@ int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1,
 } // halInitDoubleDMA
 
 
-};
+#ifdef __cplusplus
+		};
+#endif

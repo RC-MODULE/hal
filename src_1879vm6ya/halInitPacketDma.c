@@ -1,31 +1,23 @@
 #include "hal.h"
 #include "led.h"
-extern "C"{
-#ifdef __GNUC__
-__attribute__((section(".data_hal"))) static void** pSrc; 
-__attribute__((section(".data_hal"))) static void** pDst; 
-__attribute__((section(".data_hal"))) static int*   pSize;
-__attribute__((section(".data_hal"))) static int    Amm;
-__attribute__((section(".data_hal"))) static DmaCallback userCallback;
-#else
-#pragma code_section ".data_hal"
-	static void** pSrc; 
-	static void** pDst; 
-	static int*   pSize;
-	static int    Amm;
-	static DmaCallback userCallback;
-#pragma data_section ".data"
+#include "section-hal.h"
+
+#ifdef __cplusplus
+		extern "C" {
 #endif
+
+
+
+INSECTION(".data_hal") static void** pSrc; 
+INSECTION(".data_hal") static void** pDst; 
+INSECTION(".data_hal") static int*   pSize;
+INSECTION(".data_hal") static int    Amm;
+INSECTION(".data_hal") static DmaCallback userCallback;
 
 
 	DmaCallback readCallback();
 	
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-static int ownCallback(){
+INSECTION(".text_hal") static int ownCallback(){
 	pSrc++;
 	pDst++;
 	pSize++;
@@ -38,12 +30,7 @@ static int ownCallback(){
 	return 0;
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32, int amm){
+INSECTION(".text_hal") int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32, int amm){
 	SetFlagDMA(0xffffffff);
 	if(amm == 0){
 		SetFlagDMA(0x0);
@@ -66,4 +53,7 @@ int halInitPacketDMA(void** psrc,  void** pdst,  int* psize32, int amm){
 	return 0;
 }
 
+#ifdef __cplusplus
 };
+#endif
+

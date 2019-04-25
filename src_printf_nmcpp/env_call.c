@@ -15,7 +15,7 @@
 #include <cassert>
 #include "string.h"
 #include "host_duties.h"
-#icnlude "section-printf.h"
+#include "section-printf.h"
 
 #ifndef __GNUC__
 typedef int _off_t;                /* file offset value */

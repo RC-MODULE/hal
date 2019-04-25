@@ -1,39 +1,23 @@
 #include "hal.h"
-//#include <stdio.h>
+#include "section-hal.h"
 #ifdef __cplusplus
 		extern "C" {
 #endif
 
-#ifdef __GNUC__
-__attribute__((section(".data_hal"))) static int size32_loc;
-__attribute__((section(".data_hal"))) static int height_loc;
-__attribute__((section(".data_hal"))) static int* src_loc;
-__attribute__((section(".data_hal"))) static int* dst_loc;
-__attribute__((section(".data_hal"))) static int stride_src_loc;
-__attribute__((section(".data_hal"))) static int stride_dst_loc;
-__attribute__((section(".data_hal"))) static DmaCallback user_callback_loc;
-#else 
-#pragma data_section ".data_hal"
-	static int size32_loc;
-	static int height_loc;
-	static int* src_loc;
-	static int* dst_loc;
-	static int stride_src_loc;
-	static int stride_dst_loc;
-	static DmaCallback user_callback_loc;
-#pragma data_section ".data"
-#endif
+INSECTION(".data_hal") static int size32_loc;
+INSECTION(".data_hal") static int height_loc;
+INSECTION(".data_hal") static int* src_loc;
+INSECTION(".data_hal") static int* dst_loc;
+INSECTION(".data_hal") static int stride_src_loc;
+INSECTION(".data_hal") static int stride_dst_loc;
+INSECTION(".data_hal") static DmaCallback user_callback_loc;
+
 
 	void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
 	DmaCallback readCallback();	
 
 	
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-static int own_callback(){
+INSECTION(".text_hal") static int own_callback(){
 	if(--height_loc){
 		halInitSingleDMA(src_loc,dst_loc,size32_loc);
 	}else{
@@ -47,12 +31,7 @@ static int own_callback(){
 	return 0;
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
+INSECTION(".text_hal") int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32){
 	if((srcStride32 - width) < 0){
 		return 1;
 	}
@@ -102,6 +81,7 @@ int halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void
 	}
 	return 0;
 }
+
 #ifdef __cplusplus
-		};
+};
 #endif
