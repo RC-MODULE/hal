@@ -24,9 +24,9 @@ macro PRINT_MATRIX_32X(text, matrix, height, width)
 	
 	gr5 = _text;
 	[ ar5++ ] = gr5;	// dummy
-	
+	gr5 = gr7;
 	call _printMatrix_32x;
-	
+	gr7 = gr5;
 	sp -=4;
 	pop ar5,gr5;
 end PRINT_MATRIX_32X;
@@ -54,7 +54,9 @@ macro PRINT_MATRIX_32S(text, matrix, height, width)
 	gr5 = _text;
 	[ ar5++ ] = gr5;	// dummy
 	
+	gr5 = gr7;
 	call _printMatrix_32s;
+	gr7 = gr5;
 	
 	sp -=4;
 	pop ar5,gr5;
@@ -83,7 +85,9 @@ macro PRINT_MATRIX_16X(text, matrix, height, width)
 	gr5 = _text;
 	[ ar5++ ] = gr5;	// dummy
 	
+	gr5 = gr7;
 	call _printMatrix_16x;
+	gr7 = gr5;
 	
 	sp -=4;
 	pop ar5,gr5;
@@ -112,7 +116,9 @@ macro PRINT_MATRIX_16S(text, matrix, height, width)
 	gr5 = _text;
 	[ ar5++ ] = gr5;	// dummy
 	
+	gr5 = gr7;
 	call _printMatrix_16s;
+	gr7 = gr5;
 	
 	sp -=4;
 	pop ar5,gr5;
@@ -132,7 +138,9 @@ macro PRINT_32X(text,x)
 	[ ar5++ ] = gr5;	
 	gr5 = __text;
 	[ ar5++ ] = gr5;	
+	gr5 = gr7;
 	call _print_32x;
+	gr7 = gr5;
 	sp -=2;
 	pop ar5,gr5;
 end PRINT_32X;

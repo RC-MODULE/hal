@@ -16,7 +16,7 @@ else
 endif
 
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya -I../src_printf_nmcpp
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya -I../src_printf_nmcpp -I$(NMPP)/include
 LIB_DIRS = 
 SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
