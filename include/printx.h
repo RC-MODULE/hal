@@ -1,3 +1,4 @@
+extern "C" void print_32x(char* text,unsigned x);
 extern "C" void printMatrix_32x(char* text, int* matrix, int height,int width);
 extern "C" void printMatrix_32s(char* text, int* matrix, int height,int width);
 

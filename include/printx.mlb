@@ -1,9 +1,14 @@
 
 // Any arguments except gr5 are possible
 
+
+
 macro PRINT_MATRIX_32X(text, matrix, height, width)
 	extern _printMatrix_32x:label;
-	own _text		: word[32]=text;	
+	own skiptext:label;
+	goto skiptext;
+	own _text		: word[16]=text;	
+	<skiptext>
 	push ar5,gr5;
 	ar5 = sp;
     sp += 4;
@@ -29,7 +34,10 @@ end PRINT_MATRIX_32X;
 
 macro PRINT_MATRIX_32S(text, matrix, height, width)
 	extern _printMatrix_32s:label;
-	own _text		: word[32]=text;	
+	own skiptext:label;
+	goto skiptext;
+	own _text		: word[16]=text;	
+	<skiptext>
 	push ar5,gr5;
 	ar5 = sp;
     sp += 4;
@@ -55,7 +63,10 @@ end PRINT_MATRIX_32S;
 
 macro PRINT_MATRIX_16X(text, matrix, height, width)
 	extern _printMatrix_16x:label;
-	own _text		: word[32]=text;	
+	own skiptext:label;
+	goto skiptext;
+	own _text		: word[16]=text;	
+	<skiptext>
 	push ar5,gr5;
 	ar5 = sp;
     sp += 4;
@@ -81,7 +92,10 @@ end PRINT_MATRIX_16X;
 
 macro PRINT_MATRIX_16S(text, matrix, height, width)
 	extern _printMatrix_16s:label;
-	own _text		: word[32]=text;	
+	own skiptext:label;
+	goto skiptext;
+	own _text		: word[16]=text;	
+	<skiptext>
 	push ar5,gr5;
 	ar5 = sp;
     sp += 4;
@@ -103,3 +117,22 @@ macro PRINT_MATRIX_16S(text, matrix, height, width)
 	sp -=4;
 	pop ar5,gr5;
 end PRINT_MATRIX_16S;
+
+
+macro PRINT_32X(text,x)
+	extern _print_32x:label;
+	own skiptext:label;
+	goto skiptext;
+	own __text		: word[16]=text;	
+	<skiptext>
+	push ar5,gr5;
+	ar5 = sp;
+    sp += 2;
+	gr5 = x;
+	[ ar5++ ] = gr5;	
+	gr5 = __text;
+	[ ar5++ ] = gr5;	
+	call _print_32x;
+	sp -=2;
+	pop ar5,gr5;
+end PRINT_32X;
