@@ -2,10 +2,14 @@
 #include "chain7707.h"
 #ifndef xdmac7707tools
 #define xdmac7707tools
+#include "section-hal.h"
 extern SpecDMA7707 chain_7707;
 
-extern "C"
-{
+#ifdef __cplusplus
+		extern "C" {
+#endif
+
+
 	extern int chainBuf[];
 	typedef int(*DmaCallback)();
 	int xdmacChain( int* TBL );
@@ -15,22 +19,17 @@ extern "C"
 	int xdmac0();
 
 
-	int halOpenDMA(){
+	INSECTION(".text_hal") int halOpenDMA(){
 		return 0;
 	}
 
-	void halSetCallbackDMA(DmaCallback user_callback){
+	INSECTION(".text_hal") void halSetCallbackDMA(DmaCallback user_callback){
 	
 	}
 	
 	
 //int add2Chain(int dst,int src,int size);
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-SpecDMA7707* halInitDMA7707 (void** src, void** dst,  int* size32, void* specBuffer)
+INSECTION(".text_hal") SpecDMA7707* halInitDMA7707 (void** src, void** dst,  int* size32, void* specBuffer)
 {   
 	int *q,n,*asrc,*adst,*sz;
 	openDma(specBuffer);
@@ -52,24 +51,14 @@ int halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallback* func, 
 	return xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);
 } 
 */
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halInitSingleDMA(void*  src,  void*  dst,  int  size32)
+INSECTION(".text_hal") int halInitSingleDMA(void*  src,  void*  dst,  int  size32)
 {  
 	int channel=0;
 	xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);
 	return 0; 
 } 
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1)
+INSECTION(".text_hal") int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int intSize0, int intSize1)
 { 
 	int *q,k; 
 	add2Chain(((int)dst0)<<2,((int)src0)<<2,intSize0<<2);
@@ -79,12 +68,7 @@ int  halInitDoubleDMA(void*  src0, void*  src1, void* dst0,   void* dst1, int in
 	return 0;
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,  void* dst, int dstStride32 )
+INSECTION(".text_hal") int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,  void* dst, int dstStride32 )
 { 
 	int channel = 0;
 	int *q,k,i,srcrow,dstrow,asrc,adst,sz;
@@ -103,12 +87,7 @@ int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,  v
 	return 0;
 }	
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int  halInitPacketDMA(void** src,  void** dst,  int* size32, int packets)
+INSECTION(".text_hal") int  halInitPacketDMA(void** src,  void** dst,  int* size32, int packets)
 { 
 	int *q,k,n,*asrc,*adst,*sz;
 	q=(int*) halInitDMA7707 (src, dst, size32,  chainBuf);
@@ -126,15 +105,14 @@ int  halInitPacketDMA(void** src,  void** dst,  int* size32, int packets)
 	return 0;
 }
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int halStatusDMA()
+INSECTION(".text_hal") int halStatusDMA()
 {  
 	return xdmac0();
 }
-};
+
+#ifdef __cplusplus
+		};
+#endif
+
 
 #endif

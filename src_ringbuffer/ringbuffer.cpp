@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "ringbuffer.h"
-
+#include "section-hal.h"
 
 #define RING_BUFFER_DECLARED	0xDEC1A8ED
 #define RING_BUFFER_ALLOCATED	0xA10CA7ED
@@ -54,13 +54,13 @@ struct HalRingBuffer{
 	FuncSetCallbackDMA setCallback;
 };
 
-static HalRingBuffer* activeRingBuffer=0;
-	
-int halRingBufferCount(HalRingBuffer* ringBuffer) {
+INSECTION(".data_hal") static HalRingBuffer* activeRingBuffer=0;
+
+INSECTION(".text_hal") int halRingBufferCount(HalRingBuffer* ringBuffer) {
 	return ringBuffer->head - ringBuffer->tail;
 }
 
-int halRingBufferInit(HalRingBuffer* ringBuffer, void* buffer, size_t size, size_t count, FuncSingleCopy singleMemCopy, FuncDoubleCopy doubleMemCopy,  FuncSetCallbackDMA setCallback)
+INSECTION(".text_hal")	int halRingBufferInit(HalRingBuffer* ringBuffer, void* buffer, size_t size, size_t count, FuncSingleCopy singleMemCopy, FuncDoubleCopy doubleMemCopy,  FuncSetCallbackDMA setCallback)
 {
 	if (buffer==0) return RING_BUFFER_MEM_ERROR;
 	if ((count&(count-1))!=0) return RING_BUFFER_INCORRECT_COUNT;
@@ -78,21 +78,20 @@ int halRingBufferInit(HalRingBuffer* ringBuffer, void* buffer, size_t size, size
 	return RING_BUFFER_OK;
 }
 
-
-static int halRingBufferPushCallback(){
+INSECTION(".text_hal")	static int halRingBufferPushCallback(){
 	activeRingBuffer->head += activeRingBuffer->pendingCount;
 	activeRingBuffer->pendingCount =0;
 	return 0;
 }
 
-static int halRingBufferPopCallback(){
+INSECTION(".text_hal")	static int halRingBufferPopCallback(){
 	activeRingBuffer->tail += activeRingBuffer->pendingCount;
 	activeRingBuffer->pendingCount =0;
 	return 0;
 }
 
 
-void halRingBufferPush(HalRingBuffer* ringBuffer, void* src, size_t count){
+INSECTION(".text_hal")	void halRingBufferPush(HalRingBuffer* ringBuffer, void* src, size_t count){
 	while (ringBuffer->tail+ringBuffer->maxCount-ringBuffer->head < count)
 		halSleep(RING_BUFFER_SLEEP);
 	
@@ -131,7 +130,7 @@ void halRingBufferPush(HalRingBuffer* ringBuffer, void* src, size_t count){
 		ringBuffer->head += count;
 }
 
-void halRingBufferPop(HalRingBuffer* ringBuffer, void* dst, size_t count){
+INSECTION(".text_hal")	void halRingBufferPop(HalRingBuffer* ringBuffer, void* dst, size_t count){
 	while (ringBuffer->head-ringBuffer->tail < count)
 		halSleep(RING_BUFFER_SLEEP);
 	
@@ -168,29 +167,29 @@ void halRingBufferPop(HalRingBuffer* ringBuffer, void* dst, size_t count){
 		ringBuffer->tail += count;
 }
 
-void* halRingBufferHead(HalRingBuffer* ringBuffer){
+INSECTION(".text_hal")	void* halRingBufferHead(HalRingBuffer* ringBuffer){
 	size_t posHead = ringBuffer->head & ringBuffer->maxCountMinus1;			
 	int* addrHead  = ringBuffer->data + posHead*ringBuffer->size;
 	return addrHead;
 }
 
-void* halRingBufferTail(HalRingBuffer* ringBuffer){
+INSECTION(".text_hal")	void* halRingBufferTail(HalRingBuffer* ringBuffer){
 	size_t posTail = ringBuffer->tail & ringBuffer->maxCountMinus1;
 	int* addrTail  = ringBuffer->data + posTail*ringBuffer->size;
 	return addrTail;
 }
 
-int halRingBufferIsBusy(HalRingBuffer* ringBuffer){
+INSECTION(".text_hal")	int halRingBufferIsBusy(HalRingBuffer* ringBuffer){
 	if (ringBuffer->setCallback==0)
 		return false;
 	return ringBuffer->pendingCount;
 }
 
-int 	halRingBufferIsEmpty(HalRingBuffer* ringBuffer) {
+INSECTION(".text_hal")	int 	halRingBufferIsEmpty(HalRingBuffer* ringBuffer) {
 	return ringBuffer->head == ringBuffer->tail;
 
 }
-int 	halRingBufferIsFull(HalRingBuffer* ringBuffer) {
+INSECTION(".text_hal")	int 	halRingBufferIsFull(HalRingBuffer* ringBuffer) {
 	return ringBuffer->head == ringBuffer->tail + ringBuffer->maxCount;
 }
 

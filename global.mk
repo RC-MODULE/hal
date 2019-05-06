@@ -55,7 +55,7 @@ else
   endef  
 endif
 
-PLATFORMS = x86 mc12101_nmc0 mc12101_nmc1 mc5103 mc7601 mb7707
+PLATFORMS = x86 mc12101_nmpu0 mc12101_nmpu0_gcc  mc12101_nmpu1 mc12101_nmpu1_gcc  mc5103 mc7601 mb7707
 TARGET1=mc12101_nmc1
 TARGET2=x86
 

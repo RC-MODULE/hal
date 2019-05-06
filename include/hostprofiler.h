@@ -54,6 +54,36 @@ bool map_address2symbol(char* mapfile, unsigned addr, char* fullname){
 }
 
 
+bool gccmap_address2symbol(char* mapfile, unsigned addr, char* fullname) {
+	FILE* f;
+	char str[1024];
+	f = fopen(mapfile, "rt");
+	if (f == 0)
+		return false;
+	char addr_str[16];
+	sprintf(addr_str, "%08x", addr);
+
+	while (!feof(f)) {
+		fgets(str, 1024, f);
+		const char* where_addr = strstr(str, addr_str);
+		if (where_addr == 0)
+			continue;
+		
+		if (strstr(where_addr, "0x"))
+			continue;
+		while (strstr(where_addr, " "))
+			where_addr++;
+		//if (strlen(str)>(where_addr - str + 11))
+		//	continue;
+		sscanf(where_addr, " %s ", fullname);
+		fclose(f);
+		return true;
+	}
+	fclose(f);
+	return false;
+}
+
+
 std::string& replace(std::string& s, const std::string& from, const std::string& to)
 {
 	for(size_t pos = 0; (pos = s.find(from, pos)) != std::string::npos; pos += to.size())
@@ -112,11 +142,13 @@ unsigned stopwatch_head_address(char* mapfile){
 //! конвертиртирует строку funcname с 32-разрядными символами в стандартную 8-разрядную char строку на месте исходной. 
 char* profiler_funcname2char(unsigned* funcname )	{	
 	char* str86=(char*)funcname;
-	for(int i=0;i<MAX_FUNCNAME_LENGTH; i++){
+	int i;
+	for(i=0;i<MAX_FUNCNAME_LENGTH; i++){
 		str86[i]=funcname[i];
 		if (str86[i]==0)
 			break;
 	}
+	str86[i] = 0;
 	return str86;
 }
 
@@ -188,7 +220,7 @@ void halProfilerPrint2tbl(char* mapfile, int processor){
 
 	char fullname[1024];
 	for (int i = 0; i < profiler_size[processor]; i++) {
-		map_address2symbol(mapfile, profile[i].funcaddr, fullname);
+		gccmap_address2symbol(mapfile, profile[i].funcaddr, fullname);
 		demangle(fullname,fullname);
 		printf(format,	profile[i].summary, 
 						profile[i].calls,  
@@ -198,6 +230,53 @@ void halProfilerPrint2tbl(char* mapfile, int processor){
 	}
 	delete profile;
 }
+
+#define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\"	addr=\"%08X\"	name=\"%s\"/>\n"
+void halProfilerPrint2xml(char* gccmapfile, int processor, char* xml) {
+	char str[256];
+	FILE* f = fopen(xml, "w");
+	if (f == 0) {
+		printf("ERROR:Cannot open file %s\n",xml);
+		return;
+	}
+	static unsigned head_addr[4] = { 0,0,0,0 };
+	int static profiler_size[4] = { 0,0,0,0 };
+	if (head_addr[processor] == 0) {
+		//head_addr = map_symbol2address(mapfile, "_nmprofiler_head_addr"); 
+		head_addr[processor] = map_symbol2address(gccmapfile, "profileList");
+		head_addr[processor] += 12;
+		profiler_size[processor] = profiler_count(head_addr[processor], processor);
+	}
+
+	ProfilerData* profile = new ProfilerData[profiler_size[processor]];
+	profiler_read(head_addr[processor], profile, profiler_size[processor], processor);
+
+	char format[] = "%-12u| %-12u| %-12u| %08X| %s\n";
+
+	fputs("<?xml version='1.0' ?>\n",f);
+	fputs("<?xml-stylesheet type='text/xsl' href='profile.xsl'?>\n",f);
+	fputs("<profiling version=\"1.0\">\n",f);
+
+	char fullname[1024];
+	for (int i = 0; i < profiler_size[processor]; i++) {
+		gccmap_address2symbol(gccmapfile, profile[i].funcaddr, fullname);
+		//demangle(fullname, fullname);
+		//printf(format, profile[i].summary,
+		//	profile[i].calls,
+		//	profile[i].summary / (profile->calls + (profile->calls == 0)),
+		//	profile[i].funcaddr,
+		//	fullname);
+		//sprintf(str,NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
+		sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, fullname);
+		fputs(str, f);
+	}
+	fputs("</profiling>\n",f);
+	delete profile;
+	fclose(f);
+}
+
+
+
 /*
 bool profiler_save2tbl(char* tblfile, char* mapfile, tReadMemBlock ReadMemBlock){
 	FILE* f=fopen(tblfile,"wt");

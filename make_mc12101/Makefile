@@ -16,7 +16,7 @@ else
 endif
 
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya -I../src_printf_nmcpp
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya -I../src_printf_nmcpp -I$(NMPP)/include
 LIB_DIRS = 
 SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
@@ -76,7 +76,7 @@ $(TARGET): $(TMP_DIR) $(OBJECTS)
 
 # custom build of printf.c because of error with -O2 optimization compiling
 $(TMP_DIR)/printf.o: ../src_printf_nmcpp/printf.c
-	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc4 -o$(TMP_DIR)/printf.o -O0
+	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc4 -o$(TMP_DIR)/printf.o -O0 $(INC_DIRS)
 
 $(TMP_DIR):
 	-mkdir "$(@)"

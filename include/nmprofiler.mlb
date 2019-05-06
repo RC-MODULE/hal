@@ -83,7 +83,7 @@ end PROFILE_END;
 	
 // disp =12	
 macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
-.branch;
+//.branch;
 	ext funcname				:label; // указатель на профилируемую функцию
 	own timer_return			:label;
 	own timer_enter				:label;
@@ -194,15 +194,15 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		nul;
 		nul;
 	<next_init>
-.wait;
+//.wait;
 end PROFILE_FUNC_BASE;
 
 //=======================================================================================================================
 
 // макрос профилирования функции со стандартным С-вызывом  (стандартное соглашение о передачи параметров через стек)
-macro PROFILE_FUNC(funcname,funcinfo)
+macro FUNCTION(funcname,funcinfo)
 	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,0);
-end   PROFILE_FUNC;
+end   FUNCTION;
 
 // макрос разрещающий профилирование только в дочерних функциях
 macro PROFILE_MASTER_FUNC(funcname,funcinfo)
@@ -210,9 +210,9 @@ macro PROFILE_MASTER_FUNC(funcname,funcinfo)
 end   PROFILE_MASTER_FUNC;
 
 // макрос профилирования функции с нестандартным вызовом функций  (внутреннее соглашение о передаче параметров . MUL32, DIV32...)
-macro PROFILE_NONSTD_FUNC(funcname,funcinfo)
+macro NONCFUNC(funcname,funcinfo)
 	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,8,0);
-end   PROFILE_NONSTD_FUNC;
+end   NONCFUNC;
 
 
 	

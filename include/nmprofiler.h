@@ -299,6 +299,7 @@ int main()
 	void profiler_reset();
 	void profiler_dummy();
 	
+	void nmprofiler_init();
 	
 	struct ProfilerData {
 		unsigned 	next;					///< смещение до следующей структуры

@@ -1,24 +1,24 @@
 #include "dma5103.h"
+#include "section-hal.h"
 //typedef int(*cnt_func)();
+
 typedef void(*bell_func)();
 //extern SpecDMA5103 chain_5103;
 extern int * chainBuf;
-extern "C"
-{
+
+#ifdef __cplusplus
+		extern "C" {
+#endif
+
   //typedef int(*DmaCallback)();
   void SetCallBack( int vectoraddr, int ProcAddress);
   //int halDmaStart( int *q );
 
 extern int ofdmainit;
-int zzzMatrix[6];
+INSECTION(".data_hal") int zzzMatrix[6];
 extern int matrixcnt;
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
+INSECTION(".text_hal") void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
 {  
 	if (zzzMatrix[3])
    { zzzMatrix[3]--;
@@ -28,12 +28,7 @@ void BellFromDmaMatrix()// Обработчик DMA прерывания (векторы 58h,60h)
    }
 }  // BellFromDmaMatrix
 
-#ifdef __GNUC__
-__attribute__((section(".text_hal")))
-#else
-#pragma code_section ".text_hal"
-#endif
-int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
+INSECTION(".text_hal") int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
      void* dst, int dstStride32, bell_func DmaCallback, int channel)
 { 
 	if (((int)src ^ (int)dst)<0) return -2;
@@ -61,4 +56,7 @@ int  halInitMatrixDMA(void*  src,  int  width,  int  height, int srcStride32,
    return 0;
 } //  halInitMatrixDMA
 
-};
+#ifdef __cplusplus
+		};
+#endif
+

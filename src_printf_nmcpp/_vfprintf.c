@@ -3,7 +3,7 @@
 
 #include <cassert>
 #include "string.h"
-
+#include "section-printf.h"
 using namespace std;
 
 #ifdef __cplusplus

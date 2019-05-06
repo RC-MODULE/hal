@@ -1,15 +1,17 @@
- #include "malloc.h"
- 
+#include "malloc.h"
+#include "section-hal.h" 
 
- extern "C"{
+extern "C"{
  	void *malloc0(unsigned int size);
 	void *malloc1(unsigned int size);
 	void *malloc2(unsigned int size);
 	void *malloc3(unsigned int size);
 
 	typedef void* (Malloc32Func)(unsigned int);	
-	Malloc32Func* pMallocFunc=malloc;	
-	void halSetActiveHeap(int heapNo){
+
+	INSECTION(".data_hal")	Malloc32Func* pMallocFunc=malloc;	
+
+	INSECTION(".text_hal")	void halSetActiveHeap(int heapNo){
 		switch(heapNo){
 			case(0):
 				pMallocFunc=malloc0;
@@ -26,7 +28,8 @@
 		} 
 	}
 	
-	int* halMalloc32(int sharedSize32) {
+	INSECTION(".text_hal")	int* halMalloc32(int sharedSize32) {
 		return (int*)pMallocFunc(sharedSize32);
 	}	 
- };
+
+};

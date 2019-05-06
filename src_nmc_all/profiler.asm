@@ -185,7 +185,6 @@ global _nmprofiler_next:label;
 		pop ar0,gr0 with gr0;
 	if =0 delayed return;
 		ar5=0;
-
 	ar5 = gr7;
 	return;
 		
