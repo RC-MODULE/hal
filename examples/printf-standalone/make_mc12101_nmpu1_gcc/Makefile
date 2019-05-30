@@ -27,7 +27,7 @@ CFG      =  "-Wl,-cmc12101brd-nmpu1.cfg"
 SRC_CPP  = $(wildcard ../*.cpp)
 
 $(TARGET): $(SRC_CPP) Makefile
-	$(CC) $(CC_FLAGS) $(SRC_CPP) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc $(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o $(TARGET)
+	$(CC) $(CC_FLAGS) $(SRC_CPP) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc $(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o $(TARGET) -save-temps
 
 PATH:=$(MC12101)/bin;$(PATH)
 

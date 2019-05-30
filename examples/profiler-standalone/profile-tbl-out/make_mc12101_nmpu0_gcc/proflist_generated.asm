@@ -31,7 +31,6 @@ NONCFUNC(Mul32,           "Mul32           ");// 0x0000000000008dfc [.text]
 NONCFUNC(RShift32,        "RShift32        ");// 0x0000000000008e16 [.text]
 FUNCTION(RShift64,        "RShift64        ");// 0x0000000000008ea2 [.text]
 NONCFUNC(ConvU32toD,      "ConvU32toD      ");// 0x0000000000008fbe [.text]
-FUNCTION(__ZN9StopwatchC1EPc,"__ZN9StopwatchC1EPc");// 0x000000000000905a [.gnu.linkonce.t.__ZN9StopwatchC1EPc]
 FUNCTION(_printf,         "_printf         ");// 0x000000000000a06e [.text_printf]
 
 PROFILE_END();

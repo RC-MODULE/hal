@@ -67,7 +67,7 @@ CC 				 = nmc-g++
 AS               = asm 				 
 AS_FLAGS    	 = -nmc4
 LIBS             = -lnmpp-nmc4f -lhal-mc12101
-LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-cmc12101brd-nmpu0.cfg" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-cmc12101brd-nmpu0.cfg" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)  -Wl,-z,stack-size=32000
 
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
@@ -106,7 +106,7 @@ all:  $(TARGET)
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile mc12101brd-nmpu0.cfg
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:

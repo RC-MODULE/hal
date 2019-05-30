@@ -4,12 +4,21 @@
 #include "dma.h"
 #include "sleep.h"
 
+
+
+
+
 #ifdef __NM__
+	typedef void nm8s ;
+	typedef void nm16s;
 #define DISABLE_PRINTF() extern "C" {	int printf ( const char * format, ... ){	return 0;	}};
 #else 
+	typedef char nm8s;
+	typedef short nm16s;
 #define DISABLE_PRINTF() 
 #endif
-
+	
+	
 #ifdef __cplusplus
 		extern "C" {
 #endif
@@ -43,3 +52,6 @@
     */
 	
 #endif 	
+
+int			nmppsGet_8s (const nm8s*  pVec, int nIndex);
+int			nmppsGet_16s(const nm16s* pVec, int nIndex);

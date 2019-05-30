@@ -1,34 +1,56 @@
 #include <stdio.h>
 
 //#define DISABLE_STOPWATCH
-//#include "stopwatch.h"
+#include "stopwatch.h"
 #include "nmprofiler.h"
 
 int g=1;
 extern "C"{
-	 int mysin(){
-		
-		printf("--");
-		for (int i=0; i<1000; i++){
-			g++;
-			
-		}
+	 
 
-		return g;
+int sum(int * a, int size){
+	int sum=0;
+	for(int i=0; i<size;i++){
+		sum+=a[i];
 	}
-	 int mycos(){
-		for (int i=0; i<1000; i++){
-			g+=1;
+	return sum;
+}
+
+
+int mycos(){
+	for (int i=0; i<1000; i++){
+		g+=1;
+	}
+	return 0;
+}
+	
+	#define SSS 128000
+int mysin(){
+	int arr [SSS/4];
+	
+	printf("--");
+	for (int i=0; i<SSS/4; i++){
+		g++;
+		
+	}
+	mycos();
+	for(int i=0; i<SSS/4;i++){
+			arr[i]=1;
 		}
-		return 0;
-	}
+	int s=sum(arr,SSS/4);
+	
+	return s;
+}
+	 
 	//int test();
 };
 
 
-
 //STOPWATCH_INIT();
 int  main(){
+	ProfilerData* pp=stopwatch_head();
+	printf("===%x===\n",pp);
+	
 	
 	
 //for(int i=0; i<10000;i ++)
@@ -37,36 +59,39 @@ int  main(){
 	//nmprofiler_enable();
 	nmprofiler_init();
 	
-	//STOPWATCH_START(tmr_all,"tmr_all");			// Запускаем таймер tmr_all.	
+	STOPWATCH_START(tmr_all,"tmr_all");			// Запускаем таймер tmr_all.	
 	
-	Stopwatch StopwatchID("StopwatchName");	
-	
-	
+	int s;
 	for(int i=0; i<10; i++){
-		//STOPWATCH_START(tmr_sin,"tmr_sin");			// Запускаем таймер tmr_sin.	
+		STOPWATCH_START(tmr_sin,"tmr_sin");			// Запускаем таймер tmr_sin.	
 		mysin();
+		s=mysin();
 		mysin();
-		mysin();
-		//STOPWATCH_STOP(tmr_sin);					// Останавливаем таймер tmr_sin.
+		STOPWATCH_STOP(tmr_sin);					// Останавливаем таймер tmr_sin.
 	
-		//STOPWATCH_START(tmr_cos,"tmr_cos");			// Запускаем таймер tmr_cos.
+		
+	   //
+	
+		STOPWATCH_START(tmr_cos,"tmr_cos");			// Запускаем таймер tmr_cos.
 		mycos();
 		mycos();
 		mycos();
-		//STOPWATCH_STOP(tmr_cos);					// Останавливаем таймер tmr_cos.
+		STOPWATCH_STOP(tmr_cos);					// Останавливаем таймер tmr_cos.
 		printf("%d\n",i);
+		
 		//test();
 	}
 	
-	//STOPWATCH_STOP(tmr_all);						// Останавливаем таймер tmr_all.
+	STOPWATCH_STOP(tmr_all);						// Останавливаем таймер tmr_all.
 	
 	//profiler_reset();
-
+	ProfilerData* p=stopwatch_head();
+	printf("===%x===\n",p);
 	nmprofiler_print2tbl();				// выводим результат профилирования в std формате 
 
 	//STOPWATCH_PRINT2TBL();			// выводим результат замеров по таймеру 
 	
 
-	return g;
+	return s;
 	
 }

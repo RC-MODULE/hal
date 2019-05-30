@@ -1,6 +1,7 @@
 #include "stdio.h"
-#include "nmtype.h"
-#include "nmpp.h"
+#include "hal.h"
+//#include "nmtype.h"
+//#include "nmpp.h"
 extern "C" void printMatrix_16s(char* text, nm16s* matrix, int height,int width){
 	char address[16];
 	sprintf (address,"%x",matrix);
@@ -10,6 +11,6 @@ extern "C" void printMatrix_16s(char* text, nm16s* matrix, int height,int width)
 			int val=nmppsGet_16s(matrix,i);
 			printf("%4d ",val);
 		}
-		printf("\n");
+		printf("\r\n");
 	}
 }

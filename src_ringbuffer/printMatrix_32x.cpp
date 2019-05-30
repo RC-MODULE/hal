@@ -7,6 +7,6 @@ extern "C" void printMatrix_32x(char* text, int* matrix, int height,int width){
 		for(int x=0; x<width; x++,i++){
 			printf("%8x ",matrix[i]);
 		}
-		printf("\n");
+		printf("\r\n");
 	}
 }
