@@ -3,21 +3,23 @@
 #include "led.h"
 #include "dma.h"
 #include "sleep.h"
-
+#include "nmtype.h"
 
 
 
 
 #ifdef __NM__
-	typedef void nm8s ;
-	typedef void nm16s;
+//	typedef void nm8s ;
+//	typedef void nm16s;
 #define DISABLE_PRINTF() extern "C" {	int printf ( const char * format, ... ){	return 0;	}};
 #else 
-	typedef char nm8s;
-	typedef short nm16s;
+//	
+//	typedef char nm8s;
+//	typedef short nm16s;
 #define DISABLE_PRINTF() 
 #endif
 	
+//#endif	
 	
 #ifdef __cplusplus
 		extern "C" {
