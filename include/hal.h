@@ -53,5 +53,5 @@
 	
 #endif 	
 
-int			nmppsGet_8s (const nm8s*  pVec, int nIndex);
-int			nmppsGet_16s(const nm16s* pVec, int nIndex);
+int			halGet_8s (const nm8s*  pVec, int nIndex);
+int			halGet_16s(const nm16s* pVec, int nIndex);

@@ -24,7 +24,7 @@
 //!
 //! \perfinclude _nmppsGet_8s.html
 
-begin ".text_nmplv"
+begin ".text_hal"
 global _halGet_8s:label;
 <_halGet_8s>
 
