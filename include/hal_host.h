@@ -1,5 +1,16 @@
 #ifndef HAL_HOST_INCLUDED 
 #define HAL_HOST_INCLUDED 
+
+enum RetValue
+	{
+		HAL_OK              = 0, // Ok
+		HAL_ERROR           = 1, // Error
+		HAL_TIMEOUT         = 2, // Timeout of wait for operation
+		HAL_FILE            = 3, // Cannot find file for load
+		HAL_BADADDRESS      = 4, // Bad address ranges
+		HAL_NOT_IMPLEMENTED = -1 // Not implemented
+	};
+
 extern "C"{
 	int halOpen(char* absfile=0, ...);
 	//int halGetShared(unsigned* addr,int *sh);

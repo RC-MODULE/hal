@@ -374,4 +374,26 @@ int main()
 #endif
 
 
+	// Отключает все макросы таймеров
+	//inline void stopwatch_print2tbl()	{ nmprofiler_print2tbl(stopwatch_head()); }
+	//inline void stopwatch_print2xml()	{ nmprofiler_print2xml(stopwatch_head()); }
+#ifndef DISABLE_PROFILER
+	
+	//! макрос инициализации профайлера
+	#define PROFILER_START()		nmprofiler_init();
+	
+	//! макрос вывода значения таймеров через stdout в виде таблицы 
+	#define PROFILER_PRINT2TBL()	nmprofiler_print2tbl();
+	
+	//! макрос вывода значения таймеров через stdout в xml-формате 
+	#define PROFILER_PRINT2XML()	nmprofiler_print2xml();
+	
+#else 
+	#define PROFILER_START()
+	#define PROFILER_PRINT2TBL()
+	#define STOPWATCH_PRINT2XML()
+#endif 
+
+
+
 #endif 

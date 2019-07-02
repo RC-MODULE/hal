@@ -25,28 +25,64 @@ typedef  void* (*tmemcpy)(void *dst,  void const *src, unsigned int size);
 //typedef  void *(*t_bytecpy)(void *to, int toIndex, void const *from, int fromIndex, size_t size) ;
 
 
-
-//extern int statusDMA;
-template <class T, int SIZE> struct HalRingBufferT{
+template <class T, int SIZE> struct HalRingBuffer{
 	unsigned 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
 	unsigned	tail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
-	T	 		data[SIZE];		///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
-	unsigned 	polltime;		///<  время опроса кольцевого буфера если пуст или заполнен
-	tmemcpy     pmemcpy;		///<  указатель на функцию копирования типа memcpy
+	bool 		headLocked;
+	bool		tailLocked;
+	#ifdef __NM__
+	T	 		data[SIZE];			///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
+	#else 
+	T*	 		data;				///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
+	#endif
+	HalRingBuffer(){
+		#ifndef __NM__
+		data = halMalloc32(SIZE*sizeof32(T));
+		#else 
+		head=0;
+		tail=0;
+	}
+	~HalRingBuffer(){
+		#ifndef __NM__
+		halFree32(data);
+		data=0;
+		#else 
+		head=0xDEAD;
+		tail=0xDEAD;
+	}
+}
+
+//extern int statusDMA;
+template <class T, int SIZE> struct HalRingBufferConnector{
 	
-	HalRingBufferT(tmemcpy singleMemCopy, int pollTime=100){
-		pmemcpy=singleMemCopy;
+	T*	 		data[SIZE];		///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
+	unsigned*	pHead;
+	unsigned*	pTail;
+	unsigned 	polltime;		///<  время опроса кольцевого буфера если пуст или заполнен в мс
+	tmemcpy     memcpyPush;		///<  указатель на функцию копирования типа memcpy
+	tmemcpy     memcpyPop;		///<  указатель на функцию копирования типа memcpy
+	
+	HalRingBufferT(int pollTime=10){
+		memcpyPush=0;
+		memcpyPop =0;
 		polltime=pollTime;
 		head=0;
 		tail=0;
 	}
+	void connect(void* ringBuffer, tmemcpy memcpyPush=memcpy, tmemcpy memcpyPop=memcpy, int polltime=10){
+		memcpyPush=memcpy32;
+		memcpyPop =memcpy32;
+		data=ringBuffer->data;
+		pHead=&ringBuffer->head;
+		pTail=&ringBuffer->tail;
+	}
 	
 	inline bool isEmpty() {
-		return head == tail;
+		return *phead == *ptail;
 	}
 
 	inline bool isFull() {
-		return head == tail + SIZE;
+		return *phead == tail + SIZE;
 	}
 
 	inline T* ptrHead(){
@@ -70,18 +106,18 @@ template <class T, int SIZE> struct HalRingBufferT{
 		if (posTail<posHead || head==tail){
 			size_t countToEnd = SIZE - posHead;
 			if (count <= countToEnd){
-				pmemcpy(addrHead,src,count*sizeof(T));
+				memcpyPush(addrHead,src,count*sizeof(T));
 			}
 		// [*******<Head>......<Tail>*****]
 			else {
 				int firstCount = countToEnd;
 				int secondCount = count-countToEnd;
-				pmemcpy(addrHead,src, firstCount*sizeof(T));
-				pmemcpy(data, src+firstCount, secondCount*sizeof(T));
+				memcpyPush(addrHead,src, firstCount*sizeof(T));
+				memcpyPush(data, src+firstCount, secondCount*sizeof(T));
 			}
 		}
 		else {
-			pmemcpy(addrHead, src, count*sizeof(T));
+			memcpyPush(addrHead, src, count*sizeof(T));
 		}
 		head += count;
 	}
@@ -98,19 +134,19 @@ template <class T, int SIZE> struct HalRingBufferT{
 	
 		// [.......<Tail>******<Head>.....]
 		if (posTail<posHead){
-			pmemcpy( dst, addrTail, count*sizeof(T));
+			memcpyPop( dst, addrTail, count*sizeof(T));
 		}
 		// [*******<Head>......<Tail>*****]
 		else {
 			size_t countToEnd = SIZE - posTail;
 			if (count <= countToEnd){
-				pmemcpy(dst, addrTail, count*sizeof(T));
+				memcpyPop(dst, addrTail, count*sizeof(T));
 			}
 			else {
 				int firstCount = countToEnd;
 				int secondCount= count-countToEnd;
-				pmemcpy( dst,  addrTail,  firstCount*sizeof(T));
-				pmemcpy( dst+firstCount, data, secondCount*sizeof(T));
+				memcpyPop( dst,  addrTail,  firstCount*sizeof(T));
+				memcpyPop( dst+firstCount, data, secondCount*sizeof(T));
 			}
 		}
 		tail += count;

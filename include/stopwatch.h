@@ -93,7 +93,7 @@ public:
 	
 	//! Констуктор с именем таймера 
 	//! \param str имя таймера
-	Stopwatch(char* str){
+	Stopwatch(const char* str){
 		
 		profdata.next=0;
 		profdata.summary=0;
@@ -143,27 +143,26 @@ public:
 	//inline void stopwatch_print2tbl()	{ nmprofiler_print2tbl(stopwatch_head()); }
 	//inline void stopwatch_print2xml()	{ nmprofiler_print2xml(stopwatch_head()); }
 #ifndef DISABLE_STOPWATCH 
-	
-	//#define STOPWATCH_INIT() \
-	//	Stopwatch HeadStopwatch("dummy");	\
-	//	ProfilerData *pHeadStopwatchProfile=&HeadStopwatch.profdata; \
-	//	ProfilerData *pTailStopwatchProfile=&HeadStopwatch.profdata; 
-	#define STOPWATCH_INIT() \
-		ProfilerData *pHeadStopwatchProfile=0; \
-		ProfilerData *pTailStopwatchProfile=0; 
-		
-	
+
 	//! макрос вывода значения таймеров через stdout в виде таблицы 
-	#define STOPWATCH_PRINT2TBL()	nmprofiler_print2tbl(stopwatch_head());
+	#define STOPWATCH_PRINT2TBL()	printf("stopwatch:\n"); if (stopwatch_head()) nmprofiler_print2tbl(stopwatch_head()); else printf("empty\n");
 	
-
 	//! макрос вывода значения таймеров через stdout в xml-формате 
-	#define STOPWATCH_PRINT2XML()	nmprofiler_print2xml(stopwatch_head());
-	
-
+	#define STOPWATCH_PRINT2XML()	if (stopwatch_head()) nmprofiler_print2xml(stopwatch_head());
 	
 	//! Создает и запускает таймер
+	#define STOPWATCH_CREATE(StopwatchID,StopwatchName)	\
+		static Stopwatch StopwatchID(StopwatchName);	
+
+
+	//! Создает и запускает таймер
 	#define STOPWATCH_START(StopwatchID,StopwatchName)	\
+		StopwatchID.start(); 
+		
+		//static Stopwatch StopwatchID(StopwatchName);	\
+
+	//! Создает и запускает таймер
+	#define STOPWATCH_RESUME(StopwatchID)	\
 		static Stopwatch StopwatchID(StopwatchName);	\
 		StopwatchID.start();
 
@@ -172,10 +171,9 @@ public:
 		StopwatchID.stop();
 	
 #else 
- 	#define STOPWATCH_INIT()
 	#define STOPWATCH_START(StopwatchID,StopwatchName)
 	#define STOPWATCH_STOP(StopwatchID) 
-	#define STOPWATCH_PRINT()	
+	#define STOPWATCH_PRINT2TBL()	
 	#define STOPWATCH_PRINT2XML()	
 #endif 
 

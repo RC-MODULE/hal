@@ -1,154 +1,80 @@
-###########################################################################################
-# (RC)Module 7/8/2015
-#
-# This is a universal Makefile for NeuroMatrix projects (application or library) 
-# with automatic search of source files , compiling and linking.
-# Makefile is processed by GNU make and may be used both in Linux and Windows OS
-# Under OS Windows you need:
-# * GNU Make           http://gnuwin32.sourceforge.net/packages/make.htm
-#
-# USAGE:
-#   For release build                    run 'make'
-#   For debug   build                    run 'make DEBUG=y'
-#   For debug & release  build           run 'make all'
-#   For full  rebuild                    run 'make -B'
-#   Multithread build (speed up)         run 'make -j4'
-#   To clean                             run 'make clean'
-#   To create VisualStudio 2005 project  run 'make vs8'
-#   To create VisualStudio 2013 project  run 'make vs13'
-#   Execute target                       run 'make run'
-#   Execute debug target                 run 'make rund'
-#
-# WARNING:
-#   Makefile is sensitive to leading or trailing spaces and backslashes in the pathes
-#
-# DEFENITIONS:
-#   PROJECT         - project name     
-#   TARGET          - output target (.lib or .abs) file with path
-#   INC_DIRS        - set of search pathes for the macro libraries and includes (with -I flag separated)
-#   SRC_DIRS        - set of explicit search pathes of all (.c .cpp .asm) source files (with space separated)
-#   LIB_DIRS        - set of search library pathes (with -l flag separated)
-#   TMP_DIR         - temporary build-folder (Debug/Release)
-#   LIBS            - set of (.lib) libraries to be linked (with space separated)
-#   
-#   CC              - C/C++ compiler(nmcpp/nmcc)
-#   CC_FLAGS        - C/C++ compiler(nmcpp/nmcc) flags   
-#   AS				- assembler(asm/nmcc)
-#   AS_FLAGS        - assembler(asm/nmcc) flags for compiling of pure .asm files 
-#   AS_FLAGS_C2ASM  - assembler(asm/nmcc) flags for compiling of .asm files compiled from .c/.cpp sources
-#   BUILDER         - builder  (libr/linker) 			
-#   BUILDER_FLAGS   - build flags of (libr/linker)
-#
-#   HEADER_DIRS     - set of pathes for .h   files to be included into Visual Studio project (with space separated)
-#   RESOURCES       - set of any additionals files to be included into Visual Studio project
-###############################################################################################
+ROOT=../../../..
 
-#============== PROJECT & BUILD CONFIGURATION ==========
-#
+# BUILD AND RUN MAKEFILE
+# This makefile builds simple nmc-application containing single cpp-file  
+# Rule 'run' executes the application on MC12101 board 
 
-ROOT             = ../../../..
-include $(ROOT)/global.mk
-include 		 nmc4vars_win.mk
-HAL = $(ROOT)
-#-------------- target & input dirs -------------------
-PROJECT          = main0
-OUT_DIR          = .
-TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I$(HAL)/include -Ig:/hal/include
-SRC_DIRS         = .. .
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(NMPP)/lib" -L"$(HAL)/lib"
-TMP_DIR          = Release
-#-------------- RELEASE/ALL config -------------------
-CC 				 = nmc-g++
-#AS               = nmc-as-gnu 				 
-#AS_FLAGS    	 = -nmc4  --traditional-format
-#AS               = nmc-gcc				 
-#AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float 
-AS               = asm 				 
-AS_FLAGS    	 = -nmc4
-LIBS             = -lnmpp-nmc4f -lhal-mc12101
-LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-cmc12101brd-nmpu0.cfg" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)  -Wl,-z,stack-size=32000
 
-#=================== SOURCE & OBJECTS COLLECTION ===========================
+-include nmc4vars_win.mk
 
 .SUFFIXES:
 
-# regular search of *.c *.cpp,*.asm sources in all $(SRC_DIRS)
-ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
-ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS))) 
-ALL_S   =$(wildcard $(addsuffix /*.s, $(SRC_DIRS)))
-ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
-ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
+ifndef MC12101
+$(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
+endif 
 
-VPATH   = $(SRC_DIRS)
+PROJECT  = main
+TARGET   = $(PROJECT)
+CC       = nmc-g++
+AS       = nmc-gcc
+CC_FLAGS = -std=c++11 -O1 -Wall -mnmc4-float  -mmas
+PROJECT  = main
+TARGET   =$(PROJECT)
+INC_DIRS = -I$(ROOT)/include
+LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4"  -L"$(ROOT)/lib"
+LIBS     = -lhal-mc12101
+MAP      = $(PROJECT).map
+CFG      =  mc12101brd-nmpu0.cfg
+SRC_DIRS = .. /.
+SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
+SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
 
-# collecting of objects
-OBJECTS_CPP = $(notdir $(patsubst %.cpp,%.o,$(ALL_CPP)))
-OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM))) 
-OBJECTS_S   = $(notdir $(patsubst %.s,%.o,$(ALL_S)))
-OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
-OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM) $(OBJECTS_S))
 
-#======================== BUILD RULES ====================================
-.PHONY:all  clean skip
+$(TARGET): $(SRC_CPP) Makefile
+	$(CC)  $(SRC_CPP) $(SRC_ASM) $(CC_FLAGS) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc -Wl,-c$(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -fno-threadsafe-statics  -fno-exceptions -o $(TARGET) -Wl,-Map=$(MAP) 2>&1|errecho
 
-.DEFAULT_GOAL=default
-default: $(TARGET) 
+PATH:=$(MC12101)/bin;$(PATH)
 
-#$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all:  $(TARGET)
-	
-#	$(MAKE) -j4 DEBUG=y
-#	$(MAKE) -j4
-
-	
-$(TMP_DIR):
-	-mkdir "$(@)"
-
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile mc12101brd-nmpu0.cfg
-	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+	
+SRC_DIRS += .
 
-$(OUT_DIR): 
-	-mkdir "$(@)"
-	
-$(TMP_DIR)/%.o: %.asm 
-	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+-include $(ROOT)/global.mk
+# BUILD AND RUN MAKEFILE
+# This makefile builds simple nmc-application containing single cpp-file  
+# Rule 'run' executes the application on MC5103 board 
 
-$(TMP_DIR)/%.o: %.s 
-	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
-	
-$(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O0
 
-$(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O0
-	
-	
-profiler:
-	lua53 $(HAL)/script/profiler-gcc.lua .main0.map > proflist_generated.asm 
-	
+
+ifeq ($(OS),Windows_NT)
+  SHELL = cmd
+endif
+
 run: $(TARGET)
 	mc12101run $(TARGET)
-
 	
+rund:
+	-$(MAKE) run
+	pause
 
-#========================== Visual Studio  ===================
-export ALL_CPP ALL_ASM ALL_C ALL_H
-
-PROVIDER = host-x86
-
-$(PROVIDER).vcxproj :	premake5.lua 
-	premake5 vs2015
-
-$(PROVIDER).vcproj :	premake5.lua 
+vs2005:
 	premake5 vs2005
 
-vs2015:   $(PROVIDER).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROVIDER).vcxproj
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
+vs2015:
+	premake5 vs2015
 
-include $(ROOT)/clean.mk
+erase:
+	mc12101erase
+	
+profile:	
+	python $(ROOT)/script/profiler.py > proflist_generated.asm
+	$(MAKE)
+	python $(ROOT)/script/profiler.py $(MAP) > proflist_generated.asm
+	
+	
+-include $(ROOT)/clean.mk	
+
+	

@@ -24,7 +24,10 @@
 //	Рассчитываем на использование любой библиотеки загрузки и обмена
 extern "C" {
 
-enum RetValue{	PL_OK         = 0};
+//#ifndef RetValue 
+//	enum RetValue{	PL_OK         = 0};
+//#endif
+#define PL_OK 0
 // Получаем извне, закрываем сами
 int PL_CloseAccess(PL_Access *access);
 

@@ -87,14 +87,15 @@ int halOpen(char* absfile=0,...){
 				TRACE( "ERROR: Can't access processor  0 on board  0  \n");
 				return  (1);
 			}
-			if (PL_LoadProgramFile(access[proc], abs[proc])){
-				TRACE( ": : ERROR: Can't load program into board.\n");
-				return  (1);
-			}
+			if (*abs[proc]!='.')
+				if (PL_LoadProgramFile(access[proc], abs[proc])){
+					TRACE( ": : ERROR: Can't load program into board.\n");
+					return  (1);
+				}
 		}
 	}
 	for (int proc=0; abs[proc]!=0 ;proc++){
-		if (strlen(abs[proc])){
+		if (strlen(abs[proc]) && *abs[proc]!='.'){
 #ifndef SILENT	
 			// io initialization
 			if (PL_GetAccess(board, proc, &access_io[proc])){

@@ -6,7 +6,7 @@ exclude_section_prefix ={ '%.text%.',"%.data","%.nobits","%.bss","%.rodata","%.i
 
 
 -- exclude_section_prefix ={  }
-include_section = {  }
+include_section = { '.text' }
 nonstd_name = {
 "UDiv32",
 "IDiv32",
@@ -100,9 +100,15 @@ section = "null"
 	end
 	for i=1,#table do
 		--print(table[i],val);
-		if table[i] == val then 
-			return true
-		end
+		--if table[i] == val then 
+		--	return true
+		--end
+		indx,last=string.find(val,table[i]);
+		if (indx<>nul) then
+		if indx==1 then
+		     return true
+        end
+	  end
 	end
 	return false
 end
@@ -144,7 +150,7 @@ end
 print('//****************************************************************************************')
 print('// This is automaticly generated asm-file by profiler-gcc.lua' );
 print('//****************************************************************************************')
-print('import from "d:/git/hal/include/nmprofiler.mlb";')
+print('import from "nmprofiler.mlb";')
 print('begin ".text_nmprofiler\"')
 print("PROFILE_BEGIN("..max_funcname_length..");")
 print('')

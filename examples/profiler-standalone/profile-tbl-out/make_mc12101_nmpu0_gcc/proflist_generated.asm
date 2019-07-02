@@ -1,37 +1,37 @@
 //****************************************************************************************
-// This is automaticly generated asm-file by profiler-gcc.lua
+// This is automaticly generated asm-file by profiler-gcc.py
 //****************************************************************************************
 import from "nmprofiler.mlb";
-//import from "d:/git/hal/include/nmprofiler.mlb";
 begin ".text_nmprofiler"
-PROFILE_BEGIN(16);
+PROFILE_BEGIN( 16 );
 
-FUNCTION(_mysin,          "_mysin          ");// 0x00000000000081ce [.text]
-FUNCTION(_mycos,          "_mycos          ");// 0x0000000000008218 [.text]
-NONCFUNC(ARShift32,       "ARShift32       ");// 0x0000000000008584 [.text]
-NONCFUNC(DAdd,            "DAdd            ");// 0x0000000000008610 [.text]
-NONCFUNC(DFrExp,          "DFrExp          ");// 0x00000000000086d0 [.text]
-NONCFUNC(DResult,         "DResult         ");// 0x0000000000008712 [.text]
-NONCFUNC(DCmp,            "DCmp            ");// 0x0000000000008822 [.text]
-NONCFUNC(DDiv,            "DDiv            ");// 0x0000000000008874 [.text]
-NONCFUNC(UDiv32,          "UDiv32          ");// 0x0000000000008938 [.text]
-NONCFUNC(IDiv32,          "IDiv32          ");// 0x000000000000894a [.text]
-FUNCTION(IDiv64,          "IDiv64          ");// 0x00000000000089b8 [.text]
-FUNCTION(UDiv64,          "UDiv64          ");// 0x0000000000008a1e [.text]
-NONCFUNC(DMul,            "DMul            ");// 0x0000000000008a3c [.text]
-NONCFUNC(ConvDtoI32,      "ConvDtoI32      ");// 0x0000000000008aee [.text]
-NONCFUNC(ConvI32toD,      "ConvI32toD      ");// 0x0000000000008b4e [.text]
-NONCFUNC(LShift32,        "LShift32        ");// 0x0000000000008b6a [.text]
-FUNCTION(LShift64,        "LShift64        ");// 0x0000000000008bf6 [.text]
-NONCFUNC(UMod32,          "UMod32          ");// 0x0000000000008d12 [.text]
-NONCFUNC(IMod32,          "IMod32          ");// 0x0000000000008d3e [.text]
-FUNCTION(UMod64,          "UMod64          ");// 0x0000000000008d74 [.text]
-FUNCTION(IMod64,          "IMod64          ");// 0x0000000000008db0 [.text]
-NONCFUNC(Mul32,           "Mul32           ");// 0x0000000000008dfc [.text]
-NONCFUNC(RShift32,        "RShift32        ");// 0x0000000000008e16 [.text]
-FUNCTION(RShift64,        "RShift64        ");// 0x0000000000008ea2 [.text]
-NONCFUNC(ConvU32toD,      "ConvU32toD      ");// 0x0000000000008fbe [.text]
-FUNCTION(_printf,         "_printf         ");// 0x000000000000a06e [.text_printf]
+	FUNCTION( _sum ,              "_sum            ");//  00000000000081c2  [ .text ]
+	FUNCTION( _mycos ,            "_mycos          ");//  000000000000821c  [ .text ]
+	FUNCTION( _mysin ,            "_mysin          ");//  0000000000008256  [ .text ]
+	NONCFUNC( UDiv32 ,            "UDiv32          ");//  0000000000008f76  [ .text ]
+	NONCFUNC( IDiv32 ,            "IDiv32          ");//  0000000000008f88  [ .text ]
+	NONCFUNC( LShift32 ,          "LShift32        ");//  0000000000008fce  [ .text ]
+	FUNCTION( LShift64 ,          "LShift64        ");//  000000000000905a  [ .text ]
+	NONCFUNC( Mul32Ex ,           "Mul32Ex         ");//  0000000000009176  [ .text ]
+	FUNCTION( Mul64 ,             "Mul64           ");//  0000000000009192  [ .text ]
+	NONCFUNC( ARShift32 ,         "ARShift32       ");//  000000000000923a  [ .text ]
+	NONCFUNC( DAdd ,              "DAdd            ");//  00000000000092c6  [ .text ]
+	NONCFUNC( DFrExp ,            "DFrExp          ");//  0000000000009386  [ .text ]
+	NONCFUNC( DCmp ,              "DCmp            ");//  00000000000094d8  [ .text ]
+	NONCFUNC( DDiv ,              "DDiv            ");//  000000000000952a  [ .text ]
+	FUNCTION( IDiv64 ,            "IDiv64          ");//  00000000000095f4  [ .text ]
+	FUNCTION( UDiv64 ,            "UDiv64          ");//  000000000000965a  [ .text ]
+	NONCFUNC( DMul ,              "DMul            ");//  0000000000009678  [ .text ]
+	NONCFUNC( ConvDtoI32 ,        "ConvDtoI32      ");//  000000000000972a  [ .text ]
+	NONCFUNC( ConvI32toD ,        "ConvI32toD      ");//  000000000000978a  [ .text ]
+	NONCFUNC( UMod32 ,            "UMod32          ");//  00000000000097a6  [ .text ]
+	NONCFUNC( IMod32 ,            "IMod32          ");//  00000000000097d2  [ .text ]
+	FUNCTION( UMod64 ,            "UMod64          ");//  0000000000009808  [ .text ]
+	FUNCTION( IMod64 ,            "IMod64          ");//  0000000000009844  [ .text ]
+	NONCFUNC( Mul32 ,             "Mul32           ");//  0000000000009890  [ .text ]
+	NONCFUNC( RShift32 ,          "RShift32        ");//  00000000000098aa  [ .text ]
+	FUNCTION( RShift64 ,          "RShift64        ");//  0000000000009936  [ .text ]
+	NONCFUNC( ConvU32toD ,        "ConvU32toD      ");//  0000000000009a52  [ .text ]
 
 PROFILE_END();
 end ".text_nmprofiler";
