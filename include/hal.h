@@ -22,10 +22,10 @@
 //#endif	
 	
 #ifdef __cplusplus
-		extern "C" {
+	extern "C" {
 #endif
 
-
+	void halCopy_32s(const void* src, void* dst , unsigned size32);
 	void halSetActiveHeap(int heapNo);
 
 	struct SyncBuf {
@@ -57,3 +57,4 @@
 
 int			halGet_8s (const nm8s*  pVec, int nIndex);
 int			halGet_16s(const nm16s* pVec, int nIndex);
+
