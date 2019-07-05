@@ -24,13 +24,13 @@ INC_DIRS = -I$(ROOT)/include
 LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4"  -L"$(ROOT)/lib"
 LIBS     = -lhal-mc12101
 MAP      = $(PROJECT).map
-CFG      =  mc12101brd-nmpu0.cfg
+CFG      =  mc12101brd-nmpu1.cfg
 SRC_DIRS = .. /.
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
 
 
-$(TARGET): $(SRC_CPP) Makefile
+$(TARGET): $(SRC_CPP) $(SRC_ASM) Makefile 
 	$(CC)  $(SRC_CPP) $(SRC_ASM) $(CC_FLAGS) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc -Wl,-c$(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -fno-threadsafe-statics  -fno-exceptions -o $(TARGET) -Wl,-Map=$(MAP) 
 	
 #	2>&1|errecho
@@ -56,7 +56,7 @@ ifeq ($(OS),Windows_NT)
 endif
 
 run: $(TARGET)
-	mc12101run $(TARGET)
+	mc12101run $(TARGET) -p
 	
 rund:
 	-$(MAKE) run
