@@ -59,3 +59,6 @@ vs2005:	$(HOST).vcproj
 $(HOST).vcproj:
 	premake5 vs2005
 	
+vs2015:	
+	premake5 vs2015
+		
