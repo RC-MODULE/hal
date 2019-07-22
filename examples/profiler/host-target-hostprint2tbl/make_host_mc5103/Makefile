@@ -23,6 +23,9 @@ run:
 	
 proflist:
 	$(MAKE) -f Makefile0 proflist
+
+profile:
+	$(MAKE) -f Makefile0 profile
 		
 target: 
 	$(MAKE) -f Makefile0
