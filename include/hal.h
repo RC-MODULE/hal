@@ -25,7 +25,13 @@
 	extern "C" {
 #endif
 
-	void halCopy_32s(const void* src, void* dst , unsigned size32);
+	void halEnterCritical(int coreID);
+	void halExitCritical(int coreID);
+	void*  halCopyRISC  (const void* src,  void* dst,  unsigned size32);
+	void*  halCopyDMA   (const void* src,  void* dst,  unsigned size32);
+	void*  halCopyInt   (const void* src,  void* dst,  unsigned size32);
+	void*  halCopyFlt   (const void* src,  void* dst,  unsigned size32);
+	
 	void halSetActiveHeap(int heapNo);
 
 	struct SyncBuf {
@@ -40,8 +46,8 @@
 		int		writeCounter[2];
 		int		sync0;
 		int		sync1;
-		
-	
+		int 	handshake[5];
+		int 	ringBufferDMA;
 	} ;
 
 #ifdef __cplusplus

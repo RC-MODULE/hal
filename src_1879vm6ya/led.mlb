@@ -1,3 +1,42 @@
+macro HAL_LED_SOS(led,count)
+	extern _halLedSOS: label;
+	push ar5,gr5;
+	push ar0,gr0;
+	gr5 = gr7;
+	ar0 = sp;
+    sp += 2;
+	gr0 = count;
+    [ ar0++ ] = gr0;	
+	gr0 = led;
+	[ ar0++ ] = gr0;	
+	call _halLedSOS;
+	sp -= 2;
+	pop ar0,gr0 with gr7 = gr5;
+	pop ar5,gr5;
+end HAL_LED_SOS;
+
+
+macro HAL_LED_BLINK(led,freq,ms)
+	extern _halLedBlink: label;
+	push ar5,gr5;
+	push ar0,gr0;
+	gr5 = gr7;
+	ar0 = sp;
+    sp += 4;
+	gr0 = ms;
+	[ ar0++ ] = gr0;	
+	[ ar0++ ] = gr0;	
+	gr0 = freq;
+    [ ar0++ ] = gr0;	
+	gr0 = led;
+	[ ar0++ ] = gr0;	
+	call _halLedBlink;
+	sp -= 4;
+	pop ar0,gr0 with gr7 = gr5;
+	pop ar5,gr5;
+end HAL_LED_BLINK;
+
+
 //macro HAL_LED_DECLARE()
 //	const GPIO_BASE = 010030C00h;
 //	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
@@ -47,3 +86,113 @@ macro HAL_LED_OFF(ledIndx)
 	pop ar1,gr1;
 	pop ar0,gr0;
 end HAL_LED_OFF;
+
+macro HAL_LED_SWITCH(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
+	push ar0,gr0;
+	push ar1,gr1;
+	ar1 = ledBit;
+	gr1 = ledIndx;
+	gr1 = [ar1+=gr1];
+	gr0 = 0FFh;
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h];
+	gr1 = gr0 xor gr1 noflags;
+	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED_SWITCH;
+
+macro HAL_LED_ON_SC(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
+	extern _halEnterCriticalSection:label;
+	extern _halExitCriticalSection:label;
+	push ar0,gr0;
+	push ar1,gr1;
+	ar1 = ledBit;
+	gr1 = ledIndx;
+	call _halEnterCriticalSection;
+	gr1 = [ar1+=gr1];
+	gr0 = 0FFh;
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h];
+	gr1 = gr1 or gr0 noflags;
+	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	call _halExitCriticalSection;
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED_ON_SC;
+
+macro HAL_LED_OFF_SC(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
+	extern _halEnterCriticalSection:label;
+	extern _halExitCriticalSection:label;
+	
+	push ar0,gr0;
+	push ar1,gr1;
+	ar1 = ledBit;
+	gr1 = ledIndx;
+	call _halEnterCriticalSection;
+	gr1 = [ar1+=gr1];
+	gr0 = 0FFh;
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h];
+	gr1 = gr0 and not gr1 noflags;
+	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	call _halExitCriticalSection;
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED_OFF_SC;
+
+macro HAL_LED_SWITCH_SC(ledIndx)
+	extern ledBit: word;//=(1,2,4,8,16,32,64,128);	
+	extern _halEnterCriticalSection:label;
+	extern _halExitCriticalSection:label;
+	
+	push ar0,gr0;
+	push ar1,gr1;
+	ar1 = ledBit;
+	gr1 = ledIndx;
+	call _halEnterCriticalSection;
+	gr1 = [ar1+=gr1];
+	gr0 = 0FFh;
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h];
+	gr1 = gr0 xor gr1 noflags;
+	[010030C00h]   = gr1; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	call _halExitCriticalSection;
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED_SWITCH_SC;
+
+
+
+macro HAL_LED4LO(mask4bits)
+	push ar0,gr0;
+	push ar1,gr1;
+	gr1 = mask4bits;
+	gr0 = 0FFh 	with gr1<<=28 ;
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h] with gr1>>=28 ;
+	gr0>>=4 ;
+	gr0<<=4 ;
+	gr0=gr0 or gr1  ;
+	[010030C00h]   = gr0; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED4LO;
+
+macro HAL_LED4HI(mask4bits)
+	push ar0,gr0;
+	push ar1,gr1;
+	gr1 = mask4bits ;
+	gr0 = 0FFh 	with gr1<<=28 ;
+	[010030C00h+4] = gr0; // GPIO Base   + 0x04	ЧТ/ЗП	8	0x00	DDR0	Регистр направления передачи данных 0
+	gr0 =[010030C00h] with gr1>>=24 ;
+	gr0<<=28 ;
+	gr0>>=28 ;
+	gr0=gr0 or gr1 ;
+	[010030C00h]   = gr0; // GPIO Base  + 0x00	ЧТ/ЗП	8	-	PDR0	Регистр порта данных 0
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_LED4HI;

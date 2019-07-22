@@ -32,8 +32,8 @@ int main(){
 	if (src==0 || dst==0)	return -1;
 	
 	
-	//printf("src = %x \n",src);
-	//printf("dst = %x \n",dst);
+	printf("src = %x \n",src);
+	printf("dst = %x \n",dst);
 	
 	for(int i=0;i<size32; i++){
 		src[i]=i;
@@ -48,7 +48,7 @@ int main(){
 		return ret;
 	}
 	
-	halInitSingleDMA(src, dst, size32);
+	halInitSingleDMA(src, dst+0x80000, size32);
 	
 	do {
 		ret=halStatusDMA();

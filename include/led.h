@@ -6,11 +6,18 @@
 #endif
 
 void halLed(unsigned ledMask);    
+void halLed4Hi(unsigned led4Mask);    
+void halLed4Lo(unsigned led4Mask);    
 void halLedOn (unsigned ledIndx);    
 void halLedOff(unsigned ledIndx);    
+void halLedSwitch(unsigned ledIndx);    
 void halLedSOS(unsigned ledIndx, int count=0);    
 void halLedBlink(unsigned ledIndex, int freq, int ms);
 int  halLedCount();    
+
+void halLedOnSC (unsigned ledIndx);    
+void halLedOffSC(unsigned ledIndx);    
+void halLedSwitchSC(unsigned ledIndx);    
 	
 #ifdef __cplusplus
 		};

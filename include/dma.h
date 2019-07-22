@@ -64,7 +64,7 @@ typedef int(*DmaCallback2)();
 	 *	<p>size32 должен быть четным в противном случае ПДП скопирует на 1 меньше (ближайший наименьший четный) 
 	 */
 
-	int  halInitSingleDMA(void*  src,  void*  dst,  int  size32);
+	int  halInitSingleDMA(const void*  src,  void*  dst,  int  size32);
 	/**
 	 *  \brief функция инициализирует модуль ПДП для использования без прерываний
 	 *  \param [in] адрес источника
@@ -151,6 +151,8 @@ typedef int(*DmaCallback2)();
 		*
 	*/
 	void halSetCallbackDMA(DmaCallback user_callback);
+	void halSetDummyCallbackDMA();
+	DmaCallback halGetCallbackDMA();
 	/**
 		* \brief Функция выполняет первоначальную инициализацию ПДП для работы с callBack функцией и вызывается 1 раз. 
 	*/
@@ -269,7 +271,12 @@ typedef int(*DmaCallback2)();
 	int halReadCoreID();
 	
 	void halEnterCriticalSection();
-  void halExitCriticalSection();
+	void halExitCriticalSection();
+	
+	void halEnterCriticalSection0();
+	void halExitCriticalSection0();
+	void halEnterCriticalSection1();
+	void halExitCriticalSection1();
 
 #ifdef __cplusplus
 		};

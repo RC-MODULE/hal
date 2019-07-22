@@ -22,7 +22,7 @@
 extern "C"
 {
 
-
+	void halHandshake(int processor);
 
 	int halSyncArray(
 					 int value,        // Sync value

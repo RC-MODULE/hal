@@ -22,8 +22,8 @@ begin ".text_hal"
   
 
    
-global _halCopy_32s:label;
-<_halCopy_32s>
+global _halCopyRISC:label;
+<_halCopyRISC>
 .branch;
     ar5 = sp - 5	;
 	push ar0,gr0	;

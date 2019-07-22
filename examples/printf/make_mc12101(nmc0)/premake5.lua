@@ -10,17 +10,18 @@ solution "mc12101-printf"
       language "C++"
       files { "**.h", "../src_pc/*.cpp"}
 	  libdirs { "$(MC12101)/lib","../../../lib"}
-	  links { "mc12101load.lib","hal-mc12101-x86.lib","mc12101-nmc4-0"} 
 	  includedirs { "$(MC12101)/include","../../../include"}
 
       configuration "Debug"
-         defines { "DEBUG" }
-         symbols  "On" 
+	  	links { "mc12101load.lib","hal-mc12101-x86d.lib","mc12101-nmc4-0"} 
+        defines { "DEBUG" }
+        symbols  "On" 
 		 
 
       configuration "Release"
-         defines { "NDEBUG" }
-         symbols  "Off" 
+	  	links { "mc12101load.lib","hal-mc12101-x86.lib","mc12101-nmc4-0"} 
+        defines { "NDEBUG" }
+        symbols  "Off" 
 
 		 
 		 

@@ -9,17 +9,19 @@ solution "mc5103access"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_pc/*.cpp"}
-	  links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
+	  
 	  includedirs { "../../../include"}	  
 	  libdirs { "$(MC5103)/libload","../../../lib" }
 
       configuration "Debug"
-         defines { "DEBUG" }
-         symbols  "On" 
+		links { "hal-mc5103-x86d.lib","mc5103load.lib","mc5103-nmc3" } 
+        defines { "DEBUG" }
+        symbols  "On" 
 
       configuration "Release"
-         defines { "NDEBUG" }
-         symbols  "Off" 
+		links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
+        defines { "NDEBUG" }
+        symbols  "Off" 
 		 
 		 
 	project "mc5103-nmc3"
