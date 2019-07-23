@@ -13,8 +13,8 @@ global _halMapAddr:label;
 	
 	push ar0,gr0;
 	
-	delayed return;
-		ar5
+	//delayed return;
+		//ar5
 	//if >0 delayed goto 
 	//pop ar0,gr0;
 	
