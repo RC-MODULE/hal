@@ -43,9 +43,10 @@ begin ".text_hal"
 
 import from led;
 import from printx;
-import from mutex;
+import from critical;
 import from sleep;
 
+DECLARE_CS_CONST();
 // 8.3.2 (стр 152):	Запрос на прерывание по нормальному завершению работы контроллера ПДП  выставляется, 
 // когда выполняется следующее условие: 
 // - установлен бит Cpl регистра DMARC_Control и 
@@ -186,7 +187,7 @@ global _TEST:label;
 	//ar5 = [callback_addr] with  //set callback address
 	gr7 = true noflags;
 	[_halSyncro] = gr7;		// write 0xffffffff to flag of DMA means DMA is free
-	call _halExitCriticalSection;
+	//call _halExitCriticalSection;
 	gr0	= [coreID];
 	HAL_EXIT_CRITICAL_SECTION(gr0);
 //	HAL_SLEEP(1);
@@ -289,8 +290,8 @@ global _TEST:label;
 	gr7 = 1;
 
 	gr0 = false;
-	[DMATR_Control]=gr0; // Бит Cpl (1-й разряд). При чтении Cpl = 1 означает, что текущие передача или приём завершены. Чтобы произвести следующий запуск, необходимо записать Cpl = 0.
-	[DMARC_Control]=gr0; // Бит Cpl (1-й разряд). При чтении Cpl = 1 означает, что текущие передача или приём завершены. Чтобы произвести следующий запуск, необходимо записать Cpl = 0.
+	//[DMATR_Control]=gr0; // Бит Cpl (1-й разряд). При чтении Cpl = 1 означает, что текущие передача или приём завершены. Чтобы произвести следующий запуск, необходимо записать Cpl = 0.
+	//[DMARC_Control]=gr0; // Бит Cpl (1-й разряд). При чтении Cpl = 1 означает, что текущие передача или приём завершены. Чтобы произвести следующий запуск, необходимо записать Cpl = 0.
 	
 	
 	gr0 = 1;				// 0th-bit is MDMA channel 
@@ -344,6 +345,40 @@ global _TEST:label;
 
 	pop ar0,gr0;
 	return;
+
+global _halDmaIsCompleted:label;
+<_halDmaIsCompleted>
+	push ar0,gr0;
+	
+	//gr0 = [coreID]; 
+	//ar0 = 4;
+	//ar0+= gr0;
+	//HAL_LED_ON(ar0);
+
+	//gr7=  -gr0; 
+	gr7 = [DMARC_Control]; 
+	//gr0 = [_flag_of_pack_DMA];
+	//gr7 = gr0 or gr7;
+	gr0 = 2;
+	// Бит Cpl (1-й разряд). При чтении Cpl = 1 означает, что текущие передача или приём завершены. 
+	// Чтобы произвести следующий запуск, необходимо записать Cpl = 0.
+	gr7 = gr0 and gr7;
+	//gr0 = gr0 and gr7;
+	//with gr0;
+	//if =0 skip exit; 
+	
+	//gr7= gr7 xor gr0;
+	//[1001_001Ah]=gr7;
+	
+	//<exit>
+	//gr7 = gr0;
+
+	//HAL_LED_OFF(ar0);
+
+
+	pop ar0,gr0;
+	return with gr7=gr7>>1;
+
 
 <_halMaskIntContMdma_mc12101>
 	gr7 = 1;
