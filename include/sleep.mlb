@@ -1,0 +1,27 @@
+macro HAL_SLEEP(ms)
+	extern _halSleep: label;
+	push ar5,gr5;
+	push ar0,gr0 with gr5 = gr7;
+	ar0 = sp;
+    sp += 2;
+	gr0 = ms;
+	[ ar0++ ] = gr0;	
+	[ ar0++ ] = gr0;	
+	call _halSleep;
+	sp -= 2;
+	pop ar0,gr0 with gr7 = gr5;
+	pop ar5,gr5;
+end HAL_SLEEP;
+
+macro HAL_ZERO_LOOPS(ticks)
+	own next: label;
+	push ar0,gr0;
+	gr0 = ticks;
+	with gr0--;
+	<next>
+	if <>0 skip next with gr0--;
+		nul;
+		nul;
+	pop ar0,gr0 with gr7 = gr5;
+
+end HAL_ZERO_LOOPS;

@@ -1,0 +1,23 @@
+
+// Any arguments except gr5 are possible
+
+
+
+macro PRINT_MATRIX_32X(text, matrix, height, width)
+end PRINT_MATRIX_32X;
+
+
+macro PRINT_MATRIX_32S(text, matrix, height, width)
+end PRINT_MATRIX_32S;
+
+
+macro PRINT_MATRIX_16X(text, matrix, height, width)
+end PRINT_MATRIX_16X;
+
+
+macro PRINT_MATRIX_16S(text, matrix, height, width)
+end PRINT_MATRIX_16S;
+
+
+macro PRINT_32X(text,x)
+end PRINT_32X;
