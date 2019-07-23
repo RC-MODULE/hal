@@ -5,10 +5,16 @@ begin ".text_hal"
 global _halMapAddr:label;
 <_halMapAddr>
 	ar5 = ar7-2;
-	//push ar0,gr0;
-	gr0 = [--ar5];
+	gr7 = [--ar5];
 	ar5 = gr7 with gr7=gr7>>18;
+	//if >0 delayed return;
+	//	ar5 = []
+	pop ar0,gr0;
 	
+	push ar0,gr0;
+	
+	delayed return;
+		ar5
 	//if >0 delayed goto 
 	//pop ar0,gr0;
 	
