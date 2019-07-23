@@ -1,0 +1,72 @@
+
+macro DECLARE_CS_CONST()
+	extern _halSyncro: word;
+	const CS_TURN    =_halSyncro	+ 1;
+	const CS_FLAG    =_halSyncro	+ 2;
+	const CS_FLAG0   =_halSyncro	+ 2;
+	const CS_FLAG1   =_halSyncro	+ 3;
+end DECLARE_CS_CONST;
+
+macro HAL_ENTER_CRITICAL_SECTION(core)
+	//extern _halSyncro: word;
+	//const CS_TURN    =_halSyncro	+ 1;
+	//const CS_FLAG0   =_halSyncro	+ 2;
+	//const CS_FLAG1   =_halSyncro	+ 3;
+	own CS_CORE0 :label;
+	own CS_CORE1 :label;
+	own CS_OPENED:label;
+	own CS_WAIT0 :label;
+	own CS_WAIT1 :label;
+	with core;
+	if > delayed skip CS_CORE1;
+		push ar0,gr0 with gr0=false;
+		push ar1,gr1 with gr1=true;
+		
+	<CS_CORE0>
+		[CS_FLAG0]= gr1;
+		[CS_TURN] = gr1;	
+		gr1 = [CS_TURN];
+		gr0 = [CS_FLAG1];
+		with gr0;
+		<CS_WAIT0>
+			if =0 delayed skip CS_OPENED with gr1;
+				gr0 = [CS_FLAG1];
+			if =0 delayed skip CS_OPENED with gr0;
+				gr1 = [CS_TURN];
+		delayed skip CS_WAIT0;
+			nul;
+			nul;
+
+	<CS_CORE1>
+		[CS_FLAG1]= gr1;
+		[CS_TURN] = gr0;	
+		gr1 = [CS_TURN];
+		gr0 = [CS_FLAG0];
+		with gr0;
+		<CS_WAIT1>
+			if =0  delayed skip CS_OPENED with gr1;
+				gr0 = [CS_FLAG0];
+			if <>0 delayed skip CS_OPENED with gr0;
+				gr1 = [CS_TURN];
+		delayed skip CS_WAIT1;
+			nul;
+			nul;
+
+	<CS_OPENED>
+	pop ar1,gr1;
+	pop ar0,gr0;
+end HAL_ENTER_CRITICAL_SECTION;
+
+
+macro HAL_EXIT_CRITICAL_SECTION(core)
+	//extern _halSyncro: word;
+	//const CS_FLAG   =_halSyncro	+ 2;
+	push ar0,gr0;
+	gr0 = core;
+	ar0 = CS_FLAG;
+	ar0+=gr0 with gr0=false;
+	[ar0] = gr0;
+	pop ar0,gr0;
+
+	
+end HAL_EXIT_CRITICAL_SECTION;
