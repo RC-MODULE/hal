@@ -184,9 +184,11 @@ global _TEST:label;
 	[IMRH_CLR] = gr7;				// mask(disable) interrupt requests from MDMA
 	
 	
-	//ar5 = [callback_addr] with  //set callback address
 	gr7 = true noflags;
 	[_halSyncro] = gr7;		// write 0xffffffff to flag of DMA means DMA is free
+	ar5 = [callback_addr];  //set callback address
+	call ar5;
+	
 	//call _halExitCriticalSection;
 	gr0	= [coreID];
 	HAL_EXIT_CRITICAL_SECTION(gr0);
@@ -209,6 +211,8 @@ global _TEST:label;
 
 
 ///////////////////////////////////////////////////
+global _halDmaSetCallback:label;
+<_halDmaSetCallback>
 <_halSetCallbackDMA>
 	ar5 = ar7 - 2;
 	push ar1,gr1;	
@@ -229,6 +233,8 @@ global _TEST:label;
 		[callback_addr] = gr7;
 
 ///////////////////////////////////////////////////
+global _halDmaGetCallback:label;
+<_halDmaGetCallback>
 <_halGetCallbackDMA>
 	delayed return;
 		nul;
@@ -255,7 +261,7 @@ global _TEST:label;
 	//gr7 = [40000000h];
 	//with gr7 >>= 24;//detecting core the programm uses
 	//gr7 = [--ar5];
-	HAL_LED_BLINK(gr7,10,1000);
+	//HAL_LED_BLINK(gr7,10,1000);
 	
 	with gr7;
 	//HAL_LED_SOS(gr7);

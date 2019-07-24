@@ -151,8 +151,10 @@ typedef int(*DmaCallback2)();
 		*
 	*/
 	void halSetCallbackDMA(DmaCallback user_callback);
+	void halDmaSetCallback(DmaCallback user_callback);
 	void halSetDummyCallbackDMA();
 	DmaCallback halGetCallbackDMA();
+	DmaCallback halDmaGetCallback();
 	/**
 		* \brief Функция выполняет первоначальную инициализацию ПДП для работы с callBack функцией и вызывается 1 раз. 
 	*/

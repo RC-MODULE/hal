@@ -6,7 +6,7 @@
 		extern "C" {
 #endif
 
-
+/*
 extern SyncBuf halSyncro;
 
 INSECTION(".text_hal") void halEnterCriticalSection(){
@@ -53,7 +53,7 @@ INSECTION(".text_hal") void halExitCriticalSection(){
 	halSyncro.turn = wrt_turn;
 	flag[id] = false;
 }
-
+*/
 #ifdef __cplusplus
 };
 #endif

@@ -25,12 +25,18 @@
 	extern "C" {
 #endif
 
-	void halEnterCritical(int coreID);
-	void halExitCritical(int coreID);
+	void halEnterCriticalSectionCore(int coreID);
+	void halExitCriticalSectionCore(int coreID);
+	void halEnterCriticalSection();
+	void halExitCriticalSection();
+	
 	void*  halCopyRISC  (const void* src,  void* dst,  unsigned size32);
 	void*  halCopyDMA   (const void* src,  void* dst,  unsigned size32);
 	void*  halCopyInt   (const void* src,  void* dst,  unsigned size32);
 	void*  halCopyFlt   (const void* src,  void* dst,  unsigned size32);
+	
+	
+	void* halMapAddr(const void* addr);	
 	
 	void halSetActiveHeap(int heapNo);
 

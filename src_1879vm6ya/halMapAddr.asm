@@ -7,18 +7,17 @@ global _halMapAddr:label;
 	ar5 = ar7-2;
 	gr7 = [--ar5];
 	ar5 = gr7 with gr7=gr7>>18;
-	//if >0 delayed return;
-	//	ar5 = []
+	if > delayed  return;
+		gr7 = [40000000h];
+	
+	push ar0,gr0 	with gr7>>=24;
+	ar0 = ar5 	 	with gr7++;
+					with gr0 = gr7<<18;
+	ar5 = ar0+gr0; 
 	pop ar0,gr0;
-	
-	push ar0,gr0;
-	
-	//delayed return;
-		//ar5
-	//if >0 delayed goto 
-	//pop ar0,gr0;
-	
 	return;
+	
+	
 	
 end ".text_hal";
 
