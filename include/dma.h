@@ -295,15 +295,17 @@ typedef int(*DmaCallback2)();
 	 *  \param [in] size32 Размер в 32-р. словах
 	 *  
 	 *  \details Назначение суффиксов: 
-	 [C]ritical - запуск DMA с использованием критических секций. Необходимо для запуска DMA с нескольких ядер. Использоване критических секций замедляет запуск примерно на 100 тактов.
-	 [M]apped - предполагается, что адреса аргументов для внутренней памяти отмапированы в зеркало памяти (в память свыше 0x40000). Если [M] отсутствет, то
-	 производится проверка на принадлежность к внутреннему адресному пространству вызывающего ядра и мапирование в глобальное даресное пространство, доступное для DMA.
+	 [C]ritical - запуск DMA с использованием критических секций. Необходимо при запуске DMA сразу с нескольких ядер. Использование критических секций замедляет запуск примерно на 100 тактов.
+	 Инициализация DMA должна производится функций halDmaInitC также с суффиксом C.
+	 [M]apped - предполагается, что адреса аргументов для внутренней памяти подаются  отмапированными в зеркало памяти (в память свыше 0x40000). Если [M] отсутствует, то
+	 внутри функции производится проверка на принадлежность адресов массивов к внутреннему адресному пространству, вызывающего ядра и производится мапирование в глобальное адресное пространство в случае необходимости.
+	 Вызов DMA по адресам  локальной памяти приведет к ошибке.
 	 [A]ligned - предполагается, что адреса src и dst выровнены по границе 16-ти 32.р слов (4 младших бита адреса равны нулю). 
 	 Проверка выровненности адресов не производится и DMА всегда запускается в одномерном режиме. Вызов DMA в этом режиме по невыровненным адресам - приведет к ошибке. 
-	 Если [А] отсутствует - произоводится проверка на выровненность аргументов. 
-	 В случае невыровненности хотя бы одного аргумента DMA запускается в двумерном режиме. Скорость DMA в думерном режиме ниже. 
+	 Если [А] отсутствует - производится проверка на выровненность аргументов. 
+	 В случае невыровненности хотя бы одного аргумента DMA запускается в двумерном режиме. Скорость DMA в двумерном режиме ниже. 
 	 
-	 Для запуска DMA треобуется однократная инициализация halDmaInit. 
+	 Для запуска DMA требуется однократная инициализация halDmaInit или halDmaInitС при работе с критическими секциями . 
 	 */
 	//! \{
 	void halDmaStart   		(const void* src, void* dst, unsigned size32);
@@ -315,6 +317,8 @@ typedef int(*DmaCallback2)();
 	void halDmaStartCM 		(const void* src, void* dst, unsigned size32);
 	void halDmaStartCMA		(const void* src, void* dst, unsigned size32);
 	
+	//! \}	
+	
 	void halDma2D_Start   	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartA  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartM  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
@@ -323,8 +327,9 @@ typedef int(*DmaCallback2)();
 	void halDma2D_StartCA 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartCM 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartCMA	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+
 	
-	//! \}
+	
 	
 	int halDma2D_IsCompleted();
 	int halDmaIsCompleted();
