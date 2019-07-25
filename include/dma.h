@@ -319,6 +319,20 @@ typedef int(*DmaCallback2)();
 	
 	//! \}	
 	
+	/**
+	 *  \brief Запуск DMA 
+	 *  
+	 *  \param [in] src Массив источник (должно быть кратно 2)
+	 *  \param [in] dst Массив Приемник (должно быть кратно 2)
+	 *  \param [in] size32 Размер копируемой матрицы в 32-р. словах (width*heght)  (должно быть кратно 2)
+	 *  \param [in] width Ширина матрицы  в 32-р. словах  (должно быть кратно 2)
+	 *  \param [in] srcStride32 Смещение между строками входной матрицы в 32-р. словах  (должно быть кратно 2)
+	 *  \param [in] dstStride32 Смещение между строками выходной матрицы в 32-р. словах  (должно быть кратно 2)
+	 *  
+	 *  \details Назначение суффиксов: Аналогично halDmaStart
+	 */
+	//! \{
+	
 	void halDma2D_Start   	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartA  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartM  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
@@ -327,7 +341,8 @@ typedef int(*DmaCallback2)();
 	void halDma2D_StartCA 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartCM 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
 	void halDma2D_StartCMA	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
-
+//! \}	
+	
 	
 	
 	
