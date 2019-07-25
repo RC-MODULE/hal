@@ -26,7 +26,7 @@ ALL: nmc0 nmc1
 run: 
 	$(MAKE) -f Makefile0 
 	$(MAKE) -f Makefile1 
-	ptime mc12101run $(TARGET0) $(TARGET1)
+	mc12101run $(TARGET0) $(TARGET1)
 	
 run0:
 	$(MAKE) -C $(ROOT)/make_mc12101
