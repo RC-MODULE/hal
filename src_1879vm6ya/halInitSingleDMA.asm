@@ -1,7 +1,7 @@
 global _halInitSingleDMA 	: label;
 
-extern mirror_offset      : word;
-extern coreID             : word;
+extern _halMirrorOffset      : word;
+extern _halCoreID             : word;
 extern _halSyncro					: word;
 
 extern _halEnterCriticalSection : label;
@@ -9,54 +9,6 @@ extern _halExitCriticalSection  : label;
 
 
 
-
-// 8.3.2 (стр 152):	Запрос на прерывание по нормальному завершению работы контроллера ПДП  выставляется, 
-// когда выполняется следующее условие: 
-// - установлен бит Cpl регистра DMARC_Control и 
-// - сброшен бит маски MIC в регистре DMARC_InterruptMask  (в т.ч. в конце процесса передачи).
-
-const DMATR_MainCounter		= 1001_0000h;
-const DMATR_Address			= 1001_0002h;
-const DMATR_Bias            = 1001_0004h;
-const DMATR_RowCounter      = 1001_0006h;
-const DMATR_AddressMode     = 1001_0008h;
-const DMATR_Control			= 1001_000Ah; 	// Бит En (0-й разряд). Запись в бит En = 1 запускает передачу/приём.
-							 				// Бит Cpl (1-й разряд). При чтении Cpl = 1 означает, что текущие передача или приём завершены. 
-											// Чтобы произвести следующий запуск, необходимо записать Cpl = 0.
-const DMATR_InterruptMask	= 1001_000Ch;	// Бит MIC (0-й разряд) – маска запроса на прерывание по нормальному завершению обмена данными: 
-							 				// 0 – запрос разрешён;
-							 				// 1 – запрос замаскирован
-											// После RESET = 0
-const DMATR_State			= 1001_000Eh;				  
-
-const DMARC_MainCounter	    = 1001_0010h;
-const DMARC_Address		    = 1001_0012h;
-const DMARC_Bias            = 1001_0014h;
-const DMARC_RowCounter      = 1001_0016h;
-const DMARC_AddressMode     = 1001_0018h;
-const DMARC_Control		    = 1001_001Ah;
-
-const DMARC_InterruptMask   = 1001_001Ch;
-const DMARC_State			= 1001_001Eh;
-
-// Таблица 7.22   Прерывания процессорной системы /стр. 140
-// 32	0(поз бита)	прерывание по завершению работы канала ПДП память-память (от MDMAC)
-// 33	1(поз бита)	прерывание по ошибке доступа в память канала ПДП память-память (от MDMAC)
-
-// Таблица 7.23 / стр. 143
-const IRESERVED = 4000_0406h;
-const IRRH		= 4000_0440h;	//	Регистр запросов на прерывание с номерами от 32 до 39. Значение 1 в бите данного регистра показывает наличие запроса, для которого ещё не выполнена команда перехода по адресу-вектору прерывания. Программный сброс битов данного регистра производится только с помощью регистра IRRH_CLR.
-const IRRH_SET 	= 4000_0442h;	//	ЧТ/ЗП	Побитовая установка регистра IRRH.
-const IRRH_CLR 	= 4000_0444h;	//	ЧТ/ЗП	Побитовый сброс регистра IRRH. Программный сброс бита регистра IRRH следует делать, когда данный запрос замаскирован.
-
-
-const IASH	    = 4000_0458h; 	// ЧТ Регистр подтверждения и статуса запросов с номерами от 32 до 39. Значение 0 - запрос обработан, 1 - запрос обрабатывается (выполнен или выполняется переход по адресу-вектору, но бит регистра IASH ещё не сброшен
-const IASH_CLR  = 4000_045Ch;	// ЧТ/ЗП	Побитовый сброс регистра IASH.
-const IMRH      = 4000_0448h;	// ЧТ/ЗП	Регистр маски прерываний с номерами о 0 до 31.
-								// Значение 0 - прерывание запрещено, 1 - прерывание разрешено.
-								//          после RESET 0
-const IMRH_SET  = 4000_044Ah;	// ЧТ/ЗП	Побитовая установка регистра IMRH.
-const IMRH_CLR  = 4000_044Ch;	// ЧТ/ЗП	Побитовый сброс регистра IMRH.
 
 	
 
@@ -67,9 +19,10 @@ import from led;
 import from printx;
 import from sleep;
 import from critical;
-
+import from periphery;
 
 DECLARE_CS_CONST();
+DECLARE_HW_CONST();
  
  global SOS:label;
 <SOS>
@@ -83,7 +36,7 @@ DECLARE_CS_CONST();
 	push ar1,gr1;
 	push ar2,gr2;
 	
-	gr0 = [coreID];
+	gr0 = [_halCoreID];
 	//call _halEnterCriticalSection;	
 	
 	
@@ -113,7 +66,7 @@ DECLARE_CS_CONST();
 ///	[DMARC_Control] = gr7;	// clear the control register MDAM to fall interruption register 
 	gr7 = [--ar5];						// src
 	ar0 = gr7 with gr7 >>= 18;			// check is src address in local space 
-	gr0 = [mirror_offset];
+	gr0 = [_halMirrorOffset];
 	if <>0 delayed goto SkipSrcMapping;	
 		gr7 = [--ar5]; 					// dst
 		ar1 = gr7  with gr7>>=18;		// 
@@ -196,7 +149,7 @@ macro MAPPED_ARGS(mapped)
 		own	SkipDstMapping:label;
 		gr7 = [--ar5];						// src
 		ar0 = gr7 with gr7 >>= 18;			// check is src address in local space 
-		gr0 = [mirror_offset];
+		gr0 = [_halMirrorOffset];
 		if <>0 delayed goto SkipSrcMapping;	
 			gr7 = [--ar5]; 					// dst
 			ar1 = gr7  with gr7>>=18;		// 
@@ -237,9 +190,9 @@ macro ALIGNED_ARGS(aligned)
 		[DMARC_AddressMode] = gr1; 					// set 2D Mode DMA 
 		[DMATR_RowCounter]  = gr1;					// row counter =1
 		[DMARC_RowCounter]  = gr1 with gr7=gr1+1;	// row counter =1 
-		[DMATR_Bias] 		= gr7;	
+		[DMATR_Bias] 		= gr7;					// 
 		delayed goto Skip1D_DMA;
-		[DMARC_Bias] 		= gr7;	
+		[DMARC_Bias] 		= gr7;					// 
 		//-------------------------------- 1D DMA mode --------------
 		<Set1D_DMA>
 		[DMATR_AddressMode] = gr0; 					//  set 1D mode DMA
@@ -263,7 +216,7 @@ global func_name:label;
 	push ar1,gr1;
 	push ar2,gr2;
 	
-	gr0 = [coreID];	
+	gr0 = [_halCoreID];	
 	USE_CS(use_cs);
 	//gr7 = [_halSyncro];
 	//gr7;
@@ -331,7 +284,7 @@ end HAL_DMA_INIT;
 	push ar1,gr1;
 	push ar2,gr2;
 	
-	gr0 = [coreID];
+	gr0 = [_halCoreID];
 	//call _halEnterCriticalSection;	
 	
 	
@@ -346,7 +299,7 @@ end HAL_DMA_INIT;
 	[_halSyncro] = gr0;
 	gr7 = [--ar5];						// src
 	ar0 = gr7 with gr7 >>= 18;			// check is src address in local space 
-	gr0 = [mirror_offset];
+	gr0 = [_halMirrorOffset];
 	if <>0 delayed goto SkipSrcMapping;	
 		gr7 = [--ar5]; 					// dst
 		ar1 = gr7  with gr7>>=18;		// 
@@ -461,7 +414,7 @@ HAL_DMA_INIT(_halDmaStartCMA,1,1,1);
 	push ar1,gr1;
 	push ar2,gr2;
 	
-	gr0 = [coreID];	
+	gr0 = [_halCoreID];	
 	USE_CS(1);
 	//gr7 = [_halSyncro];
 	//gr7;

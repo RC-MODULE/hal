@@ -1,0 +1,48 @@
+ROOT = ../../../..
+include $(ROOT)/global.mk
+#-include ../local.mk
+# BUILD AND RUN MAKEFILE
+# This makefile builds simple nmc-application containing single cpp-file  
+# Rule 'run' executes the application on MC12101 board and stores return code in ".exitcode"  file
+
+.SUFFIXES:
+
+
+ifndef MC12101
+$(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
+endif 
+
+BOARD    = mc12101
+
+TARGET   = main1.abs
+INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include" -I$(NMPP)/include
+LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib -L$(NMPP)/lib
+LIBS     = hal-mc12101.lib mc12101lib_nm.lib libc4f.lib libc4.lib nmpp-nmc4.lib
+CFG      = mc12101brd-nmc1.cfg
+SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm1))
+SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm1))
+HEAPS    = -heap=26384 -heap1=26384 -heap2=26384 -heap3=26384
+
+ALL: $(TARGET) 
+$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile1 $(HAL)/lib/hal-mc12101.lib
+	nmcc -DMC12101 -DNMC1 -o$(TARGET) -m.main1.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
+
+
+PATH:=$(MC12101)/bin;$(PATH)
+
+
+
+	
+run: $(TARGET)
+	mc12101run $(TARGET) -p
+
+
+clean:
+	-$(OS_RM) *.abs *.elf *.ncb *.map *.elf *.suo *.user *.filters
+	-$(OS_RD) bin obj
+	
+kill: clean
+	-$(OS_RM) *.vcproj *.sln *.vcxproj
+	
+vs2005:	premake5.lua $(HOST).vcproj
+

@@ -91,4 +91,7 @@ call _halExitCriticalSection;
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return;
+	
+	
+	
 end ".text_hal";

@@ -15,6 +15,9 @@ typedef int(*DmaCallback2)();
 #endif
 
 	typedef int(*DmaCallback)();
+	
+	extern DmaCallback halDmaUserCallbackPtr;
+	
 	/**
 	 *  \brief Brief
 	 *  
@@ -126,6 +129,7 @@ typedef int(*DmaCallback2)();
 	 *	
 	 */
 	int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
+	
 	/**
 	 *  \brief функция инициализирует модуль ПДП для копирования матрицы
 	 *  \param [in] адрес массива, содержащего адреса источников
@@ -159,6 +163,8 @@ typedef int(*DmaCallback2)();
 		* \brief Функция выполняет первоначальную инициализацию ПДП для работы с callBack функцией и вызывается 1 раз. 
 	*/
 	int  halOpenDMA();
+	int  halDmaInit();
+	int  halDmaInitC();
 	/**
 		* \brief Функция выполняет первоначальную инициализацию ПДП для работы без callBack функции и вызывается 1 раз.
 		* Если до этого была вызвана функция halOpenDMA, то вызывать функцию halOpenStatusDMA не нужно
@@ -300,16 +306,27 @@ typedef int(*DmaCallback2)();
 	 Для запуска DMA треобуется однократная инициализация halDmaInit. 
 	 */
 	//! \{
-	void halDmaStart   (const void* src, void* dst, unsigned size32);
-	void halDmaStartA  (const void* src, void* dst, unsigned size32);
-	void halDmaStartM  (const void* src, void* dst, unsigned size32);
-	void halDmaStartMA (const void* src, void* dst, unsigned size32);
-	void halDmaStartC  (const void* src, void* dst, unsigned size32);
-	void halDmaStartCA (const void* src, void* dst, unsigned size32);
-	void halDmaStartCM (const void* src, void* dst, unsigned size32);
-	void halDmaStartCMA(const void* src, void* dst, unsigned size32);
+	void halDmaStart   		(const void* src, void* dst, unsigned size32);
+	void halDmaStartA  		(const void* src, void* dst, unsigned size32);
+	void halDmaStartM  		(const void* src, void* dst, unsigned size32);
+	void halDmaStartMA 		(const void* src, void* dst, unsigned size32);
+	void halDmaStartC  		(const void* src, void* dst, unsigned size32);
+	void halDmaStartCA 		(const void* src, void* dst, unsigned size32);
+	void halDmaStartCM 		(const void* src, void* dst, unsigned size32);
+	void halDmaStartCMA		(const void* src, void* dst, unsigned size32);
+	
+	void halDma2D_Start   	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartA  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartM  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartMA 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartC  	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartCA 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartCM 	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	void halDma2D_StartCMA	(const void* src, void* dst, unsigned size32, unsigned width, unsigned srcStride32, unsigned dstStride32);
+	
 	//! \}
 	
+	int halDma2D_IsCompleted();
 	int halDmaIsCompleted();
 	
 	
