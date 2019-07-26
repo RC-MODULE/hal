@@ -1,7 +1,7 @@
 
 import from "critical";
 begin ".text_hal"
-extern coreID             : word;
+extern _halCoreID             : word;
 
 DECLARE_CS_CONST();
 
@@ -26,7 +26,7 @@ global _halExitCriticalSectionCore:label;
 global _halEnterCriticalSection:label;
 <_halEnterCriticalSection>
 	ar5 = ar7-2;
-	gr7 = [coreID];
+	gr7 = [_halCoreID];
 	HAL_ENTER_CRITICAL_SECTION(gr7);
 	pop ar5,gr5;
 return;
@@ -35,7 +35,7 @@ global _halExitCriticalSection:label;
 <_halExitCriticalSection>
 	ar5 = ar7-2;
 	push ar5,gr5;
-	gr7 = [coreID];
+	gr7 = [_halCoreID];
 	HAL_EXIT_CRITICAL_SECTION(gr7);
 	pop ar5,gr5;
 	return;
