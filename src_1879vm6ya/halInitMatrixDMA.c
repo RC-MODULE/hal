@@ -14,7 +14,7 @@ INSECTION(".data_hal") static DmaCallback user_callback_loc;
 
 
 	void halInitMatrixDMA_asm(void*  src,  int  width,int  height, int srcStride32,  void* dst, int dstStride32);
-	DmaCallback readCallback();	
+	DmaCallback halGetCallbackDMA();	
 
 	
 INSECTION(".text_hal") static int own_callback(){
@@ -61,7 +61,7 @@ INSECTION(".text_hal") int halInitMatrixDMA(void*  src,  int  width,int  height,
 			return 0;
 		}else{
 			SetFlagDMA(0xffffffff);
-			user_callback_loc = readCallback();
+			user_callback_loc = halGetCallbackDMA();
 			halSetCallbackDMA((DmaCallback)own_callback);
 			///wrt param for nex call back
 			size32_loc = width;

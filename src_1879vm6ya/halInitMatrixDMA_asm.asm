@@ -1,8 +1,8 @@
 global _halInitMatrixDMA_asm : label;
 
 extern _flag_of_pack_DMA 	: word;
-extern mirror_offset      : word;
-extern coreID             : word;
+extern _halMirrorOffset      : word;
+extern _halCoreID             : word;
 extern _halSyncro					: word;
 
 extern _halEnterCriticalSection : label;
@@ -13,7 +13,7 @@ begin ".text_hal"
 	//int  halInitMatrixDMA(void*  src,  int  width,int  height, int srcStride32,  int* dst, int dstStride32);
 	ar5 = ar7 - 2;
 	push ar0,gr0;
-	gr0 = [coreID];
+	gr0 = [_halCoreID];
 <WAIT_DMA>	
 call _halEnterCriticalSection;	
 	gr7 = [_halSyncro];
@@ -29,7 +29,7 @@ call _halExitCriticalSection;
 	push ar2,gr2;
 	push ar3,gr3;
 	push ar4,gr4;
-	gr4 = [mirror_offset];
+	gr4 = [_halMirrorOffset];
 	gr7 = [--ar5];//load src
 	ar4 = gr7 with gr7 >>= 18;
 	if <>0 delayed goto SKIP_SRC_MIRROR_SETUP;
