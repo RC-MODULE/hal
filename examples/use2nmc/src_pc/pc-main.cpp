@@ -11,6 +11,7 @@ int main(){
 	unsigned srcBrdAddr0,srcBrdAddr1;
 	unsigned dstBrdAddr0,dstBrdAddr1;
 	unsigned sync,size;
+
 	if (halOpen("main0.abs","main1.abs",NULL))	// Load executable files on two processsors, and connect to shared memory
 		return -1;
 	

@@ -52,7 +52,10 @@ int halOpen(char* absfile=0,...){
 	va_end(args);
 
 
-
+	if(PL_ResetBoard(board) != PL_OK) {
+		TRACE( "ERROR: Can't open driver.\n");
+		return  (1);
+	}
 	unsigned boardCount,ok;
 	PL_Word Length = 0;
 	
