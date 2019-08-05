@@ -28,21 +28,17 @@ SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm))
 
 
-ALL: $(TARGET) $(HOST)
+ALL: $(TARGET) 
 
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile
 	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) -heap=16384 -heap1=16384 -heap2=16384 -heap3=16384
-
-$(HOST): $(HOST).vcproj 
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(BOARD)-x86.vcproj
-
 
 
 PATH:=$(MC12101)/bin;$(PATH)
 
 
 
-run: $(TARGET) $(HOST)
+run: $(TARGET) 
 	bin\debug\$(HOST)
 	
 
@@ -54,7 +50,12 @@ clean:
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj
 	
-$(HOST).vcproj  vs2005:	premake5.lua 
+	
+vs2005:	
 	premake5 vs2005
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
+vs2015:	
+	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj
 	

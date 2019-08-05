@@ -45,6 +45,9 @@ kill: clean
 	
 vs2005:	premake5.lua $(HOST).vcproj
 
+vs2015:	
+	premake5 vs2015
+
 $(HOST).vcproj:
 	premake5 vs2005
 	

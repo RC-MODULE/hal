@@ -2,7 +2,7 @@
 
 -- A solution contains projects, and defines the available configurations
 solution "hal-mc12101"
-    configurations { "Debug", "Release" }
+    	configurations { "Debug", "Release" }
 	platforms { "Win32","x64"}	
 		
 	-- x86 static library project  ---------------------------------	 
@@ -30,7 +30,7 @@ solution "hal-mc12101"
 			targetsuffix ("-x86")
 			architecture "x32"
 			defines { "NDEBUG","NM6405"}
-			symbols  "Off" 
+         		symbols  "Off" 
 		
 		configuration {"Debug","x64"}
 			targetsuffix ("-x64d")
@@ -56,14 +56,14 @@ solution "hal-mc12101"
 				"../include/*.h",
 				"Makefile" }
 	 
-		  configuration "Debug"
-			buildcommands   {"make DEBUG=y -f Makefile"}
-			rebuildcommands {"make -B DEBUG=y -f Makefile"}
-			cleancommands   {"make clean"}
+		configuration "Debug"
+			buildcommands 	{"make DEBUG=y -f    Makefile $(CPCONV)"}
+			rebuildcommands {"make -B DEBUG=y -f Makefile $(CPCONV)"}
+			cleancommands 	{"make clean"}
 		   
-		  configuration "Release"
-			buildcommands   {"make -f Makefile"}
-			rebuildcommands {"make -B -f Makefile"}
+		configuration "Release"
+			buildcommands 	{"make -f Makefile	$(CPCONV)"}
+			rebuildcommands {"make -B -f Makefile 	$(CPCONV)"}
 			cleancommands   {"make clean"}		   
 	
 	

@@ -21,7 +21,7 @@ TARGET1  = main1.abs
 VS      ?= vs2015
 PATH:=$(MC12101)/bin;$(PATH)
 
-ALL: $(TARGET0) $(TARGET1) $(HOST)
+ALL: $(TARGET0) $(TARGET1) vs2015
 
 run: $(TARGET0) $(TARGET1) $(HOST)
 	bin\debug\$(HOST)
@@ -32,19 +32,14 @@ $(TARGET0) nmc0:
 $(TARGET1) nmc1:
 	$(MAKE) -f Makefile1
 
-$(HOST): $(VS)
-	
-vs2005: $(HOST).vcproj 
+vs2005:	
+	premake5 vs2005
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
-vs2015:	$(HOST).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug
-
-$(HOST).vcproj:
-	premake5 vs2005
-
-$(HOST).vcxproj:
+vs2015:	
 	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj
+	
 
 
 	

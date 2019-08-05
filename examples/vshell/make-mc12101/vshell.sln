@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "host", "host.vcproj", "{63FE977C-4F35-990D-F821-7F10E437150F}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "host", "host.vcxproj", "{63FE977C-4F35-990D-F821-7F10E437150F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "target", "target.vcproj", "{6CFD901D-589F-BBF3-415A-CF472D9B4244}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "target", "target.vcxproj", "{6CFD901D-589F-BBF3-415A-CF472D9B4244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,6 +3,7 @@
 -- A solution contains projects, and defines the available configurations
 solution "hal-mc5103"
    	configurations { "Debug", "Release" }
+	--platforms { "Win32","x64"}	
 
 	-- x86  library with printf support  ---------------------------------	 
 	project "hal-mc5103"
@@ -25,7 +26,7 @@ solution "hal-mc5103"
 			targetsuffix ("-x86")
 			architecture "x32"
 			defines { "NDEBUG","NM6405"}
-         	symbols  "Off" 
+         		symbols  "Off" 
 		
 		configuration {"Debug","x64"}
 			targetsuffix ("-x64d")
@@ -50,13 +51,13 @@ solution "hal-mc5103"
 				"Makefile" }
 	 
 		configuration "Debug"
-			buildcommands 	{"make DEBUG=y -f 	 Makefile 2>.make & iconv -f cp1251 -t cp866 .make"}
-			rebuildcommands {"make -B DEBUG=y -f Makefile 2>.make & iconv -f cp1251 -t cp866 .make"}
+			buildcommands 	{"make DEBUG=y -f    Makefile $(CPCONV)"}
+			rebuildcommands {"make -B DEBUG=y -f Makefile $(CPCONV)"}
 			cleancommands 	{"make clean"}
 		   
 		configuration "Release"
-			buildcommands 	{"make -f Makefile		2>.make & iconv -f cp1251 -t cp866 .make"}
-			rebuildcommands {"make -B -f Makefile 	2>.make & iconv -f cp1251 -t cp866 .make"}
+			buildcommands 	{"make -f Makefile	$(CPCONV)"}
+			rebuildcommands {"make -B -f Makefile 	$(CPCONV)"}
 			cleancommands   {"make clean"}		   
 		
 		

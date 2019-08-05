@@ -2,8 +2,8 @@
 
 -- A solution contains projects, and defines the available configurations
 solution "mc5103-printf"
-   configurations { "Debug", "Release" }
-
+	configurations { "Debug", "Release" }
+	startproject "mc5103-printf"
    -- A project defines one build target
    project "mc5103-x86"
       kind "ConsoleApp"
@@ -13,7 +13,7 @@ solution "mc5103-printf"
 	  libdirs { "$(MC5103)/libload","../../../lib" }
 
       configuration "Debug"
-		links { "hal-mc5103-x86d.lib","mc5103load.lib","mc5103-nmc3" } 
+		links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
         defines { "DEBUG" }
         symbols  "On" 
 
