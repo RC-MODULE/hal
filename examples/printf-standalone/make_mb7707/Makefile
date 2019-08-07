@@ -23,7 +23,7 @@ LIB_DIRS = -L"$(MB7707)/lib"     -L$(ROOT)/lib
 LIBS     = mb7707lib.lib hal-mb7707.lib libint_soc.lib
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,..))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,..))
-HEAP     = -heap=14384 -heap1=16384 -heap2=16384 -heap3=16384
+HEAP     = -heap=10384 -heap1=16384 -heap2=16384 -heap3=16384
 FLAGS	 = -soc -g -O0
 $(TARGET): $(SRC_CPP) $(SRC_ASM)  $(CFG)  Makefile
 	nmcc $(FLAGS) $(HEAP) -c$(CFG) -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  $(INC_DIRS) $(LIB_DIRS) $(LIBS) 

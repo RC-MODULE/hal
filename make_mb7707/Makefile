@@ -13,7 +13,7 @@ endif
 
 INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
 LIB_DIRS = 
-SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_nm_io ../src_ringbuffer
+SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
@@ -70,8 +70,8 @@ $(TARGET): $(TMP_DIR) $(OBJECTS)
 	@echo *******************************************************************************
 
 # custom build of printf.c because of error with -O2 optimization compiling
-$(TMP_DIR)/printf.o: ../src_nmc_all/printf.c
-	nmcc ../src_nmc_all/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0
+$(TMP_DIR)/printf.o: ../src_printf_nmcpp/printf.c
+	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0 -I$(ROOT)/include
 
 $(TMP_DIR):
 	-mkdir "$(@)"

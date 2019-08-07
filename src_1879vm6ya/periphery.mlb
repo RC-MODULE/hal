@@ -51,8 +51,9 @@ const IMRH      = 4000_0448h;	// ЧТ/ЗП	Регистр маски преры�
 const IMRH_SET  = 4000_044Ah;	// ЧТ/ЗП	Побитовая установка регистра IMRH.
 const IMRH_CLR  = 4000_044Ch;	// ЧТ/ЗП	Побитовый сброс регистра IMRH.
 
-
-const VECTOR_DMA         = 00000120h;
-const VECTOR_DMA_HANDLER = 00000125h;
+//============ vector interrupt table ==========================
+const VECTOR_CPU_IRQ0    = 20h+12*8;
+const VECTOR_DMA         = 20h+32*8;
+const VECTOR_DMA_HANDLER = VECTOR_DMA+5;
 
 end DECLARE_HW_CONST;

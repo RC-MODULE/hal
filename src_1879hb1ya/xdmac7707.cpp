@@ -51,7 +51,7 @@ int halInitSingleDMA(void*  src,  void*  dst,  int  size32,  DmaCallback* func, 
 	return xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);
 } 
 */
-INSECTION(".text_hal") int halInitSingleDMA(void*  src,  void*  dst,  int  size32)
+INSECTION(".text_hal") int halInitSingleDMA(const void*  src,  void*  dst,  int  size32)
 {  
 	int channel=0;
 	xdmacinitn(((int)dst)<<2, ((int)src)<<2, size32<<2,channel);

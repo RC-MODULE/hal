@@ -83,6 +83,14 @@ global _TEST:label;
 		[GR7] = gr7 with gr7 = gr0+1 noflags;
 	delayed goto halDmaHandler;
 		[AR5] = ar5,gr5;		
+
+<Vector_CpuIrq0>
+		//// the limit of commands in interruption vector is 4 64 bit-wise words !!!
+		[GR0] = ar0,gr0 with gr0=false noflags;
+		[GR7] = gr7 with gr7 = gr0+1 noflags;
+	delayed goto halCpuIrqHandler0;
+		[AR5] = ar5,gr5;		
+
 ////////////////////////////////////////////////
 //global _halDmaSetHandler:label;
 //<_halDmaSetHandler>
@@ -93,6 +101,14 @@ global _TEST:label;
 //	
 //global _halDmaRestoreHandler:label;
 //<_halDmaRestoreHandler>
+
+<halCpuIrqHandler0>
+	call SOS;
+	ar5,gr5 = [AR5];
+	ar0,gr0 = [GR0];
+ 	delayed	ireturn;
+		gr7 = [GR7];
+		nop;
 
 <halDmaHandler>
 	//the code below was written according the prescription of how to clear IAS register on the right way;
@@ -300,6 +316,29 @@ global _halDmaInit:label;
 	gr1 = false;
 	[_halDmaUserCallbackPtr] = gr1;
 //turn on mask in interruption controller
+
+
+	ar5 = Vector_CpuIrq0;
+	ar1 = VECTOR_CPU_IRQ0;
+	//gr7 = pswr;
+	//simular lines of code below 
+	//are copping the programm to interruption vector of interruption controller
+	//the programm is next
+	//	[AR5] = ar5;
+	//	[GR0] = gr0;
+	//delayed goto CALL_BACK;
+	//	[GR7] = gr7;
+	ar0,gr0 = [ar5++]; 
+	[ar1++] = ar0,gr0;//
+	ar0,gr0 = [ar5++];//
+	[ar1++] = ar0,gr0;//
+	ar0,gr0 = [ar5++];
+	[ar1++] = ar0,gr0;
+	ar0,gr0 = [ar5++];
+	[ar1++] = ar0,gr0;
+	
+	
+	
 	gr7 = 1;
 
 	gr0 = false;

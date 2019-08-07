@@ -45,7 +45,7 @@ template <class T, int SIZE> struct HalRingBufferData{
 	HalRingBufferData(){
 		//size=SIZE;
 		#ifndef __NM__
-		data = halMalloc32(SIZE*sizeof32(T));
+		data = (T*)halMalloc32(SIZE*sizeof32(T));
 		#else 
 		head=0;
 		tail=0;
@@ -53,7 +53,7 @@ template <class T, int SIZE> struct HalRingBufferData{
 	}
 	~HalRingBufferData(){
 		#ifndef __NM__
-		halFree32(data);
+		halFree(data);
 		data=0;
 		#else 
 		head=0xDEAD;

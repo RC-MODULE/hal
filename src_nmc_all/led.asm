@@ -49,4 +49,4 @@ global _halLed4Lo:label;
 	HAL_LED4LO(gr7);
 	return;
 	
-end ".text";
+end ".text_hal";

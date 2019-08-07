@@ -9,3 +9,22 @@ end HAL_LED_ON;
 
 macro HAL_LED_OFF(ledIndx)
 end HAL_LED_OFF;
+
+
+macro HAL_LED_SOS(led,count)
+end HAL_LED_SOS;
+
+
+macro HAL_LED_BLINK(led,freq,ms)
+end HAL_LED_BLINK;
+
+
+
+macro HAL_LED_SWITCH(ledIndx)
+end HAL_LED_SWITCH;
+
+macro HAL_LED4LO(mask4bits)
+end HAL_LED4LO;
+
+macro HAL_LED4HI(mask4bits)
+end HAL_LED4HI;
