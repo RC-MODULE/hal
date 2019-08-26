@@ -67,7 +67,7 @@ echo:
 default: 
 	$(MAKE) $(TARGET) -j4 
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk
+$(TARGET): $(OUT_DIR) $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS)
 	@echo *******************************************************************************
 	@echo **                                                                           **
