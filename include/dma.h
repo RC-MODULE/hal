@@ -318,7 +318,7 @@ typedef int(*DmaCallback2)();
 	void halDmaStartCMA		(const void* src, void* dst, unsigned size32);
 	
 	//! \}	
-	
+	typedef void (*DmaStart)(const void* src, void* dst, unsigned size32);
 	/**
 	 *  \brief Запуск DMA 
 	 *  

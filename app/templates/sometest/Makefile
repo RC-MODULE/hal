@@ -1,5 +1,6 @@
 
 include $(ROOT)/global.mk
+-include $(PATH2LOCAL)/local.mk
 # TEST-MAKEFILE
 # This Makefile is for testing purpose
 # It builds and runs two applications built from common cpp-source but for different platforms and compares their exit codes
@@ -15,8 +16,8 @@ include $(ROOT)/global.mk
 # TOP_LEVEL :points to root directory of NMPP   
 # TEMPLATES :points to automake template folder 
 # PLATFORMS :set of available platforms: win32 mc5103 mb7707 emu ...
--include $(ROOT)/local.mk
--include local.mk
+
+
 
 
 #all: $(addsuffix /Makefile,$(addprefix make_,$(PLATFORMS))) $(addprefix build_,$(PLATFORMS))
@@ -41,10 +42,10 @@ kill:
 test: make_$(TARGET1)/Makefile make_$(TARGET2)/Makefile
 	$(MAKE) -C./make_$(TARGET1) test 
 	$(MAKE) -C./make_$(TARGET2) test
-#	@echo $(CURDIR)>> $(ROOT)/app/test/diff-$(TARGET1)-$(TARGET2).txt
+	@echo $(CURDIR)>> $(ROOT)/app/test/diff-$(TARGET1)-$(TARGET2).txt
 	$(OS_DIFF) make_$(TARGET1)/.exitcode make_$(TARGET2)/.exitcode
 	@echo TEST-OK!
-#	@echo OK>> $(ROOT)/app/test/diff-$(TARGET1)-$(TARGET2).txt
+	@echo OK>> $(ROOT)/app/test/diff-$(TARGET1)-$(TARGET2).txt
 
 	
 ########### Produces automake rule for all platforms like ############################
@@ -61,10 +62,11 @@ define automake_platform
 $(1):make_$(1)/Makefile
 
 make_$(1)/Makefile: make_$(1)
-	-$(OS_CP) $(ROOT)/app/templates/sometest/make_$(1)/* make_$(1)
-	-rm make_$(1)/Makefile
-	echo ROOT=../$(ROOT)| $(OS_CAT) - $(ROOT)/app/templates/sometest/make_$(1)/Makefile > make_$(1)/Makefile
-	
+	-cp $(TEMPLATE_DIR)/sometest/make_$(1)/* make_$(1)
+	-rm make_$(1)/Makefile*
+	-echo ROOT=../$(ROOT)| $(OS_CAT) - $(TEMPLATE_DIR)/sometest/make_$(1)/Makefile > make_$(1)/Makefile
+	-$(OS_FIND) $(TEMPLATE_DIR)/sometest/make_$(1)/Makefile0  && echo ROOT=../$(ROOT)| $(OS_CAT) - $(TEMPLATE_DIR)/sometest/make_$(1)/Makefile0 >> make_$(1)/Makefile0
+	-$(OS_FIND) $(TEMPLATE_DIR)/sometest/make_$(1)/Makefile1  && echo ROOT=../$(ROOT)| $(OS_CAT) - $(TEMPLATE_DIR)/sometest/make_$(1)/Makefile1 >> make_$(1)/Makefile1
 
 make_$(1): 
 	-mkdir make_$(1)
