@@ -114,15 +114,14 @@ global _TEST:label;
 	//the code below was written according the prescription of how to clear IAS register on the right way;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
 	// 0. 
-	gr0 = false;
 	gr0 = [_halCoreID]; 
 	gr7 = [_halSyncro]; 	// read  stateDMA from	struct SyncBuf , where
 	gr7 - gr0;
 	if <>0 call SOS;
 	//PRINT_32X("core:",gr0);
 	
-	gr7 = 4;
-	gr7+= gr0;
+	//gr7 = 4;
+	//gr7+= gr0;
 	//HAL_LED_SWITCH(gr7);
 	//HAL_LED_BLINK(gr7,20,100);
 	//HAL_LED4LO(1);
@@ -170,13 +169,6 @@ global _TEST:label;
 	with gr7;
 	if <>0 call gr7;
 	
-	//call _halExitCriticalSection;
-	gr0	= [_halCoreID];
-//	HAL_EXIT_CRITICAL_SECTION(gr0);
-//	HAL_SLEEP(1);
-//	HAL_ZERO_LOOPS(10000);
-
-
 	ar5,gr5 = [AR5];
 	ar0,gr0 = [GR0];
  	delayed	ireturn;
@@ -190,14 +182,13 @@ global _TEST:label;
 	//the code below was written according the prescription of how to clear IAS register on the right way;
 	//for more information see "Микросхема интегральная  NM6407 Руководство по эксплуатации" page 142;
 	// 0. 
-	gr0 = false;
 	gr0 = [_halCoreID]; 
 	gr7 = [_halSyncro]; 	// read  stateDMA from	struct SyncBuf , where
 	gr7 - gr0;
 	if <>0 call SOS;
 	
-	gr7 = 4;
-	gr7+= gr0;
+	//gr7 = 4;
+	//gr7+= gr0;
 	// page 142 Magic script
 	// При работе с устройствами, которые работают в режиме программного подтверждения следует обеспечить, чтобы команда снятия запроса в запрашивающем устройстве выполнялась строго раньше, чем команда снятия бита статуса прерывания (IAS) в контроллере прерываний. Рекомендуется следующий алгоритм программного подтверждения: 
 	//gr7 = true noflags;
@@ -238,8 +229,8 @@ global _TEST:label;
 	gr0	= [_halCoreID];
 	HAL_EXIT_CRITICAL_SECTION(gr0);
 
-	ar5 = [AR5];
-	gr0 = [GR0];
+	ar5,gr5 = [AR5];
+	ar0,gr0 = [GR0];
  	delayed	ireturn;
 		gr7 = [GR7];
 		nop;
@@ -289,11 +280,10 @@ global _halDmaInit:label;
 	////this function write the programm at Lint_6407 label 
 	////into interruption vector of interruption controller
 	gr7 = [40000000h];
-	push ar0,gr0 		with gr7 >>= 24;	//detecting core the programm uses
+	push ar0,gr0 		with gr7 >>= 24;			//detecting core id
 	[_halCoreID] = gr7 	with gr7++;
 	push ar1,gr1		with gr7 = gr7<<18;
-	[_halMirrorOffset] = gr7 with gr7 = false;
-	//[_flag_of_pack_DMA] = gr7;
+	[_halMirrorOffset] = gr7 with gr7 = false;		// set offset to mirror 
 	
 	ar5 = Lint_6407;
 	ar1 = VECTOR_DMA;
@@ -318,16 +308,9 @@ global _halDmaInit:label;
 //turn on mask in interruption controller
 
 
+	// set initial interrupt handler 
 	ar5 = Vector_CpuIrq0;
 	ar1 = VECTOR_CPU_IRQ0;
-	//gr7 = pswr;
-	//simular lines of code below 
-	//are copping the programm to interruption vector of interruption controller
-	//the programm is next
-	//	[AR5] = ar5;
-	//	[GR0] = gr0;
-	//delayed goto CALL_BACK;
-	//	[GR7] = gr7;
 	ar0,gr0 = [ar5++]; 
 	[ar1++] = ar0,gr0;//
 	ar0,gr0 = [ar5++];//
@@ -348,6 +331,8 @@ global _halDmaInit:label;
 	
 	gr0 = 1;				// 0th-bit is MDMA channel 
 	[IMRH_CLR] = gr0;		// mask(disable) interrupt requests from MDMA
+	gr0 = 1<<12;
+	[IMRL_SET]=gr0;			// enable  interrupt from nmc1
 	
 	//enable extern interruptions at core
 	intr clear 40h;
