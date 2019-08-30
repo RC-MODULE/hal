@@ -52,7 +52,7 @@ int main()
 
 	halLedOn(4);
 	halSetProcessorNo(1);							// Set processor number 
-	halHandshake(0);
+	//halHandshake(0);
 	
 	int no=halGetProcessorNo();
 

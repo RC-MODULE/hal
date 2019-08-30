@@ -45,27 +45,47 @@ int *dst[4];
 #define MAX_HEIGHT 32
 #define MAX_SIZE MAX_WIDTH*MAX_HEIGHT
 
+int main0()
+{
+
+	halLedOn(0);
+	//halSetProcessorNo(0);							// Set processor number 
+	//halHandshake(1);
+	
+	//printf("------------\n");
+	halLedOn(1);
+	return 1;
+}
 int main()
 {
 
 	halLedOn(0);
 	halSetProcessorNo(0);							// Set processor number 
-	halHandshake(1);
+	//halHandshake(1);
+	
 	halLedOn(1);
+	//printf("------------\n");
 	int no=halGetProcessorNo();
 
 	halDmaInitC();
 	halLedOn(2);
 	
 	src[0]=(int*)malloc (MAX_SIZE+32);
-	src[1]=(int*)malloc0(MAX_SIZE+32);
-	src[2]=(int*)malloc1(MAX_SIZE+32);
-	src[3]=(int*)malloc2(MAX_SIZE+32);
-								 
-	dst[0]=(int*)malloc (MAX_SIZE+32);
-	dst[1]=(int*)malloc0(MAX_SIZE+32);
-	dst[2]=(int*)malloc1(MAX_SIZE+32);
-	dst[3]=(int*)malloc2(MAX_SIZE+32);
+	src[0]=(int*)malloc (100);
+	halLedOn(3);							 
+	src[1]=(int*)malloc(MAX_SIZE+32);
+	src[2]=(int*)malloc(MAX_SIZE+32);
+	halLedOn(4);							 
+	src[3]=(int*)malloc(MAX_SIZE+32);
+	halLedOn(5);
+	dst[0]=(int*)malloc(MAX_SIZE+32);
+	dst[1]=(int*)malloc(MAX_SIZE+32);
+	halLedOn(6);
+	dst[2]=(int*)malloc(MAX_SIZE+32);
+	dst[3]=(int*)malloc(MAX_SIZE+32);
+	halLedOn(7);
+	
+	
 	
 	if (
 		src[0]==0 ||
@@ -80,11 +100,11 @@ int main()
 	){
 		halLed(0xFF);
 		halLedSOS(0);
-		printf("memory allocation error\n");
+		//printf("memory allocation error\n");
 		return -1;
 	}
 	
-	halLedOn(3);
+	
 	halSleep(1000);
 	
 	src[0]=(int*)(((int)src[0]+32)&0xFFFFFFF0);
@@ -97,19 +117,22 @@ int main()
 	dst[2]=(int*)(((int)dst[2]+32)&0xFFFFFFF0);
 	dst[3]=(int*)(((int)dst[3]+32)&0xFFFFFFF0);
 	
-	
+	halLedOn(4);
 			
 	for(int i=0;i<4; i++){
-		printf("src[%d]:%x  dst[%d]:%x\n",i,src[i],i,dst[i]);
+		//printf("src[%d]:%x  dst[%d]:%x\n",i,src[i],i,dst[i]);
 		for(int j=0; j<MAX_SIZE; j++)
 			src[i][j]=j;
 	}
+	halLedOn(5);
 
 	memset(dst[0],0,MAX_SIZE);
-	halDma2D_StartC(src[0],dst[0],8*8,8,8,8);
-	while (!halDma2D_IsCompleted());
-	PRINT_MATRIX_32X("src:", src[0],  8, 8);
-	PRINT_MATRIX_32X("dst:", dst[0],  8, 8);
+	
+	halLedOn(6);
+	//halDma2D_StartC(src[0],dst[0],8*8,8,8,8);
+	//while (!halDma2D_IsCompleted());
+	//PRINT_MATRIX_32X("src:", src[0],  8, 8);
+	//PRINT_MATRIX_32X("dst:", dst[0],  8, 8);
 	
 	
 	//if (0)
@@ -131,12 +154,12 @@ int main()
 			unsigned srcCrc=nmppmCrc_32s(in, height,width, srcStride);
 			unsigned dstCrc=nmppmCrc_32s(out, height,width,dstStride);
 			if (srcCrc!=dstCrc){
-				printf("src crc=%x\n",srcCrc);
-				printMatrixS_32x("src:", in,   height, width, srcStride);
-				printMatrixS_32x("dst:", out,  height, width, dstStride);
-	
-				printf("dst crc=%x\n",dstCrc);
-				printf("Error");
+				//printf("src crc=%x\n",srcCrc);
+				//printMatrixS_32x("src:", in,   height, width, srcStride);
+				//printMatrixS_32x("dst:", out,  height, width, dstStride);
+				//
+				//printf("dst crc=%x\n",dstCrc);
+				//printf("Error");
 				halSync(0,1);
 				return -1;
 				//halLedSOS(6);

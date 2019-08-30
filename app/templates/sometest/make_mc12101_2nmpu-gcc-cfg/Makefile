@@ -28,11 +28,16 @@ run:
 	$(MAKE) -f Makefile1 
 	mc12101run $(TARGET0) $(TARGET1)
 	
+dump:
+	$(MAKE) -f Makefile0 dump 
+	
 run0:
 	$(MAKE) -f Makefile0 run
 
 run1:
 	$(MAKE) -f Makefile1 run
+	
+	
 
 $(TARGET0) nmc0 0:
 	$(MAKE) -f Makefile0 

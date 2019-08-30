@@ -47,6 +47,9 @@ run: $(TARGET)
 reset:
 	reset12101
 	
+dump:  
+	nmc-objdump -d $(TARGET) > $(TARGET).dump
+	
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
 	

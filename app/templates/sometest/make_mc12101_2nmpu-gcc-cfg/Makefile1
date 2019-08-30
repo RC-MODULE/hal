@@ -42,7 +42,7 @@ default $(TARGET): $(SRC_ALL) Makefile
 PATH:=$(MC12101)/bin;$(PATH)
 
 run: $(TARGET)
-	mc12101run $(TARGET)
+	mc12101run $(TARGET) -p
 
 reset:
 	reset12101
