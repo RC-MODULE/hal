@@ -103,7 +103,9 @@ global _TEST:label;
 //<_halDmaRestoreHandler>
 
 <halCpuIrqHandler0>
+
 	call SOS;
+	
 	ar5,gr5 = [AR5];
 	ar0,gr0 = [GR0];
  	delayed	ireturn;
@@ -117,7 +119,8 @@ global _TEST:label;
 	gr0 = [_halCoreID]; 
 	gr7 = [_halSyncro]; 	// read  stateDMA from	struct SyncBuf , where
 	gr7 - gr0;
-	if <>0 call SOS;
+	//if <>0 
+	//call SOS;
 	//PRINT_32X("core:",gr0);
 	
 	//gr7 = 4;

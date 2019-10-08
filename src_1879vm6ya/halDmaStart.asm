@@ -26,7 +26,10 @@ DECLARE_HW_CONST();
  
  global SOS:label;
 <SOS>
-	HAL_LED_SOS(gr0,1);
+	PRINT_32X("gr0=",gr0);
+	PRINT_32X("gr7=",gr7);
+
+	//HAL_LED_SOS(gr0,1);
 	return;
 /*
 <_halInitSingleDMA2>
@@ -222,7 +225,8 @@ global func_name:label;
 	//gr7;
 	//if >= call SOS;
 	//
-	[_halSyncro] = gr0;
+	//gr0=03;
+	[_halSyncro] = gr0;	// set flag that DMA is used by core gr0
 	
 	// read parameters and map them to mirror if needed
 	MAPPED_ARGS(mapped_args);
