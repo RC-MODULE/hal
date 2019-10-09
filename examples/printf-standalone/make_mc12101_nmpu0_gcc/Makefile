@@ -25,8 +25,8 @@ LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4"  -L"$(ROOT)/lib"
 LIBS     = -lhal-mc12101
 
 CFG      =  "-Wl,-cmc12101brd-nmpu0.cfg"
-SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
-SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
+SRC_CPP  = $(wildcard $(addsuffix /*.cpp,..))
+SRC_ASM  = $(wildcard $(addsuffix /*.asm,..))
 
 $(TARGET): $(SRC_CPP) Makefile
 	nmc-g++ $(CC_FLAGS) $(SRC_CPP) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc $(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o $(TARGET)

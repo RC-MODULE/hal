@@ -1,4 +1,4 @@
 
 
-install:
+setenv:
 	setenv -ua HAL $(realpath .)
