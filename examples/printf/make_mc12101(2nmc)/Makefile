@@ -43,11 +43,10 @@ clean:
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj 
 	
-vs2005:	premake5.lua $(HOST).vcproj
+vs2005:	
+	premake5 vs2005
 
 vs2015:	
 	premake5 vs2015
 
-$(HOST).vcproj:
-	premake5 vs2005
 	

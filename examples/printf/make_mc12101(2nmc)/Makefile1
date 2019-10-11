@@ -22,7 +22,7 @@ HOST     = $(BOARD)-x86
 TARGET   = main1.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include"
 LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib
-LIBS     = mc12101lib_nm.lib libc4.lib hal-mc12101.lib
+LIBS     = mc12101lib_nm_.lib libc4.lib hal-mc12101.lib
 CFG      = mc12101brd-nmc1.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm1))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm1))
@@ -53,6 +53,4 @@ clean:
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj 
 	
-$(HOST).vcproj  vs2005:	premake5.lua 
-	premake5 vs2005
 	
