@@ -22,7 +22,7 @@
 int main()
 {
 	halLedOn(0);
-	halSleep(1000);
+	//halSleep(1000);
 	//halLedOff(0);
 
 

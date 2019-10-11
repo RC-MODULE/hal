@@ -29,10 +29,14 @@ int main()
 	printf("-----------------\n");
 	halLedOn(0);
 	halSleep(100);
-	
+
+	int d=4;	
 	for(int i=0; i<10; i++){
 		printf("Hello %d from NMC\n",i);	
 		halSleep(100);
+		d*=d;
+		d+=d;
+		d>>=d;
 	}
 	clock();
 	
@@ -46,5 +50,5 @@ int main()
 	halLedOff(0);
 	halSleep(500);
 	//halSleep(10000);
-	return 0x600D;
+	return d;//0x600D;
 }

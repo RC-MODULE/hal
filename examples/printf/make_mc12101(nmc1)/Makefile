@@ -22,26 +22,24 @@ HOST     = $(BOARD)-x86
 TARGET   = main1.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include"
 LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib
-LIBS     =  mc12101lib_nm.lib libc4.lib hal-mc12101.lib
+LIBS     =  mc12101lib_nm_old.lib libc4.lib hal-mc12101.lib
 CFG      = mc12101brd-nmc1.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm1))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm1))
 
 HEAP     = -heap=6384 -heap1=6384 -heap2=16384 -heap3=16384
 
-ALL: $(TARGET) $(HOST)
-$(TARGET): $(SRC_CPP) $(SRC_ASM) $(CFG) Makefile
-	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG)  $(HEAP)
-$(HOST): $(HOST).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(BOARD)-x86.vcproj
+ALL: $(TARGET)  
 
+$(TARGET): $(SRC_CPP) $(SRC_ASM) Makefile $(CFG) 
+	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG)  $(HEAP)
 
 
 PATH:=$(MC12101)/bin;$(PATH)
 
 
 
-run: $(TARGET) $(HOST)
+run: 
 	bin\debug\$(HOST)
 	
 mcrun: $(TARGET) 
@@ -55,6 +53,11 @@ clean:
 kill: clean
 	-$(OS_RM) *.vcproj *.sln *.vcxproj 
 	
-$(HOST).vcproj  vs2005:	premake5.lua 
+vs2005:	
 	premake5 vs2005
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
+	
+vs2015:	
+	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj
 	

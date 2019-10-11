@@ -23,16 +23,17 @@ HOST     = $(BOARD)-x86
 TARGET   = main0.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include"
 LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib
-LIBS     = mc12101lib_nm.lib hal-mc12101.lib  libc4f.lib libc4.lib 
+LIBS     = mc12101lib_nm_old.lib hal-mc12101.lib  libc4f.lib libc4.lib 
 CFG      = mc12101brd-nmc0.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
 
+HEAP     = -heap=6384 -heap1=6384 -heap2=16384 -heap3=16384
 
 ALL: $(TARGET) 
 
 $(TARGET): $(SRC_CPP) $(SRC_ASM) Makefile $(CFG)
-	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) -heap=16384 -heap1=16384 -heap2=16384 -heap3=16384
+	nmcc -o$(TARGET) -m.main.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAP)
 
 
 

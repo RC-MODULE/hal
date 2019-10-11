@@ -114,8 +114,8 @@ int halOpen(char* absfile=0,...){
 				nmservice[proc]=0;
 				access_io[proc]=0;
 			}
-			else 
-				break;
+			//else 
+			//	break;
 #endif				
 		}
 	}

@@ -21,8 +21,8 @@
 
 int main()
 {
+	halInstrCacheEnable();
 	for(int i=0; i<10; i++){
-		halInstrCacheEnable();
 		printf("Hello %d from NMC[1]\n",i);	
 		halSleep(100);
 	}

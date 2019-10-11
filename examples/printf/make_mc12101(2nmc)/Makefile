@@ -19,7 +19,7 @@ HOST     = $(BOARD)-x86
 TARGET0  = main0.abs
 TARGET1  = main1.abs
 
-ALL: $(TARGET0) $(TARGET1) $(HOST)
+ALL: $(TARGET0) $(TARGET1) 
 
 $(TARGET0):
 	$(MAKE) -f Makefile0
@@ -27,13 +27,11 @@ $(TARGET0):
 $(TARGET1):
 	$(MAKE) -f Makefile1
 	
-$(HOST): $(HOST).vcproj
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(BOARD)-x86.vcproj
 
 
 PATH:=$(MC12101)/bin;$(PATH)
 
-run: $(TARGET0) $(TARGET1) $(HOST)
+run: $(TARGET0) $(TARGET1)
 	bin\debug\$(HOST)
 	
 clean:
@@ -45,8 +43,10 @@ kill: clean
 	
 vs2005:	
 	premake5 vs2005
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
 
 vs2015:	
 	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj
 
 	

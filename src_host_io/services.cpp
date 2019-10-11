@@ -128,9 +128,9 @@ NM_IO_Service::NM_IO_Service( const char* fName, PL_Access* access,
 		ostream* _cout, ostream* _cerr, istream* _cin )
 :letsShutDown(false), a( access ), valid(true), nm_cout(_cout)
 {
-    if ( work )
-        throw "only one nmservice object allowed";
-    work= true;
+  //  if ( work )
+  //      throw "only one nmservice object allowed";
+  //  work= true;
 
 	ELF *elf = new ELF(fName, ELF_C_READ);
 
