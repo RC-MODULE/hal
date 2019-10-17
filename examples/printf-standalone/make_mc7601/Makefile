@@ -17,8 +17,8 @@ CFG      = mc7601brd.cfg
 INC_DIRS = -I"$(MC7601)/include" -I$(ROOT)/include
 LIB_DIRS = -L"$(MC7601)/lib" -L$(ROOT)/lib
 LIBS     = hal-mc7601.lib mc7601_ll_nm.lib libint_soc.lib  
-SRC_CPP  = $(wildcard $(addsuffix /*.cpp,..))
-SRC_ASM  = $(wildcard $(addsuffix /*.asm,..))
+SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
+SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
 HEAP     = -heap=14384 -heap1=16384 -heap2=16384 -heap3=16384
 FLAGS	 = -soc -g -O0
 

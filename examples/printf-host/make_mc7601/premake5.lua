@@ -9,7 +9,8 @@ solution "mc7601-printf"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_pc/*.cpp"}
-	  links { "hal-mc7601io-x86.lib","mc7601_ll_pc.lib","mc7601-nmc3" } 
+	  links { "hal-mc7601io-x86.lib","mc7601_ll_pc.lib"}
+	  --,"mc7601-nmc3" } 
 	  includedirs { "../../../include"}	  
 	  libdirs { "$(MC7601)/libload","../../../lib" }
 

@@ -13,12 +13,14 @@ solution "mc5103-printf"
 	  libdirs { "$(MC5103)/libload","../../../lib" }
 
       configuration "Debug"
-		links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
+		links { "hal-mc5103-x86.lib","mc5103load.lib"}
+		--,"mc5103-nmc3" } 
         defines { "DEBUG" }
         symbols  "On" 
 
       configuration "Release"
-	  	links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
+	  	links { "hal-mc5103-x86.lib","mc5103load.lib"}
+		--,"mc5103-nmc3" } 
         defines { "NDEBUG" }
         symbols  "Off" 
 		 

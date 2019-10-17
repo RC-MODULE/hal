@@ -21,8 +21,8 @@ CFG      = mb7707brd.cfg
 INC_DIRS = -I"$(MB7707)/include" -I$(ROOT)/include
 LIB_DIRS = -L"$(MB7707)/lib"     -L$(ROOT)/lib
 LIBS     = mb7707lib.lib hal-mb7707.lib libint_soc.lib
-SRC_CPP  = $(wildcard $(addsuffix /*.cpp,..))
-SRC_ASM  = $(wildcard $(addsuffix /*.asm,..))
+SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
+SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
 HEAP     = -heap=10384 -heap1=16384 -heap2=16384 -heap3=16384
 FLAGS	 = -soc -g -O0
 $(TARGET): $(SRC_CPP) $(SRC_ASM)  $(CFG)  Makefile
