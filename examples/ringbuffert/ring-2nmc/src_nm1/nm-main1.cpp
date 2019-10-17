@@ -51,24 +51,34 @@ int main()
 	halLedOn(1);
 	HalRingBufferData<int,128>* ringBufferData0to1=(HalRingBufferData<int,128>*)halSync((int)2,0);	// Принимаем адрес контейнера кольцевого буфера в глобальном адресном пространстве (зеркале);
 	HalRingBufferData<int,128>* ringBufferData1to0=(HalRingBufferData<int,128>*)halSync((int)1,0);	// Принимаем адрес контейнера кольцевого буфера в глобальном адресном пространстве (зеркале);
-	
+	printf("hello form nmc1 \n");
+	return (int)ringBufferData0to1->head;
 	//------------ Example of ring buffers based on RISC memcopy function -----------------------------------------
 	halLedOn(3);
 	memset(A,0,10);
 	HalRingBufferConnector<int,128> ringBuffer0to1_RISC(ringBufferData0to1,halCopyRISC,halCopyRISC);	// Создаем коннектор к кольцевому буферу с функциями чтения и записи через RISC
-	HalRingBufferConnector<int,128> ringBuffer1to0_RISC(ringBufferData1to0);							// Создаем коннектор к кольцевому буферу с функциями чтения и записи через RISC
-	ringBuffer0to1_RISC.pop(A,10);
-	ringBuffer1to0_RISC.push(A,10);
-	//------------ Example of ring buffers based on DMA memcopy function -----------------------------------------
+//	HalRingBufferConnector<int,128> ringBuffer1to0_RISC(ringBufferData1to0);							// Создаем коннектор к кольцевому буферу с функциями чтения и записи через RISC
 	
-	halLedOn(5);
-	halOpenDMA();	// Инициализируем DMA
-	memset(A,0,10);
-	HalRingBufferConnector<int,128> ringBuffer0to1_DMA(ringBufferData0to1,copyDMA,copyDMA);		// Создаем коннектор к кольцевому буферу с функциями чтения и записи через DMA
-	HalRingBufferConnector<int,128> ringBuffer1to0_DMA(ringBufferData1to0,copyDMA,copyDMA);		// Создаем коннектор к кольцевому буферу с функциями чтения и записи через DMA
+	return ringBufferData0to1->head;
+//	ringBuffer0to1_RISC.pop(A,10);
+//	ringBuffer1to0_RISC.push(A,10);
+//	//------------ Example of ring buffers based on DMA memcopy function -----------------------------------------
+//	
+//	halLedOn(5);
 	
-	ringBuffer0to1_DMA.pop (A,10);
-	ringBuffer1to0_DMA.push(A,10);
+	//ringBuffer0to1_RISC.pop(A,10);
+	//ringBuffer0to1_RISC.pop(A,10);
+	//ringBuffer1to0_RISC.push(A,10);
+	
+	
+	
+	//halOpenDMA();	// Инициализируем DMA
+	//memset(A,0,10);
+	//HalRingBufferConnector<int,128> ringBuffer0to1_DMA(ringBufferData0to1,copyDMA,copyDMA);		// Создаем коннектор к кольцевому буферу с функциями чтения и записи через DMA
+	//HalRingBufferConnector<int,128> ringBuffer1to0_DMA(ringBufferData1to0,copyDMA,copyDMA);		// Создаем коннектор к кольцевому буферу с функциями чтения и записи через DMA
+	
+	//ringBuffer0to1_DMA.pop (A,10);
+	//ringBuffer1to0_DMA.push(A,10);
 
 	halLedOn(7);
 	return 222;

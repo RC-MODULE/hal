@@ -26,7 +26,9 @@ ALL: nmc0 nmc1
 run: 
 	$(MAKE) -f Makefile0 
 	$(MAKE) -f Makefile1 
-	mc12101run $(TARGET0) $(TARGET1)
+	mc12101reset
+	mc12101run $(TARGET0) $(TARGET1) 
+
 	
 run0:
 	$(MAKE) -f Makefile0 run
