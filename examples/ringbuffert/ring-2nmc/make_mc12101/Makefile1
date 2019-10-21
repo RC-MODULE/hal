@@ -17,7 +17,7 @@ BOARD    = mc12101
 TARGET   = main1.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include" -I$(NMPP)/include
 LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib -L$(NMPP)/lib
-LIBS     = hal-mc12101.lib mc12101lib_nm_.lib libc4f.lib libc4.lib nmpp-nmc4.lib
+LIBS     = hal-mc12101.lib mc12101lib_nm_old.lib libc4f.lib libc4.lib nmpp-nmc4.lib
 CFG      = mc12101brd-nmc1.cfg
 HEAPS    = -heap=0 -heap1=0 -heap2=0 -heap3=0
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm1))

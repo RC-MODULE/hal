@@ -21,7 +21,7 @@ BOARD    = mc12101
 TARGET   = main0.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include" -I$(NMPP)/include
 LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib -L$(NMPP)/lib
-LIBS     = mc12101lib_nm_.lib libc4f.lib libc4.lib hal-mc12101.lib nmpp-nmc4f.lib
+LIBS     = mc12101lib_nm_old.lib libc4f.lib libc4.lib hal-mc12101.lib nmpp-nmc4f.lib
 CFG      = mc12101brd-nmc0.cfg
 HEAPS    = -heap=0 -heap1=0 -heap2=0 -heap3=0
 
