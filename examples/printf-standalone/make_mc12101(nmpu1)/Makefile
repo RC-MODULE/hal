@@ -4,7 +4,7 @@ include $(ROOT)/global.mk
 .SUFFIXES:
 
 BOARD    = mc12101
-HOST     = $(BOARD)-x86
+
 
 INC_DIRS = -I$(ROOT)/include
 LIB_DIRS = -L$(ROOT)/lib 

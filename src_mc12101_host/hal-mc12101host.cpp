@@ -60,7 +60,7 @@ int halOpen(char* absfile=0,...){
 	PL_Word *Buffer = 0;
 	PL_Word AddrLoad = 0;
 
-	TRACE ("Connection to board...");
+	//TRACE ("Connection to board...\n");
 	if (PL_GetBoardCount(&boardCount))	{
 		TRACE( "ERROR: Can't open driver.\n");
 		return  (1);
