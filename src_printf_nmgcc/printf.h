@@ -28,7 +28,7 @@
 #undef printf
 #endif
 #define printf printf_h
-
+/*
 extern "C"
 {
 int _exit(int);
@@ -133,7 +133,7 @@ __attribute__((weak)) void completeMessage( NM_IO_ServiceID id, int size )
     rpcr.sended+= size+2;
     rpcr.boardSend++;
     return;
-}
+}*/
 
 static inline int printf_h( const char* format,...)
 {

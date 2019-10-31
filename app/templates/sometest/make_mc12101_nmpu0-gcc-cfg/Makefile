@@ -24,8 +24,8 @@ MAP      = $(PROJECT).map
 CFG      = mc12101brd-nmpu0.cfg
 LDFLAGS  = -Wl,-Map=$(MAP) -Wl,-c$(CFG)
 
-INC_DIRS = -I"$(NMPP)/include" -I"$(HAL)/include"
-LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4" -L"$(NMPP)/lib" -L"$(HAL)/lib"
+INC_DIRS = -I"$(HAL)/include"
+LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4" -L"$(HAL)/lib"
 SRC_DIRS = ..
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))

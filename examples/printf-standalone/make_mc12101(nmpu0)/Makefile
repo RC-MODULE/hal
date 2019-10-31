@@ -17,14 +17,14 @@ SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
 SRC_ALL  = $(SRC_CPP) $(SRC_ASM)
 
 
-ifdef NMCC
-#################### OLD NMSDK ##################
+ifdef LEGACY
+#################### LEGACY NMSDK ##################
 ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
 CC	 = nmcc 
-LIBS     = mc12101lib_nm_old.lib libc4f.lib  hal-mc12101.lib
+LIBS     = mc12101lib_nm_legacy.lib libc4f.lib  hal-mc12101.lib
 HEAP     = -heap=6384 -heap1=6384 -heap2=16384 -heap3=16384
 CC_FLAGS = -nmc4 -g -O0
 LD_FLAGS = -c$(CFG) $(HEAP) -m$(MAP)
@@ -32,6 +32,9 @@ INC_DIRS+= -I"$(MC12101)/include" -I"$(NEURO)/include"
 LIB_DIRS+= -L"$(MC12101)/lib"  
 else 
 #################### GCC SDK ####################
+nmc4vars_win.mk:
+	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+
 -include nmc4vars_win.mk
 CC       = nmc-g++
 AS       = nmc-gcc
@@ -44,16 +47,16 @@ LIB_DIRS+=  -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib"
 endif
 #################################################
 
+.DEFAULT_GOAL := $(TARGET) 
+
 all: $(TARGET) 
 
+legacy: 
+	$(MAKE) LEGACY=y 
+	
 $(TARGET): $(SRC_CPP) $(SRC_ASM) Makefile $(CFG)
 	$(CC) -o$(TARGET) $(SRC_ALL) $(INC_DIRS) $(LIB_DIRS) $(LIBS)  $(CC_FLAGS) $(LD_FLAGS)
 	
-
-nmc4vars_win.mk:
-	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
-
-
 
 
 PATH:=$(MC12101)/bin;$(PATH)

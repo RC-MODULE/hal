@@ -22,6 +22,7 @@
 //#include <setjmp.h>
 //
 //extern jmp_buf buf;
+#pragma GCC optimize ("O0")
 
 extern "C"
 {
@@ -55,13 +56,13 @@ extern "C"
 		int boardSend;               //  пакеты  //  .rpc_services +0
 		volatile int* sended;  //  слова   //  .rpc_services +1
 		volatile int* sendMostDistant;      //  .rpc_services +2    //используется при возврате в начало буфера
-		int nm_io_debug;                    // пc//  .rpc_services +3
+		volatile int nm_io_debug;                    // пc//  .rpc_services +3
 		//  модифицируются только с хоста
-		int hostReceive;                    // п //  .rpc_services +4
+		volatile int hostReceive;                    // п //  .rpc_services +4
 		volatile int* sendConfirmed;   // с //  .rpc_services +5
 		//  модифицируется отовсюду
-		int backBufferReady;		       //   //  .rpc_services +6
-		int nm_io_debug_back;               // пc//  .rpc_services +7
+		volatile int backBufferReady;		       //   //  .rpc_services +6
+		volatile int nm_io_debug_back;               // пc//  .rpc_services +7
 	};
 
 	INSECTION(".rpc_services") RPC_control_region volatile rpcr_=
@@ -80,7 +81,7 @@ extern "C"
 
 };	//extern "C"
 
-INSECTION(".text_printf") static bool fullBuffer()
+INSECTION(".text_printf") static bool __attribute__((optimize("O0"))) fullBuffer()
 {
     if ( rpcr_.sendConfirmed>rpcr_.sended )
         return rpcr_.sended+ packetLimit >= rpcr_.sendConfirmed;
@@ -88,18 +89,18 @@ INSECTION(".text_printf") static bool fullBuffer()
         return false;
 }
 
-INSECTION(".text_printf") static void makeMsgHeader( int* ptr, NM_IO_ServiceID id, int size )
+INSECTION(".text_printf") static void __attribute__((optimize("O0"))) makeMsgHeader( int* ptr, NM_IO_ServiceID id, int size )
 {
     //  Формат пакета: |размер- 1 слово|тип- 1 слово|данные- <размер> слов|
     *ptr++ = (int)size;
     *ptr++ = (int)id;
 }
 
-INSECTION(".text_printf") void dummy_(){}
+INSECTION(".text_printf") void __attribute__((optimize("O0"))) dummy_(){}
 
-INSECTION(".rpc_services") bool incomplete_= false;
+INSECTION(".rpc_services") bool volatile incomplete_= false;
 
-INSECTION(".text_printf") int* beginMessage_()
+INSECTION(".text_printf") int* __attribute__((optimize("O0"))) beginMessage_()
 {
 //    if ( incomplete )
 //        throw "rpc error: incomplete previous message";
@@ -117,7 +118,7 @@ INSECTION(".text_printf") int* beginMessage_()
 }
 
 
-	INSECTION(".text_printf") void completeMessage_( NM_IO_ServiceID id, int size )
+	INSECTION(".text_printf") void __attribute__((optimize("O0"))) completeMessage_( NM_IO_ServiceID id, int size )
 	{
 	//    if ( !incomplete )
 	//        throw "rpc error: can't complete- message is not started";
@@ -130,7 +131,7 @@ INSECTION(".text_printf") int* beginMessage_()
 		return;
 	}
 extern "C" {
-	INSECTION(".text_printf") int printf( const char* format,...)
+	INSECTION(".text_printf") int __attribute__((optimize("O0"))) printf( const char* format,...)
 	{
 		va_list argptr;
 		va_start(argptr, format);
@@ -146,10 +147,10 @@ extern "C" {
 	}
 
 
-	INSECTION(".text_printf") int puts_( const char* str )
+	INSECTION(".text_printf") int __attribute__((optimize("O0"))) puts_( const char* str )
 	{
-		char* buf= (char*)beginMessage_();
-		int i;
+		volatile char* buf= (char*)beginMessage_();
+		volatile int i;
 		//	два условия, символ \0 и исчерпание буфера
 		for( i=0; (*str) && (i<packetLimit-4); i++ )
 			*buf++ = *str++;
