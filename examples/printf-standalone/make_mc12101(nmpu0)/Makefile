@@ -39,7 +39,7 @@ nmc4vars_win.mk:
 CC       = nmc-g++
 AS       = nmc-gcc
 LIBS     =  -lhal-mc12101 -lc -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive
-CC_FLAGS = -std=c++11 -O2 -Wall -mnmc4-float
+CC_FLAGS = -std=c++11 -O2 -Wall -mnmc4-float -fno-builtin-printf
 LD_FLAGS = -Wl,-Map=$(MAP) -Wl,-c$(CFG)
 INC_DIRS+= 
 LIB_DIRS+=  -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib"

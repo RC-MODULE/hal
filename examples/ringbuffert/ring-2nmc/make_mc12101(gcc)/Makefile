@@ -16,12 +16,21 @@ endif
 
 BOARD    = mc12101
 HOST     = $(BOARD)-x86
-TARGET0  = main0.abs
-TARGET1  = main1.abs
+TARGET0  = main0
+TARGET1  = main1
 VS      ?= vs2015
 PATH:=$(MC12101)/bin;$(PATH)
 
 ALL: $(TARGET0) $(TARGET1) 
+
+run: 
+	$(MAKE) -f Makefile0 
+	$(MAKE) -f Makefile1 
+	mc12101reset
+	mc12101run $(TARGET0) $(TARGET1) 
+
+reset:
+	mc12101reset
 
 run0:
 	$(MAKE) -f Makefile0 run

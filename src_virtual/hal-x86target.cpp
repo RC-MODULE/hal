@@ -26,6 +26,7 @@ extern "C"{
 SyncBuf* getSyncBuffer(){
 	if (pSyncBuf==0){
 		HANDLE hMapFile;
+		// пытаемся открыть существующий буфер
 		for (int i=0; i<HOST_CONNECT_TIMEOUT; i+=100){
 			hMapFile = OpenFileMapping(
 				FILE_MAP_ALL_ACCESS,   // read/write access
@@ -34,9 +35,20 @@ SyncBuf* getSyncBuffer(){
 			if (hMapFile) break;
 			halSleep(100);
 		}
+		// пытаемся создать сами 
 		if (hMapFile == NULL){
-			printf("Could not open file mapping object (%d).\n",GetLastError());
-			return 0;
+			hMapFile = CreateFileMapping(
+				INVALID_HANDLE_VALUE,    // use paging file
+				NULL,                    // default security
+				PAGE_READWRITE,          // read/write access
+				0,                       // maximum object size (high-order DWORD)
+				SYNC_BUF_SIZE,           // maximum object size (low-order DWORD)
+				TEXT(SYNC_BUFFER_MAPPING_NAME));              // name of mapping object
+
+			if (hMapFile == NULL) {
+				printf("Could not create file sync mapping object (%d).\n", GetLastError());
+				return 0;
+			}
 		}
 
 		pSyncBuf = (SyncBuf*) MapViewOfFile(
@@ -392,6 +404,10 @@ void halFree(void* ){
 	UnmapViewOfFile(pSyncBuf);
 	CloseHandle(hMapFile);
 	*/
+}
+
+void halHandshake(int procNo){
+	halSync(777, procNo);
 }
 };
 

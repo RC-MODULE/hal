@@ -23,7 +23,7 @@ INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include -I"$(NEURO)/include" -I$(NMP
 LIB_DIRS = -L"$(MC12101)/lib"  -L$(ROOT)/lib -L$(NMPP)/lib
 LIBS     = mc12101lib_nm_old.lib libc4f.lib libc4.lib hal-mc12101.lib nmpp-nmc4f.lib
 CFG      = mc12101brd-nmc0.cfg
-HEAPS    = -heap=0 -heap1=0 -heap2=0 -heap3=0
+HEAPS    = -heap=10000 -heap1=10000 -heap2=10000 -heap3=10000
 
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,../src_nm0))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,../src_nm0))
@@ -32,7 +32,7 @@ SRC_H    = $(wildcard $(addsuffix /*.h,$(HAL)/include))
 ALL: $(TARGET) 
 
 $(TARGET): $(SRC_CPP) $(SRC_ASM) $(SRC_H) $(CFG) Makefile $(HAL)/lib/hal-mc12101.lib
-	nmcc -DMC12101 -DNMC0 -o$(TARGET) -m.main0.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS)
+	nmcc -DMC12101 -DNMC0 -o$(TARGET) -m.main0.map $(SRC_CPP) $(SRC_ASM)  -nmc4 -g -O0 $(INC_DIRS) $(LIB_DIRS) $(LIBS) -c$(CFG) $(HEAPS) $(ERRECHO)
 
 
 PATH:=$(MC12101)/bin;$(PATH)

@@ -32,35 +32,41 @@ typedef  void* (*tmemcopy32)(const void *src, void *dst, unsigned int size);
 
 
 template <class T, int SIZE> struct HalRingBufferData{
-	unsigned 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
 	unsigned	tail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
+	unsigned 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
+	
 	//bool 		headLocked;
 	//bool		tailLocked;
 	//long long	size;			/// long long because to do 64-bit align 
-	#ifdef __NM__
+	//#ifdef __NM__
 	T	 		data[SIZE];			///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
-	#else 
-	T*	 		data;				///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
-	#endif
+	//#else 
+	//T*	 		data;				///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
+	//#endif
+	
 	HalRingBufferData(){
 		//size=SIZE;
-		#ifndef __NM__
-		data = (T*)halMalloc32(SIZE*sizeof32(T));
-		#else 
+		//#ifndef __NM__
+		//data = (T*)halMalloc32(SIZE*sizeof32(T));
+		//#else 
 		head=0;
 		tail=0;
-		#endif
+		//#endif
 	}
 	~HalRingBufferData(){
-		#ifndef __NM__
-		halFree(data);
-		data=0;
-		#else 
-		head=0xDEAD;
-		tail=0xDEAD;
-		#endif
+		//printf("destrctor!\n");
+		//#ifndef __NM__
+		//halFree(data);
+		//data=0;
+		//#else 
+		head=0xdeadb00f;
+		tail=0xdeadb00f;
+		//#endif
 	}
-	
+	inline void init(){
+		head=0;
+		tail=0;
+	}
 	inline bool isEmpty() {
 		return head == tail;
 	}
@@ -86,6 +92,7 @@ template <class T, int SIZE> struct HalRingBufferData{
 };
 
 //extern int statusDMA;
+
 template <class T, int SIZE> struct HalRingBufferConnector{
 public:
 	T*	 		data;

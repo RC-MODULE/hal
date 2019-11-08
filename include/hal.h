@@ -35,8 +35,8 @@
 	void*  halCopyInt   (const void* src,  void* dst,  unsigned size32);
 	void*  halCopyFlt   (const void* src,  void* dst,  unsigned size32);
 	
-	
-	void* halMapAddr(const void* addr);	
+	// отборажение  адреса в глобальное адресное пространство
+	void* halMapAddr(const void* srcAddr);	
 	
 	void halSetActiveHeap(int heapNo);
 
