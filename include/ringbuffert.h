@@ -1,5 +1,5 @@
-#ifndef HAL_RING_INCLUDED
-#define HAL_RING_INCLUDED
+#ifndef HAL_RINGBUFFERT_INCLUDED
+#define HAL_RINGBUFFERT_INCLUDED
 
 #include "stdlib.h"
 #include "dma.h"
