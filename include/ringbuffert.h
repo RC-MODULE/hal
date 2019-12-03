@@ -106,6 +106,16 @@ public:
 	tmemcopy32 	memcopyPush;	///<  указатель на функцию копирования типа halCopy_32s
 	tmemcopy32	memcopyPop;		///<  указатель на функцию копирования типа halCopy_32s
 
+	HalRingBufferConnector(){
+		pHead=0;
+		pTail=0;
+		data =0;
+		memcopyPush=_memcopyPush;
+		memcopyPop =_memcopyPop;
+		polltime=10;
+		headExternalControl=false;
+	  	tailExternalControl=false;
+	}
 	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
 		pHead=&ringBuffer->head;
 		pTail=&ringBuffer->tail;
@@ -116,7 +126,7 @@ public:
 		headExternalControl=false;
 	  	tailExternalControl=false;
 	}
-	init(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
+	void init(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
 		pHead=&ringBuffer->head;
 		pTail=&ringBuffer->tail;
 		data =ringBuffer->data;
