@@ -90,21 +90,36 @@ template <class T, int SIZE> struct HalRingBufferData{
 	}
 
 };
+	#define HEAD (*pHead)
+	#define TAIL (*pTail)
 
 //extern int statusDMA;
-
 template <class T, int SIZE> struct HalRingBufferConnector{
+
 public:
 	T*	 		data;
-	unsigned& 	head;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
-	unsigned&	tail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
+	unsigned* 	pHead;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
+	unsigned*	pTail;			///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
 	unsigned 	polltime;		///<  время опроса кольцевого буфера если пуст или заполнен в мс
 	bool		headExternalControl;
 	bool  		tailExternalControl;
 	tmemcopy32 	memcopyPush;	///<  указатель на функцию копирования типа halCopy_32s
 	tmemcopy32	memcopyPop;		///<  указатель на функцию копирования типа halCopy_32s
 
-	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC):head(ringBuffer->head),tail(ringBuffer->tail),data(ringBuffer->data){
+	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
+		pHead=&ringBuffer->head;
+		pTail=&ringBuffer->tail;
+		data =ringBuffer->data;
+		memcopyPush=_memcopyPush;
+		memcopyPop =_memcopyPop;
+		polltime=10;
+		headExternalControl=false;
+	  	tailExternalControl=false;
+	}
+	init(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
+		pHead=&ringBuffer->head;
+		pTail=&ringBuffer->tail;
+		data =ringBuffer->data;
 		memcopyPush=_memcopyPush;
 		memcopyPop =_memcopyPop;
 		polltime=10;
@@ -113,34 +128,35 @@ public:
 	}
 	
 	inline bool isEmpty() {
-		return head == tail;
+		
+		return HEAD == TAIL;
 	}
 
 	inline bool isFull() {
-		return head == tail + SIZE;
+		return HEAD == TAIL + SIZE;
 	}
 
 	inline T* ptrHead(){
-		return data + (head & (SIZE-1));
+		return data + (HEAD & (SIZE-1));
 		
 	}
 	
 	inline T* ptrTail(){
-		return data + (tail & (SIZE-1));
+		return data + (TAIL & (SIZE-1));
 		
 	}
 
 	void 	push   (const T* src, 	size_t count){
-		while (tail+SIZE-head < count)
+		while (TAIL+SIZE-HEAD < count)
 			halSleep(polltime);
 		
-		size_t tail    = this->tail;
-		size_t posHead = head & (SIZE-1);			
-		size_t posTail = tail & (SIZE-1);
+		size_t fixTail = TAIL;
+		size_t posHead = HEAD & (SIZE-1);			
+		size_t posTail = fixTail & (SIZE-1);
 		T* addrHead    = data+posHead;
 		
 		// [.......<Tail>******<Head>.....]
-		if (posTail<posHead || head==tail){
+		if (posTail<posHead || HEAD==fixTail){
 			size_t countToEnd = SIZE - posHead;
 			if (count <= countToEnd){
 				memcopyPush(src,addrHead,count*sizeof(T));
@@ -157,17 +173,17 @@ public:
 			memcopyPush(src,addrHead, count*sizeof(T));
 		}
 		if (!headExternalControl)
-			head += count;
+			HEAD += count;
 	}
 
 
 	void pop(T* dst, size_t count){
-		while (head-tail < count)
+		while (HEAD-TAIL < count)
 			halSleep(polltime);
 	
-		size_t head = this->head;
-		size_t posHead = head & (SIZE-1);			
-		size_t posTail = tail & (SIZE-1);
+		size_t fixHead = HEAD;
+		size_t posHead = fixHead & (SIZE-1);			
+		size_t posTail = TAIL & (SIZE-1);
 		T* addrTail    = data + posTail;
 	
 		// [.......<Tail>******<Head>.....]
@@ -188,7 +204,7 @@ public:
 			}
 		}
 		if (!tailExternalControl)
-			tail += count;
+			TAIL += count;
 	}
 };
 

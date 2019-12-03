@@ -191,3 +191,66 @@ int halTestParamPacketDMA(void** src, void** dst, int* size32, int amm){
 	}
 	return error_code | (ptr << 4);
 };
+
+int  halDmaInit(){
+	return 0;
+}
+
+int  halDmaInitC(){
+	return 0;
+}
+
+void halDmaStart   		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartA  		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartM  		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartMA 		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartC  		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartCA 		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartCM 		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+void halDmaStartCMA		(const void* src, void* dst, unsigned size32){
+	memcpy(dst,src,size32*4);
+	if (user_callback)
+		user_callback();
+}
+int halDmaIsCompleted(){
+	return 1;
+}	
+
+void* halMapAddr(const void* srcAddr) {
+	return srcAddr;
+}
+
+void halDmaSetCallback(DmaCallback userCallback) {
+	user_callback = userCallback;
+}
+	
+
+	

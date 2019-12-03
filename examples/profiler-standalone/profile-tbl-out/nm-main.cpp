@@ -3,6 +3,7 @@
 //#define DISABLE_STOPWATCH
 #include "stopwatch.h"
 #include "nmprofiler.h"
+#include <malloc.h>
 
 volatile int g=1;
 extern "C"{
@@ -47,6 +48,10 @@ int  main(){
 	
 	PROFILER_START();
 	
+	int *p=(int*)malloc(100);
+	int *p1=(int*)malloc(100);
+	
+	printf("%x %x\n",p,p1);
 	
 	for(int i=0; i<10; i++){
 	

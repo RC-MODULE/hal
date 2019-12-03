@@ -21,8 +21,10 @@ TARGET1  = main1
 VS      ?= vs2015
 PATH:=$(MC12101)/bin;$(PATH)
 
-ALL: $(TARGET0) $(TARGET1) 
-
+ALL: 
+	$(MAKE) -f Makefile0 
+	$(MAKE) -f Makefile1 
+	
 run: 
 	$(MAKE) -f Makefile0 
 	$(MAKE) -f Makefile1 

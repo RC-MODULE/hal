@@ -17,10 +17,15 @@
 #include "sleep.h"
 #include "hal.h"
 #include "cache.h"
+#include "math.h"
+
 //DISABLE_PRINTF();
 
 int main()
 {
+	float a=-13.5;
+	a=fabs(a);
+	printf("=%f\n",a);
 	halLedOff(1);
 	//halInstrCacheEnable();
 	for(int i=0; i<10; i++){

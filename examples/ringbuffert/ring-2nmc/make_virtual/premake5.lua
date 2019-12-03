@@ -9,7 +9,7 @@ solution "board-nmpu0"
    --platforms{"x64","x86"}
 
    -- A project defines one build target
-   project "board-nmp0"
+   project "board-nmpu0"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_nm0/*.cpp" }

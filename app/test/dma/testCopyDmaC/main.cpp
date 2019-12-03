@@ -19,8 +19,39 @@
 #include "hal.h"
 #include "led.h"
 #include "ringbuffert.h"
-#include "nmpp.h"
+#include "malloc.h"
+
+#ifndef __GNUC__
+
+
+void nmc_malloc_set_heap(int heap){
+
+}
+
+
+
+void* malloc0(int size){
+	nmc_malloc_set_heap(0);
+	return malloc(size*4);
+}
+void* malloc1(int size) {
+	nmc_malloc_set_heap(1);
+	return malloc(size*4);
+}
+void* malloc2(int size) {
+	nmc_malloc_set_heap(2);
+	return malloc(size*4);
+}
+void* malloc3(int size) {
+	nmc_malloc_set_heap(3);
+	return malloc(size*4);
+}
+
+#endif
+
+
 #include "qdma.h"
+#include "halcrc.h"
 
 extern "C" int haltest();
 
@@ -50,12 +81,13 @@ int testCopyDma(int count, DmaStart copyFunc){
 					for(int dstDisp=0; dstDisp<16; dstDisp+=2){				// dstDisp
 						for(int size=2; size<MAX_SIZE; size+=2){			// size
 							copyFunc(src[i]+srcDisp,dst[j]+dstDisp,size);
-							unsigned srcCrc=nmppsCrc_32s(src[i]+srcDisp,size);
-							unsigned dstCrc=nmppsCrc_32s(dst[j]+dstDisp,size);
+							unsigned srcCrc=halCrc_32s(src[i]+srcDisp,size);
+							unsigned dstCrc=halCrc_32s(dst[j]+dstDisp,size);
 							if (srcCrc!=dstCrc){
 								printf("Error");
 								halLed(0xFF);
 								halLedSOS(6);
+								return -1;
 							}
 						}
 					}
@@ -74,12 +106,13 @@ int testCopyDmaA(int count, DmaStart copyFunc){
 			for(int j=0; j<4; j++){											// dst bank index
 				for(int size=2; size<MAX_SIZE; size+=2){					// size
 					copyFunc(src[i],dst[j],size);
-					unsigned srcCrc=nmppsCrc_32s(src[i],size);
-					unsigned dstCrc=nmppsCrc_32s(dst[j],size);
+					unsigned srcCrc=halCrc_32s(src[i],size);
+					unsigned dstCrc=halCrc_32s(dst[j],size);
 					if (srcCrc!=dstCrc){
 						printf("Error");
 						halLed(0xFF);
 						halLedSOS(6);
+						return -1;
 					}
 				}
 			}
@@ -98,12 +131,13 @@ int testCopyDmaM(int count, DmaStart copyFunc){
 					int* s=(int*)halMapAddr(src[i]);
 					int* d=(int*)halMapAddr(dst[j]);
 					copyFunc(s,d,size);
-					unsigned srcCrc=nmppsCrc_32s(s,size);
-					unsigned dstCrc=nmppsCrc_32s(d,size);
+					unsigned srcCrc=halCrc_32s(s,size);
+					unsigned dstCrc=halCrc_32s(d,size);
 					if (srcCrc!=dstCrc){
 						printf("Error");
 						halLed(0xFF);
 						halLedSOS(6);
+						return -1;
 					}
 				}
 			}
@@ -120,13 +154,14 @@ int testCallback(int count, DmaStart copyFunc){
 					int* s=(int*)halMapAddr(src[i]);
 					int* d=(int*)halMapAddr(dst[j]);
 					copyFunc(s,d,size);
-					halSleep(10);
-					unsigned srcCrc=nmppsCrc_32s(s,size);
-					unsigned dstCrc=nmppsCrc_32s(d,size);
+					//halSleep(10);
+					unsigned srcCrc=halCrc_32s(s,size);
+					unsigned dstCrc=halCrc_32s(d,size);
 					if (srcCrc!=dstCrc){
 						printf("Error");
 						halLed(0xFF);
 						halLedSOS(6);
+						return -1;
 					}
 				}
 			}
@@ -148,12 +183,12 @@ int main()
 {
 	
 	
-	src[0]=(int*)malloc (MAX_SIZE+32);
+	src[0]=(int*)malloc0 (MAX_SIZE+32);
 	src[1]=(int*)malloc0(MAX_SIZE+32);
 	src[2]=(int*)malloc1(MAX_SIZE+32);
 	src[3]=(int*)malloc2(MAX_SIZE+32);
 								 
-	dst[0]=(int*)malloc (MAX_SIZE+32);
+	dst[0]=(int*)malloc0 (MAX_SIZE+32);
 	dst[1]=(int*)malloc0(MAX_SIZE+32);
 	dst[2]=(int*)malloc1(MAX_SIZE+32);
 	dst[3]=(int*)malloc2(MAX_SIZE+32);
@@ -187,15 +222,16 @@ int main()
 	testCopyDmaA(100, halDmaStartA);
 	testCopyDmaM(100, halDmaStartM);
 	
+	int err = 0;
 	halDmaSetCallback(dmaCallback); 	printf("--\n");
-	testCallback(2,halDmaStart);  		printf("--\n");
-	testCallback(2,halDmaStartA);		printf("--\n");
-	testCallback(2,halDmaStartM);
+	err |=testCallback(2,halDmaStart);  		printf("--\n");
+	err |= testCallback(2,halDmaStartA);		printf("--\n");
+	err |= testCallback(2,halDmaStartM);
 	
 	halDmaInitC();
-	testCopyDma (3,   halDmaStartC);
-	testCopyDmaA(100, halDmaStartCA);
-	testCopyDmaM(100, halDmaStartCM);
+	err |= testCopyDma (3,   halDmaStartC);
+	err |= testCopyDmaA(100, halDmaStartCA);
+	err |= testCopyDmaM(100, halDmaStartCM);
 	
-	return 111;
+	return err;
 }
