@@ -110,8 +110,8 @@ public:
 		pHead=0;
 		pTail=0;
 		data =0;
-		memcopyPush=_memcopyPush;
-		memcopyPop =_memcopyPop;
+		memcopyPush=halCopyRISC;
+		memcopyPop =halCopyRISC;
 		polltime=10;
 		headExternalControl=false;
 	  	tailExternalControl=false;
