@@ -1,6 +1,7 @@
 // #include "math.h"
+#include "malloc.h"
 #include "stdio.h"
-#include "time.h"
+
 
 #define SIZE 256
 
