@@ -93,15 +93,17 @@ $(TMP_DIR)/%.asmx: %.c
 
 #========================== Visual Studio build ===================	
 
-	
-vs2005: $(PROJECT).sln
+#$(PROJECT).sln	
+vs2005: 
+	premake5 vs2005
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
 	
-
-vs2015:	$(PROJECT).sln
+#(PROJECT).sln
+vs2015:	
+	premake5 vs2015
 #	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT)-x86.vcxproj /p:Configuration=Debug
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT)-x86.vcxproj /p:Configuration=Release
 	
 
 	

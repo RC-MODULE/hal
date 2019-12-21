@@ -11,7 +11,8 @@ static NM_IO_Service *nmservice[2]={0,0};
 #endif
 static unsigned result[2];
 static bool isFinished[2]={false,false};
-#define TRACE(str) printf("%s", str)
+//#define TRACE(str) printf("%s", str)
+#define TRACE(str)
 
 const int IP_ADDRESS = 0x0201A8C0; // 192.168.1.2
 
@@ -25,7 +26,7 @@ int halSync(int val, unsigned processor=0){
 
 int halOpen(char* absfile,...){
 	
-	system ("taskkill /F /IM LLC_MULTI_TASK_DAEMON.exe >nul");
+	//system ("taskkill /F /IM LLC_MULTI_TASK_DAEMON.exe >nul");
 	//tasklist /FI "IMAGENAME eq LLC1*
 
 	WR_channel_conf conf;
@@ -41,7 +42,7 @@ int halOpen(char* absfile,...){
 		TRACE("Warning: Environment variable MC7601 is not defined: 192.168.1.2 will be used as default\n");
 	}
 	else {
-		printf("Current MC7601IP is,%s\n",ipStrAddress);
+		//printf("Current MC7601IP is,%s\n",ipStrAddress);
 		//....
 	}
   

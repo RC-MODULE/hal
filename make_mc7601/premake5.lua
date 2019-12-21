@@ -24,28 +24,28 @@ solution "hal-mc7601"
 			symbols  "Off" 
 		
 	-- x86  library without printf support  ---------------------------------	 
-	project "hal-mc7601silent-x86"
-      		kind "StaticLib"
-		includedirs { "../include","$(MC7601)/include"}
-		targetdir ("../lib")
-      		files { 	"../src_mc7601_host/*.*",
-				"../src_x86/*.*",
-				"../include/*.h"}
-	  
-	  
-	  
-		configuration "Debug"
-			targetsuffix ("d")
-			defines { "DEBUG","SILENT","NM6405"}
-			symbols  "On" 
-		
-		configuration "Release"
-			defines { "NDEBUG","SILENT","NM6405"}
-			symbols  "Off" 
-		
+	-- project "hal-mc7601silent-x86"
+    --   		kind "StaticLib"
+	-- 	includedirs { "../include","$(MC7601)/include"}
+	-- 	targetdir ("../lib")
+    --   		files { 	"../src_mc7601_host/*.*",
+	-- 			"../src_x86/*.*",
+	-- 			"../include/*.h"}
+	--   
+	--   
+	--   
+	-- 	configuration "Debug"
+	-- 		targetsuffix ("d")
+	-- 		defines { "DEBUG","SILENT","NM6405"}
+	-- 		symbols  "On" 
+	-- 	
+	-- 	configuration "Release"
+	-- 		defines { "NDEBUG","SILENT","NM6405"}
+	-- 		symbols  "Off" 
+	-- 	
 
 	-- NeuroMatrix project ---------------------------------
-	project "hal-mc7601"
+	project "hal-mc7601-nmc3"
       	kind "Makefile"
       		files { "../src_src_1879vya1ya/*.*","../include/*.h", "Makefile" }
 	 
