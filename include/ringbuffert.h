@@ -1,9 +1,12 @@
-#ifndef HAL_RINGBUFFERT_INCLUDED
+Ôªø#ifndef HAL_RINGBUFFERT_INCLUDED
 #define HAL_RINGBUFFERT_INCLUDED
 
 #include "stdlib.h"
-#include "dma.h"
+//#include "dma.h"
 #include "hal.h"
+
+#include "stdio.h"
+//#include "memory.h"
 
 
 #define RING_BUFFER_DECLARED	0xDEC1A8ED
@@ -32,16 +35,19 @@ typedef  void* (*tmemcopy32)(const void *src, void *dst, unsigned int size);
 
 
 template <class T, int SIZE> struct HalRingBufferData{
-	unsigned	tail;			///<  ÒÍÓÎ¸ÍÓ ˝ÎÂÏÂÌÚÓ‚ Œ“ Õ¿◊¿À¿ œŒ“Œ ¿ ÍÓ‰ SLAVE  ÛÊÂ ÔÓ˜ËÚ‡Î (Ó·‡·ÓÚ‡Î) 			 [Á‡ÔÓÎÌˇÂÚÒˇ SLAVE]
-	unsigned 	head;			///<  ÒÍÓÎ¸ÍÓ ˝ÎÂÏÂÌÚÓ‚ Œ“ Õ¿◊¿À¿ œŒ“Œ ¿ ÍÓ‰ MASTER ÛÊÂ Á‡ÔËÒ‡Î ‚	·ÛÙÂ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı [Á‡ÔÓÎÌˇÂÚÒˇ MASTER]
+	unsigned 	sizeofInt;			///< sizeof –Ω–∞ –¥–∞–Ω–Ω–æ–π –ø–ª–∞—Ç—Ñ–æ—Ä–º–µ (1-nm , 4- x86,arm)
+	unsigned 	bufferId;			///
+	unsigned 	head;				///<  —Å–∫–æ–ª—å–∫–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –û–¢ –ù–ê–ß–ê–õ–ê –ü–û–¢–û–ö–ê –∫–æ–¥ MASTER —É–∂–µ –∑–∞–ø–∏—Å–∞–ª –≤	–±—É—Ñ–µ—Ä –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö [–∑–∞–ø–æ–ª–Ω—è–µ—Ç—Å—è MASTER]
+	unsigned	tail;				///<  —Å–∫–æ–ª—å–∫–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –û–¢ –ù–ê–ß–ê–õ–ê –ü–û–¢–û–ö–ê –∫–æ–¥ SLAVE  —É–∂–µ –ø—Ä–æ—á–∏—Ç–∞–ª (–æ–±—Ä–∞–±–æ—Ç–∞–ª) 			 [–∑–∞–ø–æ–ª–Ω—è–µ—Ç—Å—è SLAVE]
+
 	
 	//bool 		headLocked;
 	//bool		tailLocked;
 	//long long	size;			/// long long because to do 64-bit align 
 	//#ifdef __NM__
-	T	 		data[SIZE];			///<  ÍÓÌÚÂÈÌÂ ‰‡ÌÌ˚ı ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ‡ÁÏÂ‡ SIZE. SIZE - ‰ÓÎÊÂÌ ·˚Ú¸ ÒÚÂÔÂÌ¸˛ ‰‚ÓÈÍË
+	T	 		data[SIZE];			///<  –∫–æ–Ω—Ç–µ–π–Ω–µ—Ä –¥–∞–Ω–Ω—ã—Ö –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ —Ä–∞–∑–º–µ—Ä–∞ SIZE. SIZE - –¥–æ–ª–∂–µ–Ω –±—ã—Ç—å —Å—Ç–µ–ø–µ–Ω—å—é –¥–≤–æ–π–∫–∏
 	//#else 
-	//T*	 		data;				///<  ÍÓÌÚÂÈÌÂ ‰‡ÌÌ˚ı ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ‡ÁÏÂ‡ SIZE. SIZE - ‰ÓÎÊÂÌ ·˚Ú¸ ÒÚÂÔÂÌ¸˛ ‰‚ÓÈÍË
+	//T*	 		data;				///<  –∫–æ–Ω—Ç–µ–π–Ω–µ—Ä –¥–∞–Ω–Ω—ã—Ö –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ —Ä–∞–∑–º–µ—Ä–∞ SIZE. SIZE - –¥–æ–ª–∂–µ–Ω –±—ã—Ç—å —Å—Ç–µ–ø–µ–Ω—å—é –¥–≤–æ–π–∫–∏
 	//#endif
 	
 	HalRingBufferData(){
@@ -49,6 +55,8 @@ template <class T, int SIZE> struct HalRingBufferData{
 		//#ifndef __NM__
 		//data = (T*)halMalloc32(SIZE*sizeof32(T));
 		//#else 
+		sizeofInt=sizeof(int);
+		bufferId = 0x600DB00F;
 		head=0;
 		tail=0;
 		//#endif
@@ -64,21 +72,24 @@ template <class T, int SIZE> struct HalRingBufferData{
 		//#endif
 	}
 	inline void init(){
+		sizeofInt = sizeof(int);
+		bufferId = 0x600DB00F;
 		head=0;
 		tail=0;
 	}
 	inline bool isEmpty() {
 		return head == tail;
 	}
-
+	
 	inline bool isFull() {
 		return head == tail + SIZE;
 	}
-
+	
 	inline T* ptrHead(){
 		return data + (head & (SIZE-1));
 		
 	}
+	
 	
 	inline T* ptrTail(){
 		return data + (tail & (SIZE-1));
@@ -90,23 +101,46 @@ template <class T, int SIZE> struct HalRingBufferData{
 	}
 
 };
-	#define HEAD (*pHead)
-	#define TAIL (*pTail)
+//	#define HEAD (*pHead)
+//	#define TAIL (*pTail)
+//
+//#ifdef __NM__
+//	#define WRITE_HEAD(value)  	(HEAD=value);
+//	#define READ_HEAD()			(HEAD)
+//	#define WRITE_TAIL(value)  	(TAIL=value);
+//	#define READ_TAIL()         (TAIL)
+//	#define RING_ADDR32(src,disp) (((int*)src) +  (disp))
+//	#define RING_ADDR_T(src,disp) ((src) +  (disp))
+//#endif
 
+void*  memCopy(const void* src, void* dst, unsigned int size32);
 //extern int statusDMA;
 template <class T, int SIZE> struct HalRingBufferConnector{
-
-public:
+// –í–∞–∂–µ–Ω –ø–æ—Ä—è–¥–æ–∫ –ø–æ–ª–µ–π, –Ω–µ –º–µ–Ω—è—Ç—å!
+	unsigned 	sizeofBufferInt;///< –∑–Ω–∞—á–µ–Ω–∏–µ sizeof(int) –Ω–∞ —Å—Ç–æ—Ä–æ–Ω–µ –∫–æ–Ω—Ç–µ–π–Ω–µ—Ä–∞ –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ—Ñ–µ—Ä–∞
+	unsigned 	bufferId;				///< buffer id
+	unsigned* 	pHead;			///< —Å–∫–æ–ª—å–∫–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –û–¢ –ù–ê–ß–ê–õ–ê –ü–û–¢–û–ö–ê –∫–æ–¥ MASTER —É–∂–µ –∑–∞–ø–∏—Å–∞–ª –≤	–±—É—Ñ–µ—Ä –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö [–∑–∞–ø–æ–ª–Ω—è–µ—Ç—Å—è MASTER]
+	unsigned*	pTail;			///< —Å–∫–æ–ª—å–∫–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –û–¢ –ù–ê–ß–ê–õ–ê –ü–û–¢–û–ö–ê –∫–æ–¥ SLAVE  —É–∂–µ –ø—Ä–æ—á–∏—Ç–∞–ª (–æ–±—Ä–∞–±–æ—Ç–∞–ª) 			 [–∑–∞–ø–æ–ª–Ω—è–µ—Ç—Å—è SLAVE]
 	T*	 		data;
-	unsigned* 	pHead;			///<  ÒÍÓÎ¸ÍÓ ˝ÎÂÏÂÌÚÓ‚ Œ“ Õ¿◊¿À¿ œŒ“Œ ¿ ÍÓ‰ MASTER ÛÊÂ Á‡ÔËÒ‡Î ‚	·ÛÙÂ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı [Á‡ÔÓÎÌˇÂÚÒˇ MASTER]
-	unsigned*	pTail;			///<  ÒÍÓÎ¸ÍÓ ˝ÎÂÏÂÌÚÓ‚ Œ“ Õ¿◊¿À¿ œŒ“Œ ¿ ÍÓ‰ SLAVE  ÛÊÂ ÔÓ˜ËÚ‡Î (Ó·‡·ÓÚ‡Î) 			 [Á‡ÔÓÎÌˇÂÚÒˇ SLAVE]
-	unsigned 	polltime;		///<  ‚ÂÏˇ ÓÔÓÒ‡ ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ÂÒÎË ÔÛÒÚ ËÎË Á‡ÔÓÎÌÂÌ ‚ ÏÒ
+public:
+	unsigned 	polltime;		///<  –≤—Ä–µ–º—è –æ–ø—Ä–æ—Å–∞ –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ –µ—Å–ª–∏ –ø—É—Å—Ç –∏–ª–∏ –∑–∞–ø–æ–ª–Ω–µ–Ω –≤ –º—Å
 	bool		headExternalControl;
 	bool  		tailExternalControl;
-	tmemcopy32 	memcopyPush;	///<  ÛÍ‡Á‡ÚÂÎ¸ Ì‡ ÙÛÌÍˆË˛ ÍÓÔËÓ‚‡ÌËˇ ÚËÔ‡ halCopy_32s
-	tmemcopy32	memcopyPop;		///<  ÛÍ‡Á‡ÚÂÎ¸ Ì‡ ÙÛÌÍˆË˛ ÍÓÔËÓ‚‡ÌËˇ ÚËÔ‡ halCopy_32s
+	unsigned    sizeof32Item;		///<  —Ä–∞–∑–º–µ—Ä –≤ int-–∞—Ö
+	tmemcopy32 	memcopyPush;	///<  —É–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —Ñ—É–Ω–∫—Ü–∏—é –∫–æ–ø–∏—Ä–æ–≤–∞–Ω–∏—è —Ç–∏–ø–∞ halCopy_32s
+	tmemcopy32	memcopyPop;		///<  —É–∫–∞–∑–∞—Ç–µ–ª—å –Ω–∞ —Ñ—É–Ω–∫—Ü–∏—é –∫–æ–ø–∏—Ä–æ–≤–∞–Ω–∏—è —Ç–∏–ø–∞ halCopy_32s
 
+
+	int check(){
+		if (pHead==0 || pTail==0 || ((int)data&1)|| ((sizeofBufferInt !=4) &&  (sizeofBufferInt !=1))   ){
+			printf("WTF!");
+			return -1;
+		} 
+		return 0;
+	}
 	HalRingBufferConnector(){
+		sizeofBufferInt = 0;
+		bufferId = 0;
 		pHead=0;
 		pTail=0;
 		data =0;
@@ -115,118 +149,161 @@ public:
 		polltime=10;
 		headExternalControl=false;
 	  	tailExternalControl=false;
+		sizeof32Item = sizeof32(T);
 	}
-	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
-		pHead=&ringBuffer->head;
-		pTail=&ringBuffer->tail;
-		data =ringBuffer->data;
+	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
+	//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
+		init(ringBufferData, _memcopyPush, _memcopyPop);
+		//printf(" [%x] [%x]\n",memcopyPop, _memcopyPop);
+	}
+	int init(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
+	//int init(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush, tmemcopy32 _memcopyPop){
 		memcopyPush=_memcopyPush;
 		memcopyPop =_memcopyPop;
+		memcopyPop(ringBufferData,&sizeofBufferInt,2);	// —á–∏—Ç–∞–µ–º –∑–∞–Ω–∏—á–µ–Ω–∏–µ sizeof(int) –Ω–∞ —Å—Ç–æ—Ä–æ–Ω–µ ringbuffer
+		pHead=(unsigned*)	((unsigned)ringBufferData + 2 * sizeofBufferInt);
+		pTail=(unsigned*)	((unsigned)ringBufferData + 3 * sizeofBufferInt);
+		data =(T*)			((unsigned)ringBufferData + 4 * sizeofBufferInt) ;
 		polltime=10;
 		headExternalControl=false;
 	  	tailExternalControl=false;
-	}
-	void init(HalRingBufferData<T,SIZE>* ringBuffer, tmemcopy32 _memcopyPush=halCopyRISC, tmemcopy32 _memcopyPop=halCopyRISC){
-		pHead=&ringBuffer->head;
-		pTail=&ringBuffer->tail;
-		data =ringBuffer->data;
-		memcopyPush=_memcopyPush;
-		memcopyPop =_memcopyPop;
-		polltime=10;
-		headExternalControl=false;
-	  	tailExternalControl=false;
+		sizeof32Item = sizeof32(T);
+		return check();
 	}
 	
+#ifdef __NM__
+	inline void     setHead(int value)		{ *pHead = value;}
+	inline unsigned getHead()				{ return *pHead; }
+	inline void     setTail(int value)		{ *pTail = value;}
+	inline unsigned	getTail()				{ return *pTail; }
+	inline T*       ptrItem(unsigned disp)	{ return (T*)(   data + (disp&(SIZE-1))); }
+	inline T*       ptrHead()				{ return (T*)(data + ((*pHead)&(SIZE - 1))); }
+	inline T*       ptrTail()				{ return (T*)(data + ((*pTail)&(SIZE - 1))); }
+	//inline T*       ptrExtern(const T* base, unsigned disp) { return (T*)(base + disp); }
+#else
+	inline void     setHead(int value)		{ memcopyPush(&value, pHead, 1); }
+	inline void     setTail(int value)		{ memcopyPush(&value, pTail, 1); }
+	inline unsigned getHead()				{ unsigned res; 	memcopyPop(pHead, &res, 1); return res; }
+	inline unsigned	getTail()				{ unsigned res; 	memcopyPop(pTail, &res, 1); return res; }
+	
+	inline   T*     ptrItem(unsigned indx)	{ return (T*)((int)data + (     indx&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
+	inline   T*     ptrHead()				{ return (T*)((int)data + (getHead()&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
+	inline   T*     ptrTail()				{ return (T*)((int)data + (getHead()&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
+	//inline   T*     ptrExtern(const T* base, unsigned disp) { return (T*)(((int)base) +   disp*sizeofBufferInt*sizeof32(T)); }
+#endif
+	
+	inline void     incHead() { setHead(getHead() + 1); }
+	inline void     incTail() { setTail(getTail() + 1); }
+
+	inline int popAvail(){
+		return getHead() - getTail();
+	}
+	
+	inline int pushAvail(){
+		return SIZE-(getHead() - getTail());
+	}
 	inline bool isEmpty() {
-		
-		return HEAD == TAIL;
+		check();
+		return getHead() == getTail();
 	}
 
 	inline bool isFull() {
-		return HEAD == TAIL + SIZE;
-	}
-
-	inline T* ptrHead(){
-		return data + (HEAD & (SIZE-1));
-		
-	}
-	
-	inline T* ptrTail(){
-		return data + (TAIL & (SIZE-1));
-		
+		check();
+		return getHead() == getTail() + SIZE;
 	}
 
 	void 	push   (const T* src, 	size_t count){
-		while (TAIL+SIZE-HEAD < count)
+		check();
+		volatile size_t fixHead= getHead();
+		volatile size_t fixTail;
+		do {
+			fixTail = getTail();
+			if (fixTail + SIZE - fixHead >= count)
+				break;
 			halSleep(polltime);
+		}  while (1);
 		
-		size_t fixTail = TAIL;
-		size_t posHead = HEAD & (SIZE-1);			
-		size_t posTail = fixTail & (SIZE-1);
-		T* addrHead    = data+posHead;
+		
+		volatile size_t posHead = fixHead & (SIZE-1);			
+		volatile size_t posTail = fixTail & (SIZE-1);
+		T* addrHead    = ptrItem(posHead);
 		
 		// [.......<Tail>******<Head>.....]
-		if (posTail<posHead || HEAD==fixTail){
-			size_t countToEnd = SIZE - posHead;
+		if (posTail<posHead || fixHead==fixTail){
+			volatile size_t countToEnd = SIZE - posHead;
 			if (count <= countToEnd){
-				memcopyPush(src,addrHead,count*sizeof(T));
+				memcopyPush(src,addrHead,count*sizeof32(T));
 			}
 		// [*******<Head>......<Tail>*****]
 			else {
 				int firstCount = countToEnd;
 				int secondCount = count-countToEnd;
-				memcopyPush(src,addrHead, firstCount*sizeof(T));
-				memcopyPush(src+firstCount, data, secondCount*sizeof(T));
+				memcopyPush(src,addrHead, firstCount*sizeof32(T));
+				memcopyPush(src+firstCount, data, secondCount*sizeof32(T));
 			}
 		}
 		else {
-			memcopyPush(src,addrHead, count*sizeof(T));
+			memcopyPush(src,addrHead, count*sizeof32(T));
 		}
 		if (!headExternalControl)
-			HEAD += count;
+			setHead(fixHead + count);
 	}
 
 
 	void pop(T* dst, size_t count){
-		while (HEAD-TAIL < count)
+		check();
+		//printf("----------\n");
+		//dst[0]=111;
+		volatile size_t fixHead;
+		volatile size_t fixTail =getTail();
+		
+		
+		do {
+			//printf(" (%x) \n",memcopyPop);
+			fixHead=getHead();
+			if (fixHead-fixTail >= count)
+				break;
 			halSleep(polltime);
-	
-		size_t fixHead = HEAD;
-		size_t posHead = fixHead & (SIZE-1);			
-		size_t posTail = TAIL & (SIZE-1);
-		T* addrTail    = data + posTail;
-	
+		} while(1);
+		
+		volatile size_t posHead = fixHead & (SIZE-1);			
+		volatile size_t posTail = fixTail & (SIZE-1);
+		T* addrTail    = ptrItem(posTail);
+		
 		// [.......<Tail>******<Head>.....]
 		if (posTail<posHead){
-			memcopyPop( addrTail, dst, count*sizeof(T));
+			memcopyPop( addrTail, dst, count*sizeof32(T));
+			//printf("-----1----- %x %x %x (%x) (%x)\n",addrTail, dst, count*sizeof32(T), memcopyPop, halCopyRISC);
 		}
 		// [*******<Head>......<Tail>*****]
 		else {
-			size_t countToEnd = SIZE - posTail;
+			volatile size_t countToEnd = SIZE - posTail;
 			if (count <= countToEnd){
-				memcopyPop(addrTail, dst, count*sizeof(T));
+				memcopyPop(addrTail, dst, count*sizeof32(T));
+				//printf("-----2-----\n");
 			}
 			else {
 				int firstCount = countToEnd;
 				int secondCount= count-countToEnd;
-				memcopyPop( addrTail, dst, firstCount*sizeof(T));
-				memcopyPop( data, dst+firstCount,secondCount*sizeof(T));
+				memcopyPop( addrTail, dst, firstCount*sizeof32(T));
+				memcopyPop( data, dst+firstCount,secondCount*sizeof32(T));
+				//printf("-----3-----\n");
 			}
 		}
 		if (!tailExternalControl)
-			TAIL += count;
+			setTail(fixTail + count);
 	}
 };
 
 
 template <class T, int SIZE> struct HalRingBufferDataDMA{
-//	size_t 		maxCount;		///<  ‡ÁÏÂ ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı (‚ ˝ÎÂÏÂÌÚ‡ı; „‡‡ÌÚËÛÂÚÒˇ ˜ÚÓ ˝ÚÓ ÒÚÂÔÂÌ¸ ‰‚ÓÈÍË)
-//	size_t 		maxCountMinus1;	///<  ‡ÁÏÂ ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı (‚ ˝ÎÂÏÂÌÚ‡ı; „‡‡ÌÚËÛÂÚÒˇ ˜ÚÓ ˝ÚÓ ÒÚÂÔÂÌ¸ ‰‚ÓÈÍË)
-//	size_t 		size;			///<  ‡ÁÏÂ ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı (‚ ˝ÎÂÏÂÌÚ‡ı; „‡‡ÌÚËÛÂÚÒˇ ˜ÚÓ ˝ÚÓ ÒÚÂÔÂÌ¸ ‰‚ÓÈÍË)
-	unsigned 	head;			///<  ÒÍÓÎ¸ÍÓ ˝ÎÂÏÂÌÚÓ‚ Œ“ Õ¿◊¿À¿ œŒ“Œ ¿ ÍÓ‰ MASTER ÛÊÂ Á‡ÔËÒ‡Î ‚	·ÛÙÂ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı [Á‡ÔÓÎÌˇÂÚÒˇ MASTER]
-	unsigned	tail;			///<  ÒÍÓÎ¸ÍÓ ˝ÎÂÏÂÌÚÓ‚ Œ“ Õ¿◊¿À¿ œŒ“Œ ¿ ÍÓ‰ SLAVE  ÛÊÂ ÔÓ˜ËÚ‡Î (Ó·‡·ÓÚ‡Î) 			 [Á‡ÔÓÎÌˇÂÚÒˇ SLAVE]
+//	size_t 		maxCount;		///<  —Ä–∞–∑–º–µ—Ä –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö (–≤ —ç–ª–µ–º–µ–Ω—Ç–∞—Ö; –≥–∞—Ä–∞–Ω—Ç–∏—Ä—É–µ—Ç—Å—è —á—Ç–æ —ç—Ç–æ —Å—Ç–µ–ø–µ–Ω—å –¥–≤–æ–π–∫–∏)
+//	size_t 		maxCountMinus1;	///<  —Ä–∞–∑–º–µ—Ä –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö (–≤ —ç–ª–µ–º–µ–Ω—Ç–∞—Ö; –≥–∞—Ä–∞–Ω—Ç–∏—Ä—É–µ—Ç—Å—è —á—Ç–æ —ç—Ç–æ —Å—Ç–µ–ø–µ–Ω—å –¥–≤–æ–π–∫–∏)
+//	size_t 		size;			///<  —Ä–∞–∑–º–µ—Ä –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö (–≤ —ç–ª–µ–º–µ–Ω—Ç–∞—Ö; –≥–∞—Ä–∞–Ω—Ç–∏—Ä—É–µ—Ç—Å—è —á—Ç–æ —ç—Ç–æ —Å—Ç–µ–ø–µ–Ω—å –¥–≤–æ–π–∫–∏)
+	unsigned 	head;			///<  —Å–∫–æ–ª—å–∫–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –û–¢ –ù–ê–ß–ê–õ–ê –ü–û–¢–û–ö–ê –∫–æ–¥ MASTER —É–∂–µ –∑–∞–ø–∏—Å–∞–ª –≤	–±—É—Ñ–µ—Ä –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö [–∑–∞–ø–æ–ª–Ω—è–µ—Ç—Å—è MASTER]
+	unsigned	tail;			///<  —Å–∫–æ–ª—å–∫–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ –û–¢ –ù–ê–ß–ê–õ–ê –ü–û–¢–û–ö–ê –∫–æ–¥ SLAVE  —É–∂–µ –ø—Ä–æ—á–∏—Ç–∞–ª (–æ–±—Ä–∞–±–æ—Ç–∞–ª) 			 [–∑–∞–ø–æ–ª–Ω—è–µ—Ç—Å—è SLAVE]
 	size_t		pendingCount;
-	T	 		data[SIZE];			///<  ÙËÁË˜ÂÒÍËÈ ‡‰ÂÒ ÍÓÎ¸ˆÂ‚Ó„Ó ·ÛÙÂ‡ ‚ıÓ‰Ì˚ı ‰‡ÌÌ˚ı 
+	T	 		data[SIZE];			///<  —Ñ–∏–∑–∏—á–µ—Å–∫–∏–π –∞–¥—Ä–µ—Å –∫–æ–ª—å—Ü–µ–≤–æ–≥–æ –±—É—Ñ–µ—Ä–∞ –≤—Ö–æ–¥–Ω—ã—Ö –¥–∞–Ω–Ω—ã—Ö 
 	int 		polltime;
 	FuncSingleCopy singleCopy;
 	FuncDoubleCopy doubleCopy;

@@ -44,8 +44,8 @@ int B[100]={0,0,0,0,0,0,0,0,0,0};
 long align64bit2=0;	// Выравниваем массивы A,B по гранияце 64 бита
 	
 typedef HalRingBufferData<int, 128> RingBuffer;
-RingBuffer* ringBufferData0to1;		// Создаем в стеке контейнер кольцевого буфера для пересылки с ядра-0 на ядро-1
-RingBuffer* ringBufferData1to0;		// Создаем в стеке контейнер кольцевого буфера для пересылки с ядра-1 на ядро-0
+RingBuffer* ringBufferData0to1;		// Создаем контейнер кольцевого буфера для пересылки с ядра-0 на ядро-1
+RingBuffer* ringBufferData1to0;		// Создаем контейнер кольцевого буфера для пересылки с ядра-1 на ядро-0
 
 #define HAL_MALLOC_OBJECT(T) (T*)halMalloc32(sizeof(T))
 template<class T> T* halMallocT(T* type){

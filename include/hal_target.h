@@ -62,6 +62,11 @@ extern "C"
 
 };
 
+//template<class T> inline T* halMallocT(T* type){
+//	return (T*)halMalloc32(sizeof32(T));
+//}
+//#define HAL_MALLOC_T(t) (t*)halMalloc32(sizeof32(t))
+
 //int halSetProcessorNo(int);
 #ifndef PROCESSOR_ID
 	#ifdef __NM__

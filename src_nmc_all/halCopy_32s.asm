@@ -20,10 +20,18 @@ extern vec_data:label;
 
 begin ".text_hal"
   
+<halCopyEven2Even>
+
+<halCopyEven2Odd>
+
+<halCopyOdd2Odd>
+
+<halCopyOdd2Even>
+	
 
    
-global _halCopyRISC:label;
-<_halCopyRISC>
+global _halCopyRISC_:label;
+<_halCopyRISC_>
 .branch;
     ar5 = sp - 5	;
 	push ar0,gr0	;
