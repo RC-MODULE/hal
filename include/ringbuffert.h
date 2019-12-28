@@ -188,7 +188,7 @@ public:
 	
 	inline   T*     ptrItem(unsigned indx)	{ return (T*)((int)data + (     indx&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
 	inline   T*     ptrHead()				{ return (T*)((int)data + (getHead()&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
-	inline   T*     ptrTail()				{ return (T*)((int)data + (getHead()&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
+	inline   T*     ptrTail()				{ return (T*)((int)data + (getTail()&(SIZE - 1))*sizeofBufferInt*sizeof32(T)); }
 	//inline   T*     ptrExtern(const T* base, unsigned disp) { return (T*)(((int)base) +   disp*sizeofBufferInt*sizeof32(T)); }
 #endif
 	
