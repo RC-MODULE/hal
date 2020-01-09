@@ -56,7 +56,8 @@ extern "C"
 		//extern void*    halSharedBuffer;
 		//extern unsigned halSharedSize;
 		//#include <string.h>
-		inline int* halMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32);}
+		//int* halMalloc32(int sharedSize32);// {return (int*)malloc(sharedSize32); }
+#define halMalloc32(sharedSize32) (int*)malloc(sharedSize32)
 		inline void halFree(void* shared) { free(shared);}
 	#endif
 

@@ -35,10 +35,10 @@ typedef  void* (*tmemcopy32)(const void *src, void *dst, unsigned int size);
 
 
 template <class T, int SIZE> struct HalRingBufferData{
-	unsigned 	sizeofInt;			///< sizeof на данной платформе (1-nm , 4- x86,arm)
-	unsigned 	bufferId;			///
-	unsigned 	head;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
-	unsigned	tail;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
+	volatile unsigned 	sizeofInt;			///< sizeof на данной платформе (1-nm , 4- x86,arm)
+	volatile unsigned 	bufferId;			///
+	volatile unsigned 	head;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
+	volatile unsigned	tail;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
 
 	
 	//bool 		headLocked;
@@ -123,6 +123,7 @@ template <class T, int SIZE> struct HalRingBufferConnector{
 	unsigned*	pTail;			///< сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
 	T*	 		data;
 	HalRingBufferData<T, SIZE> *container;
+	bool		internalContainer;
 public:
 	unsigned 	polltime;		///<  время опроса кольцевого буфера если пуст или заполнен в мс
 	bool		headExternalControl;
@@ -145,21 +146,27 @@ public:
 		pHead=0;
 		pTail=0;
 		data =0;
+		
 		memcopyPush=halCopyRISC;
 		memcopyPop =halCopyRISC;
 		polltime=10;
 		headExternalControl=false;
 	  	tailExternalControl=false;
+		internalContainer = false;
 		sizeof32Item = sizeof32(T);
 		
 	}
 	void* create(tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
-		container = (HalRingBufferData<T,SIZE>*) halMalloc32(sizeof(HalRingBufferData<T,SIZE>)/sizeof(int));
+		int size=sizeof(HalRingBufferData<T, SIZE>) / sizeof(int);
+		//container = (HalRingBufferData<T,SIZE>*) halMalloc32(size);
+		//void*p =  halMalloc3232(100);
+		void*p = malloc(100);
 
 	//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
 		if (container){
 			container->init();
 			connect((unsigned)container, _memcopyPush, _memcopyPop);
+			internalContainer = true;
 		}
 		return container;
 		//printf(" [%x] [%x]\n",memcopyPop, _memcopyPop);
@@ -168,13 +175,15 @@ public:
 	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
 	//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
 		init(ringBufferData, _memcopyPush, _memcopyPop);
+		internalContainer = false;
 		//printf(" [%x] [%x]\n",memcopyPop, _memcopyPop);
 	}
 	~HalRingBufferConnector(){
-		if (container){
-			free(container);
-			container =0;
-		}
+		if (internalContainer)
+			if (container){
+				free(container);
+				container =0;
+			}
 	}
 	int connect(unsigned ringBufferData, tmemcopy32 _memcopyPush = halCopyRISC, tmemcopy32 _memcopyPop = halCopyRISC) {
 		return init((HalRingBufferData<T, SIZE>*)ringBufferData, _memcopyPush, _memcopyPop);
