@@ -122,6 +122,7 @@ template <class T, int SIZE> struct HalRingBufferConnector{
 	unsigned* 	pHead;			///< сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
 	unsigned*	pTail;			///< сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
 	T*	 		data;
+	HalRingBufferData<T, SIZE> *container;
 public:
 	unsigned 	polltime;		///<  время опроса кольцевого буфера если пуст или заполнен в мс
 	bool		headExternalControl;
@@ -150,14 +151,37 @@ public:
 		headExternalControl=false;
 	  	tailExternalControl=false;
 		sizeof32Item = sizeof32(T);
+		
 	}
+	void* create(tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
+		container = (HalRingBufferData<T,SIZE>*) halMalloc32(sizeof(HalRingBufferData<T,SIZE>)/sizeof(int));
+
+	//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
+		if (container){
+			container->init();
+			connect((unsigned)container, _memcopyPush, _memcopyPop);
+		}
+		return container;
+		//printf(" [%x] [%x]\n",memcopyPop, _memcopyPop);
+	}
+	
 	HalRingBufferConnector(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
 	//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
 		init(ringBufferData, _memcopyPush, _memcopyPop);
 		//printf(" [%x] [%x]\n",memcopyPop, _memcopyPop);
 	}
+	~HalRingBufferConnector(){
+		if (container){
+			free(container);
+			container =0;
+		}
+	}
+	int connect(unsigned ringBufferData, tmemcopy32 _memcopyPush = halCopyRISC, tmemcopy32 _memcopyPop = halCopyRISC) {
+		return init((HalRingBufferData<T, SIZE>*)ringBufferData, _memcopyPush, _memcopyPop);
+	}
 	int init(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
 	//int init(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush, tmemcopy32 _memcopyPop){
+		//container=0;
 		memcopyPush=_memcopyPush;
 		memcopyPop =_memcopyPop;
 		memcopyPop(ringBufferData,&sizeofBufferInt,2);	// читаем заничение sizeof(int) на стороне ringbuffer

@@ -107,7 +107,31 @@ int halInterConnect(int* shared);
 #else 
 //int halConnect(int* masterSharedBuffer=0, int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0);
 //int halDisconnect(int* sharedBuffer=0);
-#endif 
+#endif // __NM__
+
+
+//#ifndef _MACHINE_MALLOC_H_GUARD
+//#define _MACHINE_MALLOC_H_GUARD
+
+//#ifndef __NM__
+#define NMC_MAX_HEAP_NUM 32
+#define NMC_HEAP_NOT_SET (-1)
+
+#ifdef	__cplusplus
+extern "C"
+{
+#endif
+
+void nmc_malloc_set_heap (int h_num);
+int  nmc_malloc_get_heap (void) ;
+
+#ifdef	__cplusplus
+}
+#endif
+
+//#endif // __NM__
+
+//#endif  // _MACHINE_MALLOC_H
 
 
 
