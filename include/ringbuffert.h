@@ -158,11 +158,9 @@ public:
 	}
 	void* create(tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){
 		int size=sizeof(HalRingBufferData<T, SIZE>) / sizeof(int);
-		//container = (HalRingBufferData<T,SIZE>*) halMalloc32(size);
-		//void*p =  halMalloc3232(100);
-		void*p = malloc(100);
-
-	//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
+		container = (HalRingBufferData<T,SIZE>*) halMalloc32(size);
+		
+		//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
 		if (container){
 			container->init();
 			connect((unsigned)container, _memcopyPush, _memcopyPop);
