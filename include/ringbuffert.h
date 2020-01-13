@@ -4,6 +4,7 @@
 #include "stdlib.h"
 //#include "dma.h"
 #include "hal.h"
+#include "hal_target.h"
 
 #include "stdio.h"
 //#include "memory.h"
@@ -119,7 +120,8 @@ template <class T, int SIZE> struct HalRingBufferData{
 //	#define RING_ADDR32(src,disp) (((int*)src) +  (disp))
 //	#define RING_ADDR_T(src,disp) ((src) +  (disp))
 //#endif
-
+//int * halMalloc323(int size);
+// works! #define  halMalloc32(size) malloc (size)
 void*  memCopy(const void* src, void* dst, unsigned int size32);
 //extern int statusDMA;
 template <class T, int SIZE> struct HalRingBufferConnector{

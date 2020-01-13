@@ -51,14 +51,13 @@ extern "C"
 
 	#ifndef __NM__
 	//int* halMalloc32(int sharedSize32);
-	#define halMalloc32(sharedSize32) (int*)malloc(sharedSize32*4)
+	//#define halMalloc32(sharedSize32) (int*)malloc(sharedSize32*4)
 	void halFree(void* );
 	#else 
 		//extern void*    halSharedBuffer;
 		//extern unsigned halSharedSize;
 		//#include <string.h>
-		//int* halMalloc32(int sharedSize32);// {return (int*)malloc(sharedSize32); }
-#define halMalloc32(sharedSize32) (int*)malloc(sharedSize32)
+		inline int* halMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32); }
 		inline void halFree(void* shared) { free(shared);}
 	#endif
 
