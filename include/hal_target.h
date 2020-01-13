@@ -50,7 +50,8 @@ extern "C"
 	void halSetProcessorNo(int number);
 
 	#ifndef __NM__
-	int* halMalloc32(int sharedSize32);
+	//int* halMalloc32(int sharedSize32);
+	#define halMalloc32(sharedSize32) (int*)malloc(sharedSize32*4)
 	void halFree(void* );
 	#else 
 		//extern void*    halSharedBuffer;

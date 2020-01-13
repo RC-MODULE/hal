@@ -39,7 +39,7 @@ template <class T, int SIZE> struct HalRingBufferData{
 	volatile unsigned 	bufferId;			///
 	volatile unsigned 	head;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
 	volatile unsigned	tail;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
-
+	volatile unsigned   service[12]; 		///<  service words for alignment address of data at 16-word boundary (neceassary for dma)
 	
 	//bool 		headLocked;
 	//bool		tailLocked;
@@ -49,6 +49,7 @@ template <class T, int SIZE> struct HalRingBufferData{
 	//#else 
 	//T*	 		data;				///<  контейнер данных кольцевого буфера размера SIZE. SIZE - должен быть степенью двойки
 	//#endif
+	volatile unsigned  final[2];
 	
 	HalRingBufferData(){
 		//size=SIZE;
@@ -74,6 +75,11 @@ template <class T, int SIZE> struct HalRingBufferData{
 	inline void init(){
 		sizeofInt = sizeof(int);
 		bufferId = 0x600DB00F;
+		for (int i=0; i<12; i++)
+			service[i]=0xBABADEDA;
+		final[0]=0xBABADEDA;
+		final[1]=0xBABADEDA;
+		
 		head=0;
 		tail=0;
 	}
@@ -119,8 +125,8 @@ template <class T, int SIZE> struct HalRingBufferConnector{
 // Важен порядок полей, не менять!
 	unsigned 	sizeofBufferInt;///< значение sizeof(int) на стороне контейнера кольцевого буффера
 	unsigned 	bufferId;				///< buffer id
-	unsigned* 	pHead;			///< сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
-	unsigned*	pTail;			///< сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
+	unsigned* 	pHead;			///< адрес head в RingBufferData|
+	unsigned*	pTail;			///< адрес tail в RingBufferData|
 	T*	 		data;
 	HalRingBufferData<T, SIZE> *container;
 	bool		internalContainer;
@@ -194,7 +200,7 @@ public:
 		memcopyPop(ringBufferData,&sizeofBufferInt,2);	// читаем заничение sizeof(int) на стороне ringbuffer
 		pHead=(unsigned*)	((unsigned)ringBufferData + 2 * sizeofBufferInt);
 		pTail=(unsigned*)	((unsigned)ringBufferData + 3 * sizeofBufferInt);
-		data =(T*)			((unsigned)ringBufferData + 4 * sizeofBufferInt) ;
+		data =(T*)			((unsigned)ringBufferData + 16* sizeofBufferInt) ;
 		polltime=10;
 		headExternalControl=false;
 	  	tailExternalControl=false;
