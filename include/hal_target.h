@@ -49,17 +49,6 @@ extern "C"
 		size_t *inLen);   // Received array size pointer (can be NULL)
 	void halSetProcessorNo(int number);
 
-	#ifndef __NM__
-	//int* halMalloc32(int sharedSize32);
-	//#define halMalloc32(sharedSize32) (int*)malloc(sharedSize32*4)
-	void halFree(void* );
-	#else 
-		//extern void*    halSharedBuffer;
-		//extern unsigned halSharedSize;
-		//#include <string.h>
-		inline int* halMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32); }
-		inline void halFree(void* shared) { free(shared);}
-	#endif
 
 };
 

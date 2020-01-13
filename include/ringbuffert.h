@@ -4,7 +4,6 @@
 #include "stdlib.h"
 //#include "dma.h"
 #include "hal.h"
-#include "hal_target.h"
 
 #include "stdio.h"
 //#include "memory.h"
