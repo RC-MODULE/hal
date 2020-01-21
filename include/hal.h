@@ -28,8 +28,10 @@
 	inline int* halMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32); }
 	inline void halFree(void* shared) { free(shared);}
 #else 
-	inline int* halMalloc32(int sharedSize32) {return (int*)malloc(sharedSize32 * 4); }
+	extern "C"{
+	int* halMalloc32(int sharedSize32) ;//{return (int*)malloc(sharedSize32 * 4); }
 	void halFree(void* );
+	};
 #endif
 	
 #ifdef __cplusplus
