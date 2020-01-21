@@ -126,7 +126,7 @@ void*  memCopy(const void* src, void* dst, unsigned int size32);
 template <class T, int SIZE> struct HalRingBufferConnector{
 // Важен порядок полей, не менять!
 	unsigned 	sizeofBufferInt;///< значение sizeof(int) на стороне контейнера кольцевого буффера
-	unsigned 	bufferId;				///< buffer id
+	unsigned 	_bufferId;		///< buffer id
 	unsigned* 	pHead;			///< адрес head в RingBufferData|
 	unsigned*	pTail;			///< адрес tail в RingBufferData|
 	T*	 		data;
@@ -144,13 +144,17 @@ public:
 	int check(){
 		if (pHead==0 || pTail==0 || ((int)data&1)|| ((sizeofBufferInt !=4) &&  (sizeofBufferInt !=1))   ){
 			printf("WTF!");
+			printf("pHead=%x\n",pHead); 
+			printf("pTail=%x\n",pTail);
+			printf("data=%x\n",data);
+			printf("sizeofBufferInt=%x\n",sizeofBufferInt);
 			return -1;
 		} 
 		return 0;
 	}
 	HalRingBufferConnector(){
 		sizeofBufferInt = 0;
-		bufferId = 0;
+		_bufferId = 0;
 		pHead=0;
 		pTail=0;
 		data =0;
@@ -171,7 +175,7 @@ public:
 		//HalRingBufferConnector(HalRingBufferData<T, SIZE>* ringBufferData, tmemcopy32 _memcopyPush , tmemcopy32 _memcopyPop ) {
 		if (container){
 			container->init();
-			connect((unsigned)container, _memcopyPush, _memcopyPop);
+			connect(container, _memcopyPush, _memcopyPop);
 			internalContainer = true;
 		}
 		return container;
@@ -191,7 +195,7 @@ public:
 				container =0;
 			}
 	}
-	int connect(unsigned ringBufferData, tmemcopy32 _memcopyPush = halCopyRISC, tmemcopy32 _memcopyPop = halCopyRISC) {
+	int connect(void* ringBufferData, tmemcopy32 _memcopyPush = halCopyRISC, tmemcopy32 _memcopyPop = halCopyRISC) {
 		return init((HalRingBufferData<T, SIZE>*)ringBufferData, _memcopyPush, _memcopyPop);
 	}
 	int init(HalRingBufferData<T,SIZE>* ringBufferData, tmemcopy32 _memcopyPush= halCopyRISC, tmemcopy32 _memcopyPop= halCopyRISC){

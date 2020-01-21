@@ -28,6 +28,7 @@ void nmc_malloc_set_heap(int heap){
 
 }
 
+#endif
 
 
 void* malloc0(int size){
@@ -47,7 +48,6 @@ void* malloc3(int size) {
 	return malloc(size*4);
 }
 
-#endif
 
 
 #include "qdma.h"
