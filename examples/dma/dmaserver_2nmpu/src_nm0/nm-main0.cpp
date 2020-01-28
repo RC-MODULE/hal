@@ -29,7 +29,9 @@ int dmaServerCallback();
 #define NUM_TASKS 1024
 #define NUM_CHANNELS 2
 
+
 DmaServer<NUM_TASKS,NUM_CHANNELS> dmaServer(dmaServerCallback); 	// создаем DMA сервер, передаем обработчик 
+																	// память под циклические буфера выделятся в куче по умолчанию т.е. в нулевой
 DmaClient<NUM_TASKS>   dmaClient0;									// создаем DMA клиент на NMC0
 
 unsigned long long totalCopiedSize=0;
@@ -65,7 +67,6 @@ int main()
 	}
 
 	printf("[NMC0:] NM6407 Dma-Server+Client\n");
-	nmc_malloc_set_heap(0);
 	HalRingBufferData<DmaTask,1024>* channel0= dmaServer.getChannelBuffer(0);	// получаем адрес канала-0
 	HalRingBufferData<DmaTask,1024>* channel1= dmaServer.getChannelBuffer(1);	// получаем адрес канала-1
 	

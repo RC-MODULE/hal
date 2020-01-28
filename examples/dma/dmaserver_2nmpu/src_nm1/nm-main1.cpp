@@ -24,8 +24,8 @@
 #include "dmaserver.h"
 
 
-
-DmaClient<1024>   dmaClient1; // создаем DMA клиент на NMC1
+#define NUM_TASKS 1024
+DmaClient<NUM_TASKS>   dmaClient1; // создаем DMA клиент на NMC1
 
 int main()
 {

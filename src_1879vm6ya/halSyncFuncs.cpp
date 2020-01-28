@@ -77,8 +77,9 @@ INSECTION(".text_hal") int halSync(int val,int processor){
 }
 
 INSECTION(".text_hal") void* halSyncAddr(void* srcAddr,int syncProc){
-	void* globalAddr=halMapAddr(srcAddr);
-	return (void*)halSync((int)globalAddr,syncProc);
+	void* incomeAddr=(void*)halSync((int)srcAddr,syncProc);
+	void* ownAddr   =halMapAddrFrom(incomeAddr,syncProc);
+	return ownAddr;
 }
 
 INSECTION(".text_hal") int halSyncArray(

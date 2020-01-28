@@ -11,7 +11,7 @@ void halLed4Lo(unsigned led4Mask);
 void halLedOn (unsigned ledIndx);    
 void halLedOff(unsigned ledIndx);    
 void halLedSwitch(unsigned ledIndx);    
-void halLedSOS(unsigned ledIndx, int count=0);    
+void halLedSOS(unsigned ledIndx, int count);    
 void halLedBlink(unsigned ledIndex, int freq, int ms);
 int  halLedCount();    
 

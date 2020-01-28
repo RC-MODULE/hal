@@ -10,6 +10,7 @@
 #define SYNC_BUF_SIZE 64*1024
 #define MAX_COUNT_PROCESSORS 8
 #define HOST_CONNECT_TIMEOUT 1000
+#define SHARED_MEMORY_MAPPING_NAME "Global\\SharedMemoryMappingObject"
 
 TCHAR* createName(TCHAR* baseName, int index0, int index2);
 /*
@@ -31,10 +32,12 @@ struct SyncBuf {
 
 SyncBuf* getSyncBuffer();
 struct MappedBuffer {
-	int*     address;
-	unsigned size32;
-	int		 owner;
+	int*     address;	// адрес раздел€емого буфера 
+	unsigned size32;	// размер буфера в 32р словах 
+	int		 owner;		// владелец похоже что лишн€€ пременна€
 	HANDLE   handle;
+	int*	 mappedAddress[MAX_COUNT_PROCESSORS];	// под этими адресами вид€т сей буфер другие процессы
+	int*	 mappedDiff[MAX_COUNT_PROCESSORS];		// смещение, которое необходимо  добавить к адресу в сием буффере чтобы получить отмпапированный адрес дл€ другого процесса 
 };   
 
 struct BufferRegistry {
@@ -62,6 +65,8 @@ struct MirrorRegistry{
 
 extern "C"{
 	MirrorBuffer* findBuffer(unsigned boardAddr,int processorNo);
+	//findAddressIn()//mapAddrTo()
+	//mapAddrFrom();
 };
 
 #define SYNC_BUF_SIZE 64*1024

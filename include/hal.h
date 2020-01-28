@@ -49,8 +49,10 @@
 	void*  halCopyFlt   (const void* src,  void* dst,  unsigned size32);
 	
 	// отборажение  адреса в глобальное адресное пространство
-	void* halMapAddr(const void* srcAddr);	
-	
+	//void* halMapAddr(const void* srcAddr);	
+	void* halMapAddrTo(const void* ownAddress, int toProccessor);
+	void* halMapAddrFrom(const void* extAddress, int fromProcessor);
+
 	void halSetActiveHeap(int heapNo);
 
 	struct SyncBuf {

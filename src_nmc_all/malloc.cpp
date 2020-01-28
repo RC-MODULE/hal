@@ -31,5 +31,8 @@ extern "C"{
 	INSECTION(".text_hal")	int* halMalloc32(int sharedSize32) {
 		return (int*)pMallocFunc(sharedSize32);
 	}	 
+	
+	
+	
 
 };

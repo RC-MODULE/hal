@@ -1,3 +1,5 @@
+
+
 typedef int(*DmaCallback)();
 
 int dummy_function(){
@@ -200,10 +202,22 @@ int  halDmaInitC(){
 	return 0;
 }
 
-void halDmaStart   		(const void* src, void* dst, unsigned size32){
-	memcpy(dst,src,size32*4);
+static * __src;
+static * __dst;
+static int  __size;
+void* copythread() {
+	memcpy(__dst, __src, __size*4);
 	if (user_callback)
 		user_callback();
+}
+
+void halDmaStart   		(const void* src, void* dst, unsigned size32){
+	__src=src;
+	__dst = dst;
+	__size = size32;
+	_beginthread(copythread,0,0);
+	//memcpy(dst, src, size32 * 4);
+	
 }
 void halDmaStartA  		(const void* src, void* dst, unsigned size32){
 	memcpy(dst,src,size32*4);
@@ -244,9 +258,6 @@ int halDmaIsCompleted(){
 	return 1;
 }	
 
-void* halMapAddr(const void* srcAddr) {
-	return srcAddr;
-}
 
 void halDmaSetCallback(DmaCallback userCallback) {
 	user_callback = userCallback;

@@ -5,72 +5,125 @@
 #include <conio.h>
 #include <tchar.h>
 #include <stdlib.h>
+#include "heap.h"
 #pragma comment(lib, "user32.lib")
 
 #include "hal-defs.h"
-HANDLE hBufferRegistry=0;
-BufferRegistry* pBufferRegistry=0;
+
+
 extern int procNo;
-extern  SyncBuf  *pSyncBuf;
+
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
+#define TRACE(str) printf("%s", str)
 
-extern "C"{
-
-	void halSetProcessorNo(int number){
-		procNo=number;
-	}
+struct SharedMemory {
+	SharedMemory* hostOwnAddr;												// адрес под которым хост видит эту структуру
+	SharedMemory* procOwnAddr[MAX_COUNT_PROCESSORS];						// адрес под которым каждый процессора видит SharedMemory 
+	SyncBuf		 hostSyncBuff[MAX_COUNT_PROCESSORS];						// структура для синхронизация с хостом - nmc
+	SyncBuf		 procSyncBuff[MAX_COUNT_PROCESSORS][MAX_COUNT_PROCESSORS];	// nmc-nmc межпроцессорная синхронизция (ипользуется половина)
+	int			 hostMapDiff [MAX_COUNT_PROCESSORS];						// смещение для пересчета адресов при их пересылке между процессором и хостом 
+	int			 procMapDiff [MAX_COUNT_PROCESSORS][MAX_COUNT_PROCESSORS];	// смещения для пересчета адресов при их пересылке между процессорами
+	Heap<0x8200000> heap;													// общая разделяемая куча
+	// (256*1024*1024*2+4*1024*1024*2)/4 = 8200000
 };
-// Возвращает указатель на буфер синхронизации
-SyncBuf* getSyncBuffer(){
-	if (pSyncBuf==0){
+
+SharedMemory* sharedMemory=0;
+
+// создает разделяемую структура мапируемую в память. Кто первый зашел , тот и создают . Остальные подключаются
+SharedMemory* openSharedMemory() {
+	
+	if (sharedMemory == 0) {
+		// округляем размер. так надо
+		unsigned sharedSize32 = sizeof(SharedMemory);
+		sharedSize32 += (64 * 1024 / 4 - 1);
+		sharedSize32 &= (~0x3FFF);
+
 		HANDLE hMapFile;
-		// пытаемся открыть существующий буфер
-		for (int i=0; i<HOST_CONNECT_TIMEOUT; i+=100){
+		// пытаемся открыть существующий мап- объект
+		for (int i = 0; i<HOST_CONNECT_TIMEOUT; i += 100) {
 			hMapFile = OpenFileMapping(
 				FILE_MAP_ALL_ACCESS,   // read/write access
 				FALSE,                 // do not inherit the name
-				TEXT(SYNC_BUFFER_MAPPING_NAME));               // name of mapping object
+				TEXT(SHARED_MEMORY_MAPPING_NAME));               // name of mapping object
 			if (hMapFile) break;
 			halSleep(100);
 		}
-		// пытаемся создать сами 
-		if (hMapFile == NULL){
-			hMapFile = CreateFileMapping(
-				INVALID_HANDLE_VALUE,    // use paging file
-				NULL,                    // default security
-				PAGE_READWRITE,          // read/write access
-				0,                       // maximum object size (high-order DWORD)
-				SYNC_BUF_SIZE,           // maximum object size (low-order DWORD)
-				TEXT(SYNC_BUFFER_MAPPING_NAME));              // name of mapping object
-
+		// пытаемся создать сами мап- объект
+		bool mapFileCreated = false;
+		try {
 			if (hMapFile == NULL) {
-				printf("Could not create file sync mapping object (%d).\n", GetLastError());
-				return 0;
+				hMapFile = CreateFileMapping(
+					INVALID_HANDLE_VALUE,    // use paging file
+					NULL,                    // default security
+					PAGE_READWRITE,          // read/write access
+					0,                       // maximum object size (high-order DWORD)
+					sharedSize32 ,           // maximum object size (low-order DWORD)
+					TEXT(SHARED_MEMORY_MAPPING_NAME));              // name of mapping object
+
+				if (hMapFile == NULL) {
+					printf("Could not create file sync mapping object (%d).\n", GetLastError());
+					throw (555);
+				}
+
+				mapFileCreated = true;
 			}
 		}
-
-		pSyncBuf = (SyncBuf*) MapViewOfFile(
-			hMapFile, // handle to map object
-			FILE_MAP_ALL_ACCESS,  // read/write permission
-			0,
-			0,
-			SYNC_BUF_SIZE);
-
-		if (pSyncBuf == NULL){
-			printf("Could not map view of file (%d).\n",GetLastError());
-			CloseHandle(hMapFile);
+		catch (int err){
+			printf("Could not create file sync mapping object (%d).\n", err);
+			return 0;
+		}
+		// Отображаем мап- объект на область памяти
+		try {
+			sharedMemory = (SharedMemory*)MapViewOfFile(
+				hMapFile, // handle to map object
+				FILE_MAP_ALL_ACCESS,  // read/write permission
+				0,
+				0,
+				sharedSize32);
+		
+			if (sharedMemory == NULL) {
+				printf("Could not map view of file (%d).\n", GetLastError());
+				CloseHandle(hMapFile);
+				throw 666;
+			}
+		}
+		catch (int err) {
+			printf("Could not map view of file (%d).\n (%d).\n", err);
 			return 0;
 		}
 
+		if (mapFileCreated) {
+			memset(sharedMemory, 0, sharedSize32 );
+			sharedMemory->heap.init();
+		}
+		// пишем свои адреса
+		if (procNo == -1) //host
+			sharedMemory->hostOwnAddr = sharedMemory;
+		else 
+			sharedMemory->procOwnAddr[procNo] = sharedMemory;
+		// вычислем смещения для конвертации адресов
+		for (int i = 0; i < MAX_COUNT_PROCESSORS; i++)
+			sharedMemory->hostMapDiff[i] = (int*)sharedMemory->hostOwnAddr - (int*)sharedMemory->procOwnAddr[i];
+		for (int i = 0; i < MAX_COUNT_PROCESSORS; i++)
+			for (int j = 0; j < MAX_COUNT_PROCESSORS; j++)
+				sharedMemory->procMapDiff[i][j] = (int*)sharedMemory->procOwnAddr[j] - (int*)sharedMemory->procOwnAddr[i];
+
 	}
-	return pSyncBuf;
+	return sharedMemory;
 }
 
-
-
+void closeSharedMemory(char* name) {
+	UnmapViewOfFile(sharedMemory);
+	CloseHandle(sharedMemory);
+}
+//=============================================================
 extern "C"{
+
+void halSetProcessorNo(int number){
+	procNo=number;
+}
     
 int ncl_getProcessorNo(){
 
@@ -80,141 +133,25 @@ int ncl_getProcessorNo(){
 int turn=1;
 	
 int ncl_hostSync(int val){
-		//findBuffer();
-	if (pSyncBuf==0)
-		pSyncBuf=getSyncBuffer();
+	if (openSharedMemory()==0)
+		return 0;
 	
-	SyncBuf& syncro = pSyncBuf[procNo];
-
+	SyncBuf& syncro = sharedMemory->hostSyncBuff[procNo];
 			
-	while(syncro.writeCounter[1]>syncro.readCounter[1])
-	{}
+	while(syncro.writeCounter[1]>syncro.readCounter[1]){}
 	syncro.sync1=val;						
 	syncro.writeCounter[1]++;
 	
-	while(syncro.readCounter[0]==syncro.writeCounter[0])		
-	{}									
+	while(syncro.readCounter[0]==syncro.writeCounter[0]){}									
 	int sync=syncro.sync0;								
 	syncro.readCounter[0]++;
 
 	return sync;
-
-
-
-/*
-		if (turn==1)
-		pSyncBuf[procNo].locked0=true;
-		pSyncBuf[procNo].sync1=val;
-		pSyncBuf[procNo].counter1++;
-		
-		while (pSyncBuf[procNo].counter0!=pSyncBuf[procNo].counter1){
-			::Sleep(100);
-		}
-		int sync=pSyncBuf[procNo].sync0;
-		pSyncBuf[procNo].locked0=false;
-		while ((pSyncBuf[procNo].locked1)){
-			::Sleep(100);
-		}
-		printf("=%Xh\n",pSyncBuf[procNo].sync0);
-		return sync;
-	}
-	*/
-		//SyncBuf& syncro = pSyncBuf[procNo];
-
-
-	}
+}
 
 };
 
-BufferRegistry* createBufferRegistry(){
-	if (pBufferRegistry)
-		return pBufferRegistry;
-	/*
-	// пытаемся открыть кем то созданный реест
-	hBufferRegistry = OpenFileMapping(
-		FILE_MAP_ALL_ACCESS,			// read/write access
-		FALSE,							// do not inherit the name
-		sBufferRegistryMappingName);	// name of mapping object
-*/
-	//if (hBufferRegistry  == NULL){
-	//TCHAR registryName[256]=TEXT(CONST_REGISTRY_MAPPING_NAME);
-	//TCHAR registrySuffix[256];
-	//int procNo=ncl_getProcessorNo();
-	//_itow(procNo,registrySuffix,16);
-	//wcscat(registrySuffix,registryName);
-	TCHAR* registryName=createName(TEXT(CONST_REGISTRY_MAPPING_NAME),procNo,procNo);
 
-	// Реест еще не создан , создаем сами
-	hBufferRegistry = CreateFileMapping(
-		INVALID_HANDLE_VALUE,    // use paging file
-		NULL,                    // default security
-		PAGE_READWRITE,          // read/write access
-		0,                       // maximum object size (high-order DWORD)
-		sizeof(BufferRegistry),          // maximum object size (low-order DWORD)
-		registryName);         // name of mapping object
-
-	if (hBufferRegistry == NULL) {
-		printf("ERROR:Could not create registry file mapping object (%d).\n",GetLastError());
-		return 0;
-	}
-	
-	pBufferRegistry = (BufferRegistry*)MapViewOfFile(
-		hBufferRegistry,
-		FILE_MAP_ALL_ACCESS,
-		0,
-		0,
-		sizeof(BufferRegistry));
-
-	if (pBufferRegistry == NULL) {
-		printf("ERROR:Could not map registry view of file (%d) \n",GetLastError());
-		return 0;
-	}
-
-	memset(pBufferRegistry,0,sizeof(BufferRegistry));
-	return pBufferRegistry;
-}
-
-// а если повтор ???
-/*
-int* halGetBuffer(int bufferID){
-	if (cropenBufferRegistry()==0)
-		return 0;
-	for(int i=0;i<pBufferRegistry->size;i++){
-		MappedBuffer& mappedBuffer=pBufferRegistry->buffer[i];
-		if (mappedBuffer.id==bufferID){
-			TCHAR bufferName[256]=TEXT(CONST_BUFFER_MAPPING_NAME);
-			TCHAR bufferSuffix[256];
-			_itow(bufferID,bufferSuffix,16);
-			wcscat(bufferSuffix,bufferName);
-
-			hMapFile = OpenFileMapping(
-				FILE_MAP_ALL_ACCESS,   // read/write access
-				FALSE,                 // do not inherit the name
-				bufferName);           // name of mapping object
-
-			if (hMapFile == NULL){
-				_tprintf(TEXT("ERROR:Could not open file mapping object (%d).\n"),GetLastError());
-				return 0;
-			}
-
-			int* pBuffer = (int*) MapViewOfFile(
-				hMapFile, // handle to map object
-				FILE_MAP_ALL_ACCESS,  // read/write permission
-				0,
-				0,
-				mappedBuffer.size32*4);
-
-			if (pBuffer == NULL){
-				_tprintf(TEXT("ERROR:Could not map view of file (%d).\n"),GetLastError());
-				CloseHandle(hMapFile);
-				return 0;
-			}
-			return pBuffer;
-		}
-	}
-	return 0;	
-}
-*/
 TCHAR* createName(TCHAR* baseName, int index0, int index2){
 	static TCHAR bufferName[256];
 	TCHAR bufferSuffix[256];
@@ -226,114 +163,14 @@ TCHAR* createName(TCHAR* baseName, int index0, int index2){
 	wcscat_s(bufferName,bufferSuffix);
 	return bufferName;
 }
+
 int* halMalloc32(int bufferSize32){
-	if (createBufferRegistry()==0)
+	if (openSharedMemory()==0)
 		return 0;
-	MappedBuffer mappedBuffer;
-	bufferSize32+=(64*1024/4-1);
-	bufferSize32&=(~0x3FFF);
-	mappedBuffer.size32 = bufferSize32;
-	mappedBuffer.owner  = ncl_getProcessorNo(); //must be done on host 
-	
-	// создаем массив отображаемый в файл
-	mappedBuffer.handle = CreateFileMapping(
-		INVALID_HANDLE_VALUE,    // use paging file
-		NULL,                    // default security
-		PAGE_READWRITE,          // read/write access
-		0,                       // maximum object size (high-order DWORD)
-		mappedBuffer.size32*4,   // maximum object size (low-order DWORD)
-		createName(TEXT(CONST_BUFFER_MAPPING_NAME),mappedBuffer.owner,pBufferRegistry->count));			 // name of mapping object
-
-	if (mappedBuffer.handle == NULL) {
-		printf("ERROR:Could not open file mapping object (%d).\n",GetLastError());
-		return 0;
-	}
-	// получаем указатель
-	mappedBuffer.address = (int*)MapViewOfFile(
-		mappedBuffer.handle ,
-		FILE_MAP_ALL_ACCESS,
-		0,
-		0,
-		mappedBuffer.size32*4);
-
-	if (mappedBuffer.address == NULL) {
-		printf("ERROR:Could not map view of file (%d) \n",GetLastError());
-		return 0;
-	}
-
-	//----------- регистрируем новый буфер в реестре  ----------
-	memcpy(pBufferRegistry->buffer+pBufferRegistry->count,&mappedBuffer,sizeof(MappedBuffer));
-	pBufferRegistry->count++;
-	return mappedBuffer.address;
+	int* buffer=sharedMemory->heap.allocate(bufferSize32);
+	return buffer;
 }
-/*
-int halConnect(int* masterSharedBuffer, int masterSharedSize32, int** sharedBuffer, int* sharedSize32){
 
-	hMapFile = OpenFileMapping(
-		FILE_MAP_ALL_ACCESS,   // read/write access
-		FALSE,                 // do not inherit the name
-		sSyncName);               // name of mapping object
-
-	if (hMapFile == NULL){
-		_tprintf(TEXT("Could not open file mapping object (%d).\n"),GetLastError());
-		return 0;
-	}
-
-	pSyncBuf = (SyncBuf*) MapViewOfFile(
-		hMapFile, // handle to map object
-		FILE_MAP_ALL_ACCESS,  // read/write permission
-		0,
-		0,
-		SYNC_BUF_SIZE);
-
-	if (pSyncBuf == NULL){
-		_tprintf(TEXT("Could not map view of file (%d).\n"),GetLastError());
-		CloseHandle(hMapFile);
-		return 0;
-	}
-
-
-	int ok=halHostSync(0x64060000+halGetProcessorNo());
-	//------------------------------
-	//LPVOID sharedBuffer = 0;
-	//LPVOID sharedBuffer = 0;
-	if (masterSharedBuffer==0 && masterSharedSize32==0){
-		*sharedSize32=halHostSync(0);
-		hMapFileSharedMem = OpenFileMapping(
-			FILE_MAP_ALL_ACCESS,   // read/write access
-			FALSE,                 // do not inherit the name
-			sSharedMemName);               // name of mapping object
-
-		if (hMapFileSharedMem == NULL){
-			_tprintf(TEXT("Could not open file mapping object (%d).\n"),GetLastError());
-			return 0;
-		}
-
-		*sharedBuffer = (int*)MapViewOfFile(
-			hMapFileSharedMem,
-			FILE_MAP_ALL_ACCESS,
-			0,
-			0,
-			*sharedSize32*4);
-
-		printf("Shared: %X %X\n",*sharedBuffer ,*sharedSize32*4);
-		if (sharedBuffer == NULL) {
-			_tprintf(TEXT("Could not map view of file (%d) \n"),GetLastError());
-			return 0;
-		}
-		halHostSync((int)*sharedBuffer);
-	}
-	else {
-		halHostSync((int)masterSharedSize32);
-		halHostSync((int)masterSharedBuffer);
-		
-	}
-
-
-	//printf("Target" STR(PROCESSOR_ID)  "-ok\n");
-	
-}
-*/
 int halHostSyncArray(
 					 int value,        // Sync value
 					 void *outAddress, // Sended array address (can be NULL)
@@ -349,61 +186,31 @@ int halHostSyncArray(
 	return 1;
 }
 
-int halSyncArray(
-					 int value,        // Sync value
-					 void *outAddress, // Sended array address (can be NULL)
-					 size_t outLen,    // Sended array length (can be 0)
-					 void **inAddress, // Received array address pointer (can be NULL)
-					 size_t *inLen,   // Received array size pointer (can be NULL)
-					 int  procNo)
-{
-	int sync=halSync(value,procNo);
-	if (inAddress){
-		*inAddress=(void*)halSync((int)outAddress);
-		MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(*inAddress),procNo);
-		if (mirrorBuffer==0){
-			*inAddress=0;
-			*inLen=0;
-			return sync;
-		}
-		*inAddress=(void*)((int*)(*inAddress)+mirrorBuffer->diff);
-	}
-	else 
-		halSync((int)outAddress);
-	if (inLen)
-		*inLen=halSync(outLen);
-	else 
-		halSync(outLen);
-
-	
-	return sync;
-}
+//int halSyncArray(
+//					 int value,        // Sync value
+//					 void *outAddress, // Sended array address (can be NULL)
+//					 size_t outLen,    // Sended array length (can be 0)
+//					 void **inAddress, // Received array address pointer (can be NULL)
+//					 size_t *inLen,   // Received array size pointer (can be NULL)
+//					 int  procNo)
+//{
+//	
+//	return sync;
+//}
 
 void* halSyncAddr(
 					 void *outAddress, // Sended array address (can be NULL)
 					 int  procNo)
 {
 	void *inAddress=(void*)halSync((int)outAddress,procNo);
-	if (inAddress){
-		MirrorBuffer* mirrorBuffer=findBuffer((unsigned)(inAddress),procNo);
-		if (mirrorBuffer==0){
-			return 0;
-		}
-		inAddress=(void*)((int*)(inAddress)+mirrorBuffer->diff);
-	}
-	return inAddress;
+	void* ownAddress=halMapAddrFrom(inAddress, procNo);
+	return ownAddress;
 }
 
 
 extern "C" {
-void halFree(void* ){
-	/*
-	halHostSync((int)0x600DBA1+halGetProcessorNo());
-	UnmapViewOfFile(shared);
-	CloseHandle(hMapFileSharedMem);	
-	UnmapViewOfFile(pSyncBuf);
-	CloseHandle(hMapFile);
-	*/
+void halFree(void* p){
+	sharedMemory->heap.release(p);
 }
 
 void halHandshake(int procNo){
@@ -413,10 +220,154 @@ void halHandshake(int procNo){
 
 int halDisconnect(int* shared){
 	halHostSync((int)0x600DBA1+halGetProcessorNo());
-	//for()
-	//UnmapViewOfFile(shared);
-	//CloseHandle(hMapFileSharedMem);	
-	//UnmapViewOfFile(pSyncBuf);
-	//CloseHandle(hMapFile);
+	
 	return 0;
 }
+
+
+//void* halMapAddr(const void* srcAddr) {
+//	return srcAddr;
+//}
+
+void* halMapAddrTo(const void* ownAddress, int toProccessor) {
+	int diff;
+	if (procNo == -1)
+		diff = sharedMemory->hostMapDiff[toProccessor];
+	else 
+		diff=sharedMemory->procMapDiff[procNo][toProccessor];
+	void* extAddress = (void*)((int*)(ownAddress)+diff);
+	return extAddress;
+}
+void* halMapAddrFrom(const void* extAddress, int fromProccessor) {
+	int diff;
+	if (procNo==-1)
+		diff = sharedMemory->hostMapDiff[fromProccessor];
+	else 
+		diff = sharedMemory->procMapDiff[fromProccessor][procNo];
+	void* ownAddress = (void*)((int*)(extAddress)+diff);
+	return ownAddress;
+}
+
+// синхронизация host-nmc и nmc-nmc
+int halSync(int val, int processor) {
+	if (openSharedMemory() == 0)
+		return 0;
+
+	int sync;
+
+	if (procNo == -1) {		// if host  <-> processoor sync
+		SyncBuf& syncro = sharedMemory->hostSyncBuff[processor];
+
+		while (syncro.writeCounter[0]>syncro.readCounter[0])
+		{
+			::Sleep(100);
+		}
+		syncro.sync0 = val;
+		syncro.writeCounter[0]++;
+
+		while (syncro.readCounter[1] == syncro.writeCounter[1])
+		{
+			::Sleep(100);
+		}
+		sync = syncro.sync1;
+		syncro.readCounter[1]++;
+	}
+	else
+	{
+		//if (procNo == 0)
+		if (procNo < processor) {
+			SyncBuf& syncro = sharedMemory->procSyncBuff[procNo][processor];
+
+			while (syncro.writeCounter[0] > syncro.readCounter[0])
+			{
+				::Sleep(100);
+			}
+			syncro.sync0 = val;
+			syncro.writeCounter[0]++;
+
+			while (syncro.readCounter[1] == syncro.writeCounter[1])
+			{
+				::Sleep(100);
+			}
+			sync = syncro.sync1;
+			syncro.readCounter[1]++;
+		}
+		//else if (procNo == 1)
+		else {
+			SyncBuf& syncro = sharedMemory->procSyncBuff[processor][procNo];
+
+			while (syncro.writeCounter[1] > syncro.readCounter[1])
+			{
+			}
+			syncro.sync1 = val;
+			syncro.writeCounter[1]++;
+
+			while (syncro.readCounter[0] == syncro.writeCounter[0])
+			{
+			}
+			sync = syncro.sync0;
+			syncro.readCounter[0]++;
+
+		}
+	}
+	return sync;
+}
+
+HANDLE hMapFile;
+
+
+extern int procNo = 0;
+extern "C" {
+
+
+	void halSetActiveHeap(int heap) {
+		//activeHeap=heap;
+	}
+
+	static char* absFile[MAX_COUNT_PROCESSORS] = { 0,0,0,0,0,0,0,0 };
+
+	int halOpen(char* absfile, ...) {
+		procNo = -1;
+
+		//unsigned sharedSize32;
+
+		va_list args;
+		va_start(args, absfile);
+		absFile[0] = absfile;
+		absFile[1] = va_arg(args, char*);
+		va_end(args);
+
+		TRACE("Connected!\n");
+		return 0;
+	}
+
+	
+	int halReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0)
+	{
+		//CopyMemory((PVOID)dstHostAddr, (char*)(halMapAddrFrom((void*)srcBoardAddr,processor), size32 * 4);
+		memcpy(dstHostAddr, (char*)(halMapAddrFrom((void*)srcBoardAddr,processor)), size32 * 4);
+
+		return 0;
+
+	}
+
+	int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
+		//CopyMemory((char*)(halMapAddrFrom((void*)dstBoardAddr,processor ), (PVOID)srcHostAddr,  size32 * 4);
+		memcpy(halMapAddrFrom((void*)dstBoardAddr, processor),srcHostAddr, size32 * 4);
+	return 0;
+	}
+
+
+	int halClose()
+	{
+		//closeSharedMemory();
+		return 1;
+	}
+
+
+	int halGetResult(unsigned long* returnCode, int processor = 0)
+	{
+		return 1;
+
+	}
+};
