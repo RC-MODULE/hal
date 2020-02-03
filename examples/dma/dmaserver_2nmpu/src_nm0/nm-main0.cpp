@@ -97,7 +97,7 @@ int main()
 		//printf("[NMC0:]%d\n", taskNo);
 		dmaServer.startJob();	
 		// Замер скорости DMA сервера
-		if (taskNo%4096==0){
+		if (0) if (taskNo%4096==0){
 			t1=clock();
 			unsigned long long dmaSpeed=totalCopiedSize;
 			totalCopiedSize=0;
