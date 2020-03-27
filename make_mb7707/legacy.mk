@@ -52,16 +52,16 @@ VPATH    = $(SRC_DIRS)
 
 
 #========================== NeuroMatrix build ===================	
-nmc: echo $(TARGET)
+.DEFAULT_GOAL:=legacy
 
-echo:
+logo:
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...          )
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> legacy compiling...   )
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) 
+legacy: logo $(OUT_DIR) $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
 	@echo *******************************************************************************
 	@echo **                                                                           **
@@ -91,23 +91,3 @@ $(TMP_DIR)/%.asmx: %.cpp
 $(TMP_DIR)/%.asmx: %.c
 	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
 
-#========================== Visual Studio build ===================	
-
-	
-vs2005: $(PROJECT).sln
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
-	
-
-vs2015:	$(PROJECT).sln
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
-
-	
-$(PROJECT).sln:	premake5.lua 
-	premake5 $(MAKECMDGOALS) 
-	
-#--------------- cleanup  --------------------------------	
-
-
--include $(ROOT)/clean.mk

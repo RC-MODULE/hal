@@ -2,6 +2,7 @@
 
 -- A solution contains projects, and defines the available configurations
 solution "hal-mc7601"
+	platforms { "Win32","x64"}		
    	configurations { "Debug", "Release" }
 	-- x86  library with printf support  ---------------------------------	 
 	project "hal-mc7601-x86"
