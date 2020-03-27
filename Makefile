@@ -1,4 +1,4 @@
 
 
 setenv:
-	setenv -ua HAL $(realpath .)
+	setenv -ua HAL "$(realpath .)"

@@ -64,18 +64,15 @@ OUT_DIR  = $(ROOT)/lib
 TARGET          = $(OUT_DIR)/lib$(PROJECT).a
 CC       		= nmc-g++
 AS              = asm 				 
-AR               = nmc-ar
+AR              = nmc-ar
 CXXFLAGS 		= -std=c++11 -O2 -Wall -m$(ARCH) -c
-
-ASFLAGS        = -$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
-
-ARFLAGS          = rcs $(TARGET)
+ASFLAGS         = -$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
+ARFLAGS         = rcs $(TARGET)
 
 #-------------- DEBUG config -------------------------
 ifdef DEBUG
 ASFLAGS         += -g
 endif 
-
 
 
 INC_DIRS = -I$(ROOT)/include -I../src_1879vm6ya
@@ -85,9 +82,6 @@ ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_S    = $(wildcard $(addsuffix /*.s,  $(SRC_DIRS)))
-
-
-
 
 
 #################################################
@@ -103,23 +97,21 @@ export OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJE
 
 
 
-
-
 #========================== NeuroMatrix build ===================	
 .DEFAULT_GOAL:=$(TARGET)
 
 default: 
-	$(MAKE) $(TARGET) 
+	$(MAKE) $(TARGET) vs2015
 
 logo:
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...          )
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> NMC-GCC compiling...  )
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 
 
-$(TARGET): logo $(TMP_DIR) $(OUT_DIR) $(OBJECTS) 
+nmc $(TARGET): logo $(TMP_DIR) $(OUT_DIR) $(OBJECTS) 
 	$(AR) $(ARFLAGS) $(OBJECTS)
 	@echo *******************************************************************************
 	@echo **                                                                           **
@@ -135,7 +127,6 @@ legacy:
 
 $(TMP_DIR)/printf.o: ../src_printf_nmgcc/printf.cpp
 	$(CC) -std=c++11 -O0 -Wall -m$(ARCH) -c $(<) -o$(@) $(INC_DIRS) $(ERRECHO) 
-
 
 $(TMP_DIR):
 	-mkdir "$(@)"
@@ -159,16 +150,28 @@ $(TMP_DIR)/%.o: %.s
 #========================== Visual Studio build ===================	
 
 	
-vs2005: $(PROJECT).sln
+vs2005: 
+	premake5 vs2005
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|x64"
 	
 
-vs2015:	$(PROJECT).sln
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
 
+vs2015:
+	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=x64
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=x64
 	
-$(PROJECT).sln:	premake5.lua 
-	premake5 $(MAKECMDGOALS) 
+	
+vs2017:
+	premake5 vs2017
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=win32
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=win32
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=x64
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=x64
+	
 	
 #--------------- cleanup  --------------------------------	
 
