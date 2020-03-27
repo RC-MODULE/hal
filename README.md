@@ -13,13 +13,58 @@
 Поддерживаемые модули: МС51.03 , MС76.01, МВ77.07, МС12101
 
 
-# Установка HAL
+# Установка HAL 
 ## Системные требования
 *  Сборка компонент (статические lib-библиотеки, тесты, примеры) построена на сборочных скриптах Makefile. Для корректного запуска сборочных Makefile-ов  под Windows требуется установленный GNU **make**.
-Для ОС Windows рекомендуется версия make 3.81. 
-make 3.81, premake,  - входит в состав [GnuWin32-lite](https://github.com/RC-MODULE/gnuwin32-lite) (см.ниже)
+Для ОС Windows рекомендуется версия make [3.81](https://sourceforge.net/projects/gnuwin32/files/make/3.81/)  (3.82- проявляет себя нестабильно). make 3.81 - входит в состав [GnuWin32-lite](https://github.com/RC-MODULE/gnuwin32-lite) (см.ниже)
+
 * Для обеспечения полной функциональности Makefile-ов (тестов/примеров/генерации проектов и .т.д.), а также кросс-платформенной работы Makefile как в ОС Windows, так и в Linux  используются UNIX-утилиты (rm,cp,which,...).  В среде ОС Windows вызываются их аналоги из пакета [GnuWin](http://gnuwin32.sourceforge.net/), в виду чего требуется их предварительная установка. 
 Сокращенный необходимый комплект всех необходимых GnuWin утилит включая: make,cmake,gzip и пр. можно установить с помощью online-установщика [GnuWin32-lite](https://github.com/RC-MODULE/gnuwin32-lite)
-* NeuroMatrix SDK  
-  Для сборки библиотек под NeuroMatrix требуется NMSDK версией не ниже 3.07.  Полный комплект утилит  https://github.com/RC-MODULE/dev-kit
+
+* NeuroMatrix NMGCC-SDK  
+  Для сборки библиотек gcc компилятором под NeuroMatrix 
+
+* Leqacy NeuroMatrix SDK  (устаревшая версия SDK)
+  Для сборки библиотек под NeuroMatrix требуется NMSDK версией не ниже 3.07
+
+* x86/x64 SDK   
+  Для сборки host-библиотек  ребуется Gnu GCC или Microsoft Visual Studio.
+  http://www.mingw.org/   
+  http://win-builds.org/doku.php    
+[Visual Studio 2005 Express](http://apdubey.blogspot.ru/2009/04/microsoft-visual-studio-2005-express.html)  
+[Visual Studio Express](https://visualstudio.microsoft.com/ru/vs/older-downloads/)  
+
+
+
+## Сборка NeuroMatrix библиотек  GCC  компилятором 
+  Сборка осуществляется командой ```make``` из соответствующей плате папки */make/nmpp_<board>*. 
+  
+```
+nmpp> cd make/nmpp-mc12101
+nmpp/make/nmpp-nmc3> make nmc
+nmpp/make/nmpp-nmc3> make DEBUG=y
+```
+## Сборка NeuroMatrix библиотек Legacy  компилятором 
+  Сборка устравшим компилятором осуществляется командой ```make``` с ключом ```legacy``` из соответствующей архитектуре папки */make/nmpp_archictecture*. 
+  
+```
+nmpp> cd make/nmpp-nmc3
+nmpp/make/nmpp-nmc3> make legacy
+nmpp/make/nmpp-nmc3> make legacy DEBUG=y
+```
+
+## Сборка x86/x64 библиотек  
+  Генерация самих проектов оcуществляется средствами [**premake5**](https://premake.github.io/).  
+ Сконфигурировать проект под нужный SDK и собрать его можно командой   
+ 
+```\nmpp\make\nmpp-x86-x64> make vs2005 ```  
+```\nmpp\make\nmpp-x86-x64> make vs2015 ```  
+```\nmpp\make\nmpp-x86-x64> make vs2017 ```  
+где с помощью ключей:  vs2008, vs20015, vs2017 , unix, mingw ...
+указывается требуемый SDK   
+
+## Настройка переменных окружения  
+Для удобства подключения библиотек к собственным проектам, а также примерам и тестам  рекомендуется использовать переменную окружения **NMPP**. Создать переменную **NMPP** и присвоить ей путь к установленной папке NMPP можно с помощью команды  
+```\nmpp\make\> make setenv```
+
 
