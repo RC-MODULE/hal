@@ -32,16 +32,16 @@ AS_FLAGS         =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 AS_FLAGS_C2ASM   =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 LIBS             =
 CC               =nmcpp
-CCPP_FLAGS       =-$(ARCH) -DNEURO -OPT2 -inline 
-CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
+CCPP_FLAGS       =-nmc3 -DNEURO -OPT2 -inline 
+CC_FLAGS         =-nmc3 -except -rtti
 BUILDER          =libr
 BUILDER_FLAGS    =-s $(TARGET)
 TMP_DIR          =$(CONFIGURATION)
 #--------------  DEBUG config -------------------------
 ifdef DEBUG
 TARGET           =$(OUT_DIR)/$(PROJECT).lib
-CCPP_FLAGS       =-$(ARCH) -DNEURO -OPT0 -inline -debug 
-CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
+CCPP_FLAGS       :=$(CCPP_FLAGS) -DNEURO -OPT0 -inline -debug 
+CC_FLAGS         :=$(CC_FLAGS) -except -rtti
 AS_FLAGS        +=-ga
 BUILDER_FLAGS   +=-d0 -full_names
 endif 

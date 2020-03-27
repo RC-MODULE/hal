@@ -1,6 +1,7 @@
 #include "malloc.h"
 #include "section-hal.h" 
 
+#ifdef __GNUC__
 extern "C"{
  	void *malloc0(unsigned int size);
 	void *malloc1(unsigned int size);
@@ -36,3 +37,4 @@ extern "C"{
 	
 
 };
+#endif

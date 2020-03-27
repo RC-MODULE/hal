@@ -40,7 +40,7 @@
 	sync=halSync(100,1);							// Handshake with with proc 1
 
 	//---------- memory allocation ---------------------
-	halSetActiveHeap(0);
+	//halSetActiveHeap(0);
 	int* sharedBuffer0=halMalloc32(sharedSize32+128);	// Allocates shared memory (in 32-bit words) 
 	if (sharedBuffer0==0) 
 		return -1;
