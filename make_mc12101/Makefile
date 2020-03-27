@@ -98,10 +98,10 @@ export OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJE
 
 
 #========================== NeuroMatrix build ===================	
-.DEFAULT_GOAL:=$(TARGET)
+.DEFAULT_GOAL:=default
 
 default: 
-	$(MAKE) $(TARGET) vs2015
+	$(MAKE) nmcgcc vs2015
 
 logo:
 	$(info *******************************************************************************)
@@ -111,7 +111,7 @@ logo:
 	$(info *******************************************************************************)
 
 
-nmc $(TARGET): logo $(TMP_DIR) $(OUT_DIR) $(OBJECTS) 
+nmcgcc: logo $(TMP_DIR) $(OUT_DIR) $(OBJECTS) 
 	$(AR) $(ARFLAGS) $(OBJECTS)
 	@echo *******************************************************************************
 	@echo **                                                                           **
