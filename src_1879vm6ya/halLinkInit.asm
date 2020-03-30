@@ -1,20 +1,27 @@
 
-data ".data_link"
-	cpUserCallback: word[3] = (0h dup 3);	//6 пользовательских callback-ов
-	global cpPortDirection: word[3];
-end ".data_link";
-
-extern GR7: word[2];
-extern AR5: word[2];
-extern GR0: word[2];
+data ".data_hal"
+	cpUserCallback: word[3] = (0h dup 3);	//3 пользовательских callback-ов
+	global cpPortDirection: word[3] = (0h dup 3);
+	link_gr7: word[2];
+	link_ar5: word[2];
+end ".data_hal";
 
 import from periphery;
+import from led;
 
-macro cpInterrupt(nameHandler)
-	[GR7] = gr7;
+
+/*macro cpInterrupt(nameHandler)
 	nul;nul;
-	delayed goto nameHandler;
-		[AR5] = ar5;
+	nul;nul;
+	delayed ireturn;
+		nul;
+		nul;
+		nul;
+end cpInterrupt;*/
+macro cpInterrupt(nameHandler)
+	[link_gr7] = gr7;
+	[link_ar5] = ar5;
+	goto nameHandler;
 end cpInterrupt;
 
 macro cpHandler(nameHandler, numberCallback)
@@ -22,14 +29,12 @@ macro cpHandler(nameHandler, numberCallback)
 	gr7 = [cpUserCallback + numberCallback];
 	with gr7;
 	if <>0	call gr7;
-	
-	ar5 = [AR5];
- 	delayed	ireturn;
-		gr7 = [GR7];
-		nop;
+	ar5 = [link_ar5];	
+	gr7 = [link_gr7];
+ 	ireturn;
 end cpHandler;
 
-begin ".text_link"
+begin ".text_hal"
 global _halLinkSetCallback: label;
 <_halLinkSetCallback>
 	ar5 = ar7 - 2;
@@ -42,13 +47,15 @@ global _halLinkSetCallback: label;
 	return;
 	
 <cpInterrupts>
-	cpInterrupt(cp0Handler);
-	cpInterrupt(cp1Handler);
-	cpInterrupt(cp2Handler);
+	cpInterrupt(link0Handler);
+	cpInterrupt(link1Handler);
+	cpInterrupt(link2Handler);
 	
-	cpHandler(cp0Handler, 0);
-	cpHandler(cp1Handler, 1);
-	cpHandler(cp2Handler, 2);
+	cpHandler(link0Handler, 0);
+	cpHandler(link1Handler, 1);
+	cpHandler(link2Handler, 2);
+<NUL_NUL>
+	nul;nul;
 
 //void halLinkInit(int port, int direction);
 global _halLinkInit: label;
@@ -58,7 +65,6 @@ global _halLinkInit: label;
 	push ar1, gr1;
 	gr0 = [--ar5];		//номер порта 0..2
 	gr1 = [--ar5];		//0 если порт передающий, 1, если порт принимающий
-	
 	ar0 = cpPortDirection;
 	[ar0 += gr0] = gr1	with gr7 = false;
 	
@@ -83,8 +89,8 @@ global _halLinkInit: label;
 	// CP1RC - 27 (3)
 	// CP2TR - 28 (4)
 	// CP2RC - 29 (5)
-	gr1 = 1	with gr7 = gr0;
 	EndShift: label;
+	gr1 = 1	with gr7 = gr0;
 <ShiftBit>
 	if =0 delayed goto EndShift;
 		nul;
@@ -119,4 +125,4 @@ global _halLinkInit: label;
 	pop ar1, gr1;
 	pop ar0, gr0;
 	return;
-end ".text_link";
+end ".text_hal";

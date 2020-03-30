@@ -2,8 +2,10 @@
 
 extern cpPortDirection:word[3];
 
+import from led;
+
 //void halLinkStart(void* vector, int size32, int port);
-begin ".text_link"
+begin ".text_hal"
 global _halLinkStart: label;
 <_halLinkStart>
 	ar5 = sp - 2;
@@ -19,12 +21,15 @@ global _halLinkStart: label;
 	ar1 += gr1	with gr7 = false;
 	
 	[ar1 + 0Ah] = gr7;		//reset Control
-	[ar1] = gr0;			//MainCounter
+	[ar1 + 08h] = gr7	with gr7++;		//AddrMode
+	[ar1] = gr0			with gr7++;		//MainCounter, gr7 = 2
 	[ar1 + 02h] = ar0;		//Addr
-	[ar1 + 08h] = gr7;		//AddrMode
-	gr7 = 2;
-	[ar1 + 0Ch] = gr7	with gr7--;		//IntMask
+	//gr7 = 3;
+	[ar1 + 0Ch] = gr7	with gr7--;		//IntMask, gr7 = 1
+	//gr7 = 1;
 	[ar1 + 0Ah] = gr7;			//start	
+	
+	gr7 = [ar1 + 0Ah];
 	pop ar1, gr1;
 	pop ar0, gr0;
 	return;
@@ -60,6 +65,8 @@ global _halLinkStart2D: label;
 	[ar1 + 0Ch] = gr7	with gr7--;		//IntMask
 	[ar1 + 08h] = gr7;			//AddrMode
 	[ar1 + 0Ah] = gr7;			//start	
+	
+
 	pop ar2, gr2;
 	pop ar1, gr1;
 	pop ar0, gr0;
@@ -75,10 +82,17 @@ global _halLinkIsCompleted: label;
 	ar0 = cpPortDirection	with gr1 = gr0 << 10;
 	gr7 = [ar0 += gr0]	with gr0 = false;
 	gr7 <<= 4;
-	ar1 = 4000180Ah	with gr1 += gr7; 	//	ar0 - базовый адрес регистра Control коммуникационных портов	
+	ar1 = 40001800h + 0Ah	with gr1 += gr7; 	//	ar0 - базовый адрес регистра Control коммуникационных портов	
 	ar1 += gr1	with gr0++;
 	gr7 = [ar1]	with gr0++;		//gr0 = 2;
-	pop ar1, gr1	with gr7 = gr7 and gr0;
-	pop ar0, gr0	with gr7 >>= 1;
+	gr7 = gr7 and gr0;
+	/*gr1 = gr7 and gr0;
+	gr0<<=2;
+	gr0 = gr7 and gr0;
+	gr0 >>= 2;
+	gr7 = not gr0 and gr1;*/
+	gr7>>=1;
+	pop ar1, gr1;
+	pop ar0, gr0;
 	return;
-end ".text_link";
+end ".text_hal";
