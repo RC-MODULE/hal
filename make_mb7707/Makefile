@@ -1,77 +1,132 @@
-ROOT = ..
--include $(ROOT)/global.mk
-.SUFFIXES:
+#
+# This is a  Makefile for NeuroMatrix projects (application or library) 
+# with automatic recursive search of source files , compiling and linking.
+# Makefile is processed by GNU make and may be used both in Linux and Windows OS
+#
+# USAGE:
+#   For release build                    run 'make'
+#   For debug   build                    run 'make DEBUG=y'
+#   For debug & release  build           run 'make all'
+#   For full  rebuild                    run 'make -B'
+#   Multithread build (speed up)         run 'make -j4'
+#   To clean                             run 'make clean'
+#   To clean DEBUG & RELEASE             run 'make cleanall'
+#   To create VisualStudio 2005 project  run 'make vs2005'
+#   To create VisualStudio 2015 project  run 'make vs2015'
+#   For verbose build (no colorizing)    run 'make VERBOSE=y'
+#
+# WARNING:
+#   Makefile is sensitive to leading or trailing spaces and backslashes in the pathes
+#
+# DEFENITIONS:
+#   PROJECT         - project name     
+#   TARGET          - output target (.lib or .abs) file with path
+#   INC_DIRS        - set of search pathes for the macro libraries and includes (with -I flag separated)
+#   SRC_DIRS        - set of explicit  search pathes of all (.c .cpp .asm) source files (with space separated)
+#   LIB_DIRS        - set of search library pathes (with -l flag separated)
+#   TMP_DIR         - temporary build-folder (Debug/Release)
+#   
+#   CFLAGS          - C compiler
+#   CXXFLAGS        - C++ compiler flags   
+#   AS              - assembler
+#   ASMFLAGS        - assembler flags for compiling of pure .asm files 
+#   AR              - librarian
+#   ARFLAGS         - librarian flags of (libr/linker)
+#
 
-PROJECT  = hal-mb7707
+ROOT             = ..
+ifeq ($(OS),Windows_NT)
+nmc4vars_win.mk:
+	-copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+
+-include 		 nmc4vars_win.mk
+SHELL 			 = cmd
+endif
+
+DEBUG = y;
+
+
 CONFIGURATION ?= Release
 ifdef DEBUG
 CONFIGURATION =Debug
 else
-
+$(error Release configuration cause bug in printf. Run with flag DEBUG=y )
 endif
 
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
-LIB_DIRS = 
+#--------------  RELEASE/ALL config -------------------
+
+
+ARCH            = nmc3
+PROJECT  = hal-mb7707
+TMP_DIR  = $(CONFIGURATION)
+OUT_DIR  = $(ROOT)/lib
+TARGET          = $(OUT_DIR)/lib$(PROJECT).a
+CC       		= nmc-g++
+AS              = asm 				 
+AR              = nmc-ar
+CXXFLAGS 		= -std=c++11 -O2 -Wall -m$(ARCH) -c
+ASFLAGS         = -$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
+ARFLAGS         = rcs $(TARGET)
+
+#-------------- DEBUG config -------------------------
+ifdef DEBUG
+ASFLAGS         += -g
+endif 
+
+
+INC_DIRS = -I$(ROOT)/include  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
+
 SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
-ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
+ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_S    = $(wildcard $(addsuffix /*.s,  $(SRC_DIRS)))
-OUT_DIR  = $(ROOT)/lib
-#--------------  RELEASE/ALL config -------------------
-TARGET           = $(OUT_DIR)/$(PROJECT).lib
-ARCH             =nmc3
-AS               =asm 				 
-AS_FLAGS         =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
-AS_FLAGS_C2ASM   =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
-LIBS             =
-CC               =nmcpp
-CCPP_FLAGS       =-nmc3 -DNEURO -OPT2 -inline 
-CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
-BUILDER          =libr
-BUILDER_FLAGS    =-s $(TARGET)
-TMP_DIR          =$(CONFIGURATION)
-#--------------  DEBUG config -------------------------
-ifdef DEBUG
-TARGET           =$(OUT_DIR)/$(PROJECT).lib
-CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
-CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
-AS_FLAGS        +=-ga
-BUILDER_FLAGS   +=-d0 -full_names
-endif 
+
+
+#################################################
+
+VPATH    = $(SRC_DIRS)
 
 # collecting of objects
 OBJECTS_CPP = $(notdir $(patsubst %.cpp,%.o,$(ALL_CPP)))
 OBJECTS_ASM = $(notdir $(patsubst %.asm,%.o,$(ALL_ASM)))
-OBJECTS_S   = $(notdir $(patsubst %.s,%.o,$(ALL_S)))
 OBJECTS_C   = $(notdir $(patsubst %.c,%.o,$(ALL_C)))
-OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM) $(OBJECTS_S))
+OBJECTS_S   = $(notdir $(patsubst %.s,%.o,$(ALL_S)))
+export OBJECTS     = $(addprefix $(TMP_DIR)/,$(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_ASM) $(OBJECTS_S))
 
-VPATH    = $(SRC_DIRS)
 
 
 #========================== NeuroMatrix build ===================	
-nmc: echo $(TARGET)
+.DEFAULT_GOAL:=default
 
-echo:
+default: 
+	$(MAKE) nmcgcc vs2015
+
+logo:
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
-	$(info **                       Neuro Matrix <$(CONFIGURATION)> compiling...          )
+	$(info **                       Neuro Matrix <$(CONFIGURATION)> NMC-GCC compiling...  )
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) 
-	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
+
+nmcgcc: logo $(TMP_DIR) $(OUT_DIR) $(OBJECTS) 
+	$(AR) $(ARFLAGS) $(OBJECTS)
 	@echo *******************************************************************************
 	@echo **                                                                           **
 	@echo **                                   Build OK!                               **
 	@echo **                                                                           **
 	@echo *******************************************************************************
 
-# custom build of printf.c because of error with -O2 optimization compiling
-$(TMP_DIR)/printf.o: ../src_printf_nmcpp/printf.c
-	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0 -I$(ROOT)/include
+legacy:
+	$(MAKE) -f legacy.mk
+	
+#$(TMP_DIR)/printf.o: ../src_printf_nmgcc/printf.c
+#	$(CC) ../src_printf_nmcpp/printf.c $(INC_DIRS) $(CXXFLAGS) -o$(TMP_DIR)/printf.o 
+
+$(TMP_DIR)/printf.o: ../src_printf_nmgcc/printf.cpp
+	$(CC) -std=c++11 -O0 -Wall -m$(ARCH) -c $(<) -o$(@) $(INC_DIRS) $(ERRECHO) 
 
 $(TMP_DIR):
 	-mkdir "$(@)"
@@ -79,33 +134,44 @@ $(TMP_DIR):
 $(OUT_DIR): 
 	-mkdir "$(@)"
 	
-$(TMP_DIR)/%.o: %.asm 
-	$(AS) $(AS_FLAGS) $(<) -o$(@)
+$(TMP_DIR)/%.o: %.c
+	$(CC) $(CXXFLAGS) $(<) -o$(@) $(INC_DIRS) $(ERRECHO)
+
 	
-$(TMP_DIR)/%.o: $(TMP_DIR)/%.asmx 
-	$(AS) $(AS_FLAGS_C2ASM) $(<) -o$(@)
+$(TMP_DIR)/%.o: %.cpp 
+	$(CC) $(CXXFLAGS) $(<) -o$(@) $(INC_DIRS) $(ERRECHO)
 
-$(TMP_DIR)/%.asmx: %.cpp 
-	$(CC) $(CCPP_FLAGS) $(<) -O$(@) $(INC_DIRS) 
+$(TMP_DIR)/%.o: %.asm 
+	$(AS) $(ASFLAGS) $(<) -o$(@) $(ERRECHO)
 
-$(TMP_DIR)/%.asmx: %.c
-	$(CC) $(CC_FLAGS) $(<) -O$(@) $(INC_DIRS) 
+$(TMP_DIR)/%.o: %.s 
+	$(AS) $(ASFLAGS) $(<) -o$(@) $(ERRECHO)
 
 #========================== Visual Studio build ===================	
 
 	
-vs2005: $(PROJECT).sln
+vs2005: 
+	premake5 vs2005
 	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|Win32"
+	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(PROJECT).sln  "$(CONFIGURATION)|x64"
 	
 
-vs2015:	$(PROJECT).sln
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).sln /t:Build /p:Configuration=$(CONFIGURATION)
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
 
+vs2015:
+	premake5 vs2015
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=win32
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=x64
+	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=x64
 	
-$(PROJECT).sln:	premake5.lua 
-	premake5 $(MAKECMDGOALS) 
+	
+vs2017:
+	premake5 vs2017
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=win32
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=win32
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Release /property:Platform=x64
+	"$(VS150COMNTOOLS)VsDevCmd" && msbuild $(PROJECT).vcxproj /p:Configuration=Debug   /property:Platform=x64
+	
 	
 #--------------- cleanup  --------------------------------	
 

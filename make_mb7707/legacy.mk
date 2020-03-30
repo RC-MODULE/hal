@@ -2,12 +2,7 @@ ROOT = ..
 -include $(ROOT)/global.mk
 .SUFFIXES:
 
-ifdef RELEASE
-else
-DEBUG = y
-endif
-
-PROJECT  = hal-mc12101
+PROJECT  = hal-mb7707
 CONFIGURATION ?= Release
 ifdef DEBUG
 CONFIGURATION =Debug
@@ -16,9 +11,9 @@ else
 endif
 
 
-INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I../src_1879vm6ya -I../src_printf_nmcpp -I$(NMPP)/include
+INC_DIRS = -I$(ROOT)/include -I"$(NEURO)/include"  -I"$(MB7707)/libload" -I"../src_1879hb1ya"
 LIB_DIRS = 
-SRC_DIRS = ../src_1879vm6ya ../src_nm_io ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
+SRC_DIRS = ../src_1879hb1ya ../src_mb7707  ../src_nmc_all ../src_ringbuffer ../src_printf_nmcpp
 ALL_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 ALL_C    = $(wildcard $(addsuffix /*.c  ,$(SRC_DIRS)))
 ALL_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
@@ -26,22 +21,22 @@ ALL_S    = $(wildcard $(addsuffix /*.s,  $(SRC_DIRS)))
 OUT_DIR  = $(ROOT)/lib
 #--------------  RELEASE/ALL config -------------------
 TARGET           = $(OUT_DIR)/$(PROJECT).lib
-ARCH             =nmc4
+ARCH             =nmc3
 AS               =asm 				 
 AS_FLAGS         =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 AS_FLAGS_C2ASM   =-$(ARCH) -nm2ms  $(INC_DIRS) -split_sir -W-111 -W-109
 LIBS             =
 CC               =nmcpp
 CCPP_FLAGS       =-nmc3 -DNEURO -OPT2 -inline 
-CC_FLAGS         =-nmc3 -except -rtti
+CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 BUILDER          =libr
 BUILDER_FLAGS    =-s $(TARGET)
 TMP_DIR          =$(CONFIGURATION)
 #--------------  DEBUG config -------------------------
 ifdef DEBUG
 TARGET           =$(OUT_DIR)/$(PROJECT).lib
-CCPP_FLAGS       :=$(CCPP_FLAGS) -DNEURO -OPT0 -inline -debug 
-CC_FLAGS         :=$(CC_FLAGS) -except -rtti
+CCPP_FLAGS       =-nmc3 -DNEURO -OPT0 -inline -debug 
+CC_FLAGS         =$(CCPP_FLAGS) -except -rtti
 AS_FLAGS        +=-ga
 BUILDER_FLAGS   +=-d0 -full_names
 endif 
@@ -59,8 +54,6 @@ VPATH    = $(SRC_DIRS)
 #========================== NeuroMatrix build ===================	
 .DEFAULT_GOAL:=legacy
 
-
-
 logo:
 	$(info *******************************************************************************)
 	$(info **                                                                           **)
@@ -68,7 +61,7 @@ logo:
 	$(info **                                                                           **)
 	$(info *******************************************************************************)
 
-legacy: logo  $(OUT_DIR) $(TMP_DIR) $(OBJECTS) 
+legacy: logo $(OUT_DIR) $(TMP_DIR) $(OBJECTS) 
 	$(BUILDER) $(BUILDER_FLAGS) $(OBJECTS) 
 	@echo *******************************************************************************
 	@echo **                                                                           **
@@ -78,7 +71,7 @@ legacy: logo  $(OUT_DIR) $(TMP_DIR) $(OBJECTS)
 
 # custom build of printf.c because of error with -O2 optimization compiling
 $(TMP_DIR)/printf.o: ../src_printf_nmcpp/printf.c
-	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc4 -o$(TMP_DIR)/printf.o -O0 $(INC_DIRS)
+	nmcc ../src_printf_nmcpp/printf.c -Sc -nmc3 -o$(TMP_DIR)/printf.o -O0 -I$(ROOT)/include
 
 $(TMP_DIR):
 	-mkdir "$(@)"

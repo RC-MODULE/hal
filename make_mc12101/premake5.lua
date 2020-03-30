@@ -2,8 +2,8 @@
 
 -- A solution contains projects, and defines the available configurations
 solution "hal-mc12101"
-   configurations { "Debug", "Release" }
-		
+	configurations { "Debug", "Release" }
+	platforms { "Win32","x64"}		
 	
 		
 	-- NeuroMatrix project ---------------------------------
@@ -47,3 +47,43 @@ solution "hal-mc12101"
 			cleancommands   {"make clean"}		   
 	
 	
+		
+	-- x86/x64 static library project  ---------------------------------	 
+
+	project "hal-mc12101"
+		kind "StaticLib"
+	
+		includedirs { "../include","$(MC12101)/include","../src_host_io"}
+		
+		targetdir ("../lib")
+      	
+		files { 	"../src_mc12101_host/*.*",
+				"../src_x86/*.*",
+				"../src_ringbuffer/*.*",
+				"../include/*.h",
+				"../src_host_io/*.*"}
+	  
+		configuration {"Debug","Win32"}
+			targetsuffix ("-x86d")
+			architecture "x32"
+			defines { "DEBUG","NM6405"}
+			symbols  "On" 
+		
+		configuration {"Release","Win32"}
+			targetsuffix ("-x86")
+			architecture "x32"
+			defines { "NDEBUG","NM6405"}
+         		symbols  "Off" 
+		
+		configuration {"Debug","x64"}
+			targetsuffix ("-x64d")
+			architecture "x64"
+			defines { "DEBUG","NM6405"}
+			symbols  "On" 
+		
+		configuration {"Release","x64"}
+			targetsuffix ("-x64")
+			architecture "x64"
+			defines { "NDEBUG","NM6405"}
+			symbols  "Off" 
+		
