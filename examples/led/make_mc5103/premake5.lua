@@ -9,7 +9,7 @@ solution "mc5103-printf"
       kind "ConsoleApp"
       language "C++"
       files { "**.h", "../src_pc/*.cpp"}
-	  links { "hal-mc5103io-x86.lib","mc5103load.lib","mc5103-nmc3" } 
+	  links { "hal-mc5103-x86.lib","mc5103load.lib","mc5103-nmc3" } 
 	  includedirs { "../../../include"}	  
 	  libdirs { "$(MC5103)/libload","../../../lib" }
 
