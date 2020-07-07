@@ -267,7 +267,8 @@ void halProfilerPrint2xml(char* gccmapfile, int processor, char* xml) {
 		//	profile[i].funcaddr,
 		//	fullname);
 		//sprintf(str,NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
-		sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, fullname);
+		//sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, fullname);
+		sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
 		fputs(str, f);
 	}
 	fputs("</profiling>\n",f);
