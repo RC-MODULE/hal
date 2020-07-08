@@ -73,7 +73,11 @@ nonstd_names = {
 'IMod32'    ,
 'Mul32'     ,
 'RShift32'  ,
-'ConvU32toD'
+'ConvU32toD',
+'ConvDtoF'  ,
+'FAdd'      ,
+'FFrExp'    ,
+'FMul'    
 }
 
 print('//****************************************************************************************')
