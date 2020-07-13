@@ -25,7 +25,7 @@ LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4"  -L"$(ROOT)/lib"
 LIBS     = -lhal-mc12101
 MAP      = $(PROJECT).map
 CFG      =  mc12101brd-nmpu0.cfg
-SRC_DIRS = .. /.
+SRC_DIRS = .. ./
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
 

@@ -15,24 +15,28 @@
 
 # Установка HAL 
 ## Системные требования
-*  Сборка компонент (статические lib-библиотеки, тесты, примеры) построена на сборочных скриптах Makefile. Для корректного запуска сборочных Makefile-ов  под Windows требуется установленный GNU **make**.
-Для ОС Windows рекомендуется версия make [3.81](https://sourceforge.net/projects/gnuwin32/files/make/3.81/)  (3.82- проявляет себя нестабильно). make 3.81 - входит в состав [GnuWin32-lite](https://github.com/RC-MODULE/gnuwin32-lite) (см.ниже)
-
-* Для обеспечения полной функциональности Makefile-ов (тестов/примеров/генерации проектов и .т.д.), а также кросс-платформенной работы Makefile как в ОС Windows, так и в Linux  используются UNIX-утилиты (rm,cp,which,...).  В среде ОС Windows вызываются их аналоги из пакета [GnuWin](http://gnuwin32.sourceforge.net/), в виду чего требуется их предварительная установка. 
-Сокращенный необходимый комплект всех необходимых GnuWin утилит включая: make,cmake,gzip и пр. можно установить с помощью online-установщика [GnuWin32-lite](https://github.com/RC-MODULE/gnuwin32-lite)
-
 * NeuroMatrix NMGCC-SDK  
-  Для сборки библиотек gcc компилятором под NeuroMatrix 
+  Для сборки библиотек под NeuroMatrix  gcc компилятором 
 
 * Leqacy NeuroMatrix SDK  (устаревшая версия SDK)
-  Для сборки библиотек под NeuroMatrix требуется NMSDK версией не ниже 3.07
+  Для сборки библиотек под NeuroMatrix предыдущим компилятором требуется  NMSDK версией не ниже 3.07
 
 * x86/x64 SDK   
-  Для сборки host-библиотек  ребуется Gnu GCC или Microsoft Visual Studio.
-  http://www.mingw.org/   
-  http://win-builds.org/doku.php    
+  Для эмуляции NeuroMatrix функций из состава NMPP под x86/x64 возможна сборка библиотек с помощью   Gnu GCC.  http://www.mingw.org/  или http://win-builds.org/doku.php или Microsoft Visual Studio, и в частности версиями Express:  
 [Visual Studio 2005 Express](http://apdubey.blogspot.ru/2009/04/microsoft-visual-studio-2005-express.html)  
 [Visual Studio Express](https://visualstudio.microsoft.com/ru/vs/older-downloads/)  
+
+*  Сборка компонент (статические lib-библиотеки, тесты, примеры) построена на Makefile скриптах. Для корректного запуска сборочных Makefile-ов  под Windows требуется установленный GNU **make**.
+Для ОС Windows рекомендуется версия make [3.81](https://sourceforge.net/projects/gnuwin32/files/make/3.81/)  (3.82- проявляет себя нестабильно). 
+
+* Генерация сборочных проектов x86/x64 библиотек/тестов, в т.ч. для VisualStudio, осуществляется [premake5](https://premake.github.io/)  версией не ниже premake-5.0.0-alpha14
+
+* Для обеспечения полной функциональности Makefile-ов (тестов/примеров/генерации проектов и .т.д.), а также кросс-платформенной работы Makefile как в ОС Windows, так и в Linux  используются :    UNIX-утилиты:   
+[rm,cp,mkdir,rmdir,...](http://gnuwin32.sourceforge.net/packages/coreutils.htm )  
+[find](http://gnuwin32.sourceforge.net/packages/findutils.htm ) (требует переимнования в gfind.exe для устранения конфликта
+ с системным Windows\System32\find.exe)  
+
+* Пути к premake и GnuWin утилитами должны быть прописаны в PATH 
 
 
 
@@ -44,7 +48,7 @@ hal> cd make-mc12101
 hal/make-mc12101> make nmcgcc
 ```
 ## Сборка NeuroMatrix библиотек Legacy  компилятором 
-  Сборка устравшим компилятором осуществляется командой ```make``` с ключом ```legacy``` из соответствующей плате папки */make/hal_archictecture*. 
+  Сборка устравшим компилятором осуществляется командой ```make``` с ключом ```legacy``` из соответствующей плате папки */make/hal_board*. 
   
 ```
 hal> cd make-mc12101

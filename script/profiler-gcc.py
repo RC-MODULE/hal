@@ -15,18 +15,20 @@ max_funcname_length=16
 
 
 #white list of section  RegExp patterns. Only matched sectinos will be passed
-section_whitelist={'\.text\d*'}
+section_whitelist={'\.text_*'}
 
 #black list of section RegExp patterns . Matched sections will be blocked
 section_blacklist={
 '\.text_nmprofiler',
 '\.text_printf',
-'\.text\.'
+'\.text\.',
+'\.text '
 }
 
 #black list of funcname RegExp patterns. Matched functions will be blocked
 function_blacklist={
-'^__'               ,
+'__[a-zA-W]',
+'_print_32x',
 '_result_code'      ,
 'loadStackAddr'     ,
 '^start$'           ,
@@ -71,7 +73,11 @@ nonstd_names = {
 'IMod32'    ,
 'Mul32'     ,
 'RShift32'  ,
-'ConvU32toD'
+'ConvU32toD',
+'ConvDtoF'  ,
+'FAdd'      ,
+'FFrExp'    ,
+'FMul'    
 }
 
 print('//****************************************************************************************')
@@ -145,9 +151,25 @@ if os.path.isfile(mapfile):
 			if name==funcname:
 				matched=True
 				break
+
+		#print(outfuncname)
+		match=re.search("(_)?(_Z\d*)?(.*)",funcname)
+		if match:
+			outfuncname=match[3]
 		
-		align = ('                          ')[:16-len(funcname)]
-		outfuncname= (funcname+" "*max_funcname_length)[:max_funcname_length]
+		match=re.search("(.+)PK.*",outfuncname)
+		if match:
+			outfuncname=match[1]
+		
+		match=re.search("(.+)RK.*",outfuncname)
+		if match:
+			#print("**********")
+			outfuncname=match[1]
+		
+		
+		align = ('                          ')[:16-len(outfuncname)]
+		outfuncname= (outfuncname+" "*max_funcname_length)[:max_funcname_length]
+
 		if matched:
 			print("\tNONCFUNC(",funcname,",",align,"\""+outfuncname+"\");// ",funcaddr," [",section,"]")
 		else:				
