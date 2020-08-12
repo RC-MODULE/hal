@@ -63,7 +63,7 @@ int halHostRingBufferIsEmpty(HalHostRingBuffer* ringBuffer) {
 	return head == tail;
 }
 
-#ifdef VIRTAUL_BOARD
+#ifdef VIRTUAL_BOARD
 // если коннектимся к виртуальной плате то адресация в 4 раза меньше
 #define SIZE_OF_INT 4
 #else 
