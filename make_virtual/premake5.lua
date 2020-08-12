@@ -1,7 +1,7 @@
 #!lua
 
 -- A solution contains projects, and defines the available configurations
-solution "hal-virtual-x86"
+solution "hal-virtual"
 	configurations { "Debug", "Release" }
 	platforms { "Win32","x64"}
 	project "hal-virtual"
