@@ -59,14 +59,14 @@ void halSetCallbackDMA(DmaCallback funct){
 
  	void halInitPacketDMA(void** src_arr, void** dst_arr, int* size_arr, int amm){
 		int i=0;
-		int src,dst;
+		size_t src,dst;
 		int* ptr_src;
 		int* ptr_dst;
 	
 		for(i = 0; i < amm; i++){
 			int j;
-			src = (int)*(src_arr + i); 
-			dst = (int)*(dst_arr + i);
+			src = (size_t)*(src_arr + i); 
+			dst = (size_t)*(dst_arr + i);
 			ptr_src = (int*)src;
 			ptr_dst = (int*)dst;
 			for(j=0;j<size_arr[i];j++){
@@ -106,11 +106,11 @@ void halInitStatusSingleDMA(void* src,void* dst,int size32){
  	}
 
 int halTestParamSingleDMA(void* src, void* dst, int size){
-	int temp = (int)src;
+	size_t temp = (size_t)src;
 	if(temp << 31){
 		return 1;
 	}
-	temp = (int)dst;
+	temp = (size_t)dst;
 	if(temp << 31){
 		return 2;
 	}
@@ -121,19 +121,19 @@ int halTestParamSingleDMA(void* src, void* dst, int size){
 };
 
 int halTestParamDoubleDMA(void*  src0, void* src1, void* dst0, void* dst1, int intSize0, int intSize1){
-	int temp = (int)src0;
+	size_t temp = (size_t)src0;
 	if(temp << 31){
 		return 1;
 	}
-	temp = (int)src1;
+	temp = (size_t)src1;
 	if(temp << 31){
 		return 2;
 	}
-	temp = (int)dst0;
+	temp = (size_t)dst0;
 	if(temp << 31){
 		return 3;
 	}
-	temp = (int)dst1;
+	temp = (size_t)dst1;
 	if(temp << 31){
 		return 4;
 	}
@@ -147,11 +147,11 @@ int halTestParamDoubleDMA(void*  src0, void* src1, void* dst0, void* dst1, int i
 };
 
 int halTestParamMatrixDMA(void* src, int width, int height, int srcStride32, void* dst, int dstStride32){
-	int temp = (int)src;
+	size_t temp = (size_t)src;
 	if(temp << 31){
 		return 1;
 	}
-	temp = (int)dst;
+	temp = (size_t)dst;
 	if(temp << 31){
 		return 4;
 	}
@@ -169,20 +169,20 @@ int halTestParamMatrixDMA(void* src, int width, int height, int srcStride32, voi
 
 int halTestParamPacketDMA(void** src, void** dst, int* size32, int amm){
 	int error_code = 0;
-	int test;
+	size_t test;
 	int ptr;
 	for(ptr = 0; ptr < amm; ptr++){
-		test = (int)src[ptr] << 31;//test src is even or not
+		test = (size_t)src[ptr] << 31;//test src is even or not
 		if(test){
 			error_code = 1;
 			break;
 		}
-		test = (int)dst[ptr] << 31;//test dst is even or not
+		test = (size_t)dst[ptr] << 31;//test dst is even or not
 		if(test){
 			error_code = 2;
 			break;
 		}
-		test = (int)size32[ptr] << 31;//test size32 is even or not
+		test = (size_t)size32[ptr] << 31;//test size32 is even or not
 		if(test){
 			error_code = 4;
 			break;
@@ -209,6 +209,7 @@ void* copythread() {
 	memcpy(__dst, __src, __size*4);
 	if (user_callback)
 		user_callback();
+	return 0;
 }
 
 void halDmaStart   		(const void* src, void* dst, unsigned size32){

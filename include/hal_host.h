@@ -1,11 +1,12 @@
 #ifndef HAL_HOST_INCLUDED 
 #define HAL_HOST_INCLUDED 
 
-#ifdef _WIN64
-#define NMC_ADDR long long 
-#else 
-#define NMC_ADDR long 
-#endif
+//#ifdef _WIN64
+//#define ARCH_ADDR unsigned long long 
+#define ARCH_ADDR size_t
+//#else 
+//#define ARCH_ADDR unsigned long 
+//#endif
 
 enum RetValue
 	{
@@ -22,8 +23,8 @@ extern "C"{
 	//int halGetShared(unsigned* addr,int *sh);
 	int halSync(int val, unsigned processor=0);
 	void* halSyncAddr(void* sendAddr, int processor = 0);
-	int halReadMemBlock (const void* dstHostAddr, NMC_ADDR srcBoardAddr, unsigned size32, unsigned processor=0);
-	int halWriteMemBlock(const void* srcHostAddr, NMC_ADDR dstBoardAddr, unsigned size32, unsigned processor=0);
+	int halReadMemBlock (const void* dstHostAddr, ARCH_ADDR srcBoardAddr, size_t size32, unsigned processor=0);
+	int halWriteMemBlock(const void* srcHostAddr, ARCH_ADDR dstBoardAddr, size_t size32, unsigned processor=0);
 	int halGetResult(unsigned* result,  unsigned processor=0);
 	int halSetTimeout(int msec);
 	void halSelectBoard(int index);

@@ -15,11 +15,11 @@
 #define bytesizeof(T) sizeof(T)
 #endif 
 
-#ifdef __NM__
-#define sizeof32(t) sizeof(t)
-#else
-#define sizeof32(t) (sizeof(t)*4)
-#endif
+//#ifdef __NM__
+//#define sizeof32(t) sizeof(t)
+//#else
+//#define sizeof32(t) (sizeof(t)*4)
+//#endif
 
 
 typedef  void (*memcpy_ptr)(const void *, void *, size_t) ;
@@ -50,14 +50,14 @@ typedef  void *(*t_bytecpy)(void *to, int toIndex, void const *from, int fromInd
 
 
 int halHostRingBufferIsFull(HalHostRingBuffer* ringBuffer) {
-	int head, tail;
+	size_t head, tail;
 	halReadMemBlock(&head, ringBuffer->remoteHeadAddr, 1, ringBuffer->processor);
 	halReadMemBlock(&tail, ringBuffer->remoteTailAddr, 1, ringBuffer->processor);
 	return head == tail+ ringBuffer->maxCount;
 }
 
 int halHostRingBufferIsEmpty(HalHostRingBuffer* ringBuffer) {
-	int head, tail;
+	size_t head, tail;
 	halReadMemBlock(&head, ringBuffer->remoteHeadAddr, 1, ringBuffer->processor);
 	halReadMemBlock(&tail, ringBuffer->remoteTailAddr, 1, ringBuffer->processor);
 	return head == tail;
@@ -111,7 +111,7 @@ void halHostRingBufferPush(HalHostRingBuffer* ringBuffer, void* src, size_t coun
 	size_t tail    = ringBuffer->tail;
 	size_t posHead = ringBuffer->head & ringBuffer->maxCountMinus1;			
 	size_t posTail = tail & ringBuffer->maxCountMinus1;
-	unsigned  addrHead  = ringBuffer->data + posHead*ringBuffer->size*SIZE_OF_INT;
+	ARCH_ADDR  addrHead = ringBuffer->data +posHead*ringBuffer->size*SIZE_OF_INT;
 	
 	// [.......<Tail>******<Head>.....]
 	if (posTail<posHead || ringBuffer->head==ringBuffer->tail){
@@ -122,8 +122,8 @@ void halHostRingBufferPush(HalHostRingBuffer* ringBuffer, void* src, size_t coun
 		}
 	// [*******<Head>......<Tail>*****]
 		else {
-			int firstSize =countToEnd*ringBuffer->size;
-			int secondSize=(count-countToEnd)*ringBuffer->size;
+			size_t firstSize =countToEnd*ringBuffer->size;
+			size_t secondSize=(count-countToEnd)*ringBuffer->size;
 			//ringBuffer->doubleCopy(src, (int*)src+firstSize, addrHead, ringBuffer->data, firstSize, secondSize);
 			halWriteMemBlock((unsigned*)src, addrHead ,firstSize);
 			halWriteMemBlock((unsigned*)src+firstSize, ringBuffer->data ,secondSize, ringBuffer->processor);
@@ -148,7 +148,7 @@ void halHostRingBufferPop(HalHostRingBuffer* ringBuffer, void* dst, size_t count
 	size_t head    = ringBuffer->head;
 	size_t posHead = head & ringBuffer->maxCountMinus1;			
 	size_t posTail = ringBuffer->tail & ringBuffer->maxCountMinus1;
-	unsigned addrTail  = ringBuffer->data + posTail*ringBuffer->size*SIZE_OF_INT;
+	ARCH_ADDR addrTail  = ringBuffer->data + posTail*ringBuffer->size*SIZE_OF_INT;
 	
 	// [.......<Tail>******<Head>.....]
 
@@ -164,8 +164,8 @@ void halHostRingBufferPop(HalHostRingBuffer* ringBuffer, void* dst, size_t count
 			halReadMemBlock((unsigned*)dst,addrTail, count*ringBuffer->size, ringBuffer->processor);
 		}
 		else {
-			int firstSize = countToEnd*ringBuffer->size;
-			int secondSize= (count-countToEnd)*ringBuffer->size;
+			size_t firstSize = countToEnd*ringBuffer->size;
+			size_t secondSize= (count-countToEnd)*ringBuffer->size;
 			//ringBuffer->doubleCopy(addrTail, ringBuffer->data, dst, (int*)dst+firstSize, firstSize, secondSize);
 			halReadMemBlock((unsigned*)dst,addrTail, firstSize, ringBuffer->processor);
 			halReadMemBlock((unsigned*)dst+firstSize,ringBuffer->data, secondSize, ringBuffer->processor);
