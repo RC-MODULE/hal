@@ -1,6 +1,6 @@
 #include "mc12101load.h"
 #include <stdio.h>
-
+//#include "hal_host.h"
 #include "sleep.h"
 
 #ifndef SILENT
@@ -26,6 +26,7 @@ static unsigned activeSingleProc1=false;
 static int locked = false;
 #define LOCK()  while (locked);	locked =true;
 #define UNLOCK()  locked = false;
+
 int halSync(int val,int processor=0){
 	int static counter[2] = { 0,0 };
 	counter[processor]++;
@@ -36,6 +37,10 @@ int halSync(int val,int processor=0){
 	UNLOCK();
 	return ret;
 };
+
+size_t halSyncAddr(void* outAddress, int processor = 0) {
+	return halSync((int)outAddress, processor);
+}
 
 static int boardIndex = 0;
 void halSelectBoard(int index) {
@@ -123,7 +128,7 @@ int halOpen(char* absfile=0,...){
 }
 	
 
-int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0){
+int halReadMemBlock (const void* dstHostAddr, size_t srcBoardAddr, unsigned size32, unsigned processor=0){
 	LOCK();
 	if (activeSingleProc1)	processor = 1;
 	int ret=PL_ReadMemBlock(access[processor], (PL_Word*)dstHostAddr, srcBoardAddr, size32);
@@ -131,7 +136,7 @@ int halReadMemBlock (unsigned long* dstHostAddr, unsigned srcBoardAddr, unsigned
 	return ret;
 }
 
-int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
+int halWriteMemBlock(const void* srcHostAddr, size_t dstBoardAddr, unsigned size32, unsigned processor=0){
 	LOCK();
 	if (activeSingleProc1)	processor = 1;
 	int ret=PL_WriteMemBlock(access[processor], (PL_Word*)srcHostAddr, dstBoardAddr, size32);

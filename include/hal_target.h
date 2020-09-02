@@ -38,7 +38,8 @@ extern "C"
 					 int  procNo);
 
 	int halSync(int val,int processor=0);
-	void* halSyncAddr(void* sendAddr,int processor=0);
+	//void* halSyncAddr(void* sendAddr,int processor=0);
+	void* halSyncAddr(void* sendAddr, int processor = 0);
 	// Return processor number on board
 	int ncl_getProcessorNo(void);
 
@@ -78,8 +79,8 @@ extern "C"
 // Barrier sync with host PC
 #define halHostSync(value) ncl_hostSync(value)
 
-
 #ifdef __NM__
+#define halHostSyncAddr(outAddress) ncl_hostSync((int)outAddress);
 
 int halHostSyncArray(
 		int value,        // Sync value
@@ -100,6 +101,7 @@ int halHostSyncMemory(
 //int halDisconnect(int* sharedBuffer=0) {if (sharedBuffer) free(sharedBuffer); return 1;} 
 int halInterConnect(int* shared);
 #else 
+	void* halHostSyncAddr(void* outAddress);
 //int halConnect(int* masterSharedBuffer=0, int masterSharedSize32=0, int** sharedBuffer=0, int* sharedSize32=0);
 //int halDisconnect(int* sharedBuffer=0);
 #endif // __NM__

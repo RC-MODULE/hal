@@ -26,11 +26,12 @@
 //	long srcBuff[1024/2];
 //	long dstBuff[1024/2];
 	
-
+int a[1000];
 
  int main()
 {
-	
+	int* g = new int[100000];
+	int b[1000];
 	halLedOn(0);
 	
 	printf("Hello from nmc[0]\n");
@@ -48,7 +49,7 @@
 		sharedBuffer0[i]=0xA0000+i;
 	}
 	
-	sync = halHostSync((unsigned)(sharedBuffer0+16));	// Sends input buffer address
+	halHostSyncAddr(sharedBuffer0+16);	// Sends input buffer address
 														// Host >>> write >>> sharedBuffer0+16  				// Here host write data to shared memory 0
 	sync = halHostSync(0x4321);							// wait until copied 
 	for (int i = 0; i<16; i++)
@@ -61,5 +62,7 @@
 		sharedBuffer1[i]=sharedBuffer0[i+16];			
 
 	halSync(0, 1);		// sync at the end of copy
+	//int c = a[10] + b[10]+g[5];
 	return 0x600D;
+	//return c;
 }

@@ -54,7 +54,7 @@ DISABLE_PRINTF();
 
 	
 	//---------- data exchange with host -----------------
-	sync=halHostSync((unsigned)(sharedBuffer1+8));	// Sends sharedBuffer1A address to host
+	halHostSyncAddr(sharedBuffer1+8);	// Sends sharedBuffer1A address to host
 	
 
 	// Host <<< read <<< sharedBuffer1+8			// Here host reads data from shared memory 

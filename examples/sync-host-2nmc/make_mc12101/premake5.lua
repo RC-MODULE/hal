@@ -2,24 +2,44 @@
 
 -- A solution contains projects, and defines the available configurations
 solution "mc12101access"
-   configurations { "Debug", "Release" }
-
+	configurations { "Debug", "Release" }
+	
+	platforms{"x64","x86"}
    -- A project defines one build target
-   project "mc12101-x86"
+	project "mc12101-x86"
+		
 		kind "ConsoleApp"
 		language "C++"
 		files { "../../../*.h", "../src_pc/*.cpp", "../../../src/mc12101/*.cpp" }
+		
 		libdirs { "$(MC12101)/lib","../../../lib" }
-		links { "mc12101load.lib","hal-mc12101-x86d.lib","mc12101-nmc4-0", "mc12101-nmc4-1" }
 		includedirs { "$(MC12101)/include","../../../include"}
 		
-      configuration "Debug"
-         defines { "DEBUG" }
-         symbols  "On" 
+		configuration {"Debug","Win32"}
+			architecture "x32"
+			defines { "DEBUG" }
+			symbols  "On" 
+			links { "mc12101load.lib","hal-mc12101-x86d.lib","mc12101-nmc4-0", "mc12101-nmc4-1" }
 		
-      configuration "Release"
-         defines { "NDEBUG" }
-         symbols  "Off" 
+		configuration {"Release","Win32"}
+			architecture "x32"
+			defines { "NDEBUG" }
+			symbols  "Off" 
+			links { "mc12101load.lib","hal-mc12101-x86.lib","mc12101-nmc4-0", "mc12101-nmc4-1" }
+		
+		configuration {"Debug","x64"}
+			architecture "x64"
+			defines { "DEBUG" }
+			symbols  "On" 
+			links { "mc12101load.lib","hal-mc12101-x64d.lib","mc12101-nmc4-0", "mc12101-nmc4-1" }
+		
+		configuration {"Release","x64"}
+			architecture "x64"
+			defines { "NDEBUG" }
+			symbols  "Off" 
+			links { "mc12101load.lib","hal-mc12101-x64.lib","mc12101-nmc4-0", "mc12101-nmc4-1" }
+		
+		
 		
 		 
 		 

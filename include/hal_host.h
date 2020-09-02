@@ -22,9 +22,10 @@ extern "C"{
 	int halOpen(char* absfile=0, ...);
 	//int halGetShared(unsigned* addr,int *sh);
 	int halSync(int val, unsigned processor=0);
-	void* halSyncAddr(void* sendAddr, int processor = 0);
-	int halReadMemBlock (const void* dstHostAddr, ARCH_ADDR srcBoardAddr, size_t size32, unsigned processor=0);
-	int halWriteMemBlock(const void* srcHostAddr, ARCH_ADDR dstBoardAddr, size_t size32, unsigned processor=0);
+	//void* halSyncAddr(void* sendAddr, int processor = 0);
+	size_t halSyncAddr(void* sendAddr, int processor = 0);
+	int halReadMemBlock (const void* dstHostAddr, size_t srcBoardAddr, size_t size32, unsigned processor=0);
+	int halWriteMemBlock(const void* srcHostAddr, size_t dstBoardAddr, size_t size32, unsigned processor=0);
 	int halGetResult(unsigned* result,  unsigned processor=0);
 	int halSetTimeout(int msec);
 	void halSelectBoard(int index);

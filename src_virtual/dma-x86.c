@@ -1,5 +1,5 @@
 #include <string.h>
-void dma_init(int N, unsigned src, unsigned dst)
+void dma_init(int N, size_t src, size_t dst)
 {	
 	memcpy((void*)dst,(void*)src,N*8);
 	//for(i = 0; i < N; i++) {
@@ -7,7 +7,7 @@ void dma_init(int N, unsigned src, unsigned dst)
 	//}
 }
 
-void dma_bias_init(int n, unsigned src, unsigned dstq, int row2read, int bias2read, int row2wrt, int bias2wrt)
+void dma_bias_init(int n, size_t src, size_t dstq, int row2read, int bias2read, int row2wrt, int bias2wrt)
 {
 	long long* pSrc=(long long*)src;
 	long long* pDst=(long long*)dstq;

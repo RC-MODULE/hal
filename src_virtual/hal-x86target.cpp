@@ -47,7 +47,8 @@ SharedMemory* openSharedMemory() {
 				FILE_MAP_ALL_ACCESS,   // read/write access
 				FALSE,                 // do not inherit the name
 				TEXT(SHARED_MEMORY_MAPPING_NAME));               // name of mapping object
-			if (hMapFile) break;
+			if (hMapFile) 
+				break;
 			halSleep(100);
 		}
 		// пытаемся создать сами мап- объект
@@ -95,7 +96,7 @@ SharedMemory* openSharedMemory() {
 		}
 
 		if (mapFileCreated) {
-			memset(sharedMemory, 0, sharedSize32 );
+			memset(sharedMemory, -1, sharedSize32 );
 			sharedMemory->heap.init();
 		}
 		// пишем свои адреса
@@ -208,6 +209,7 @@ int halHostSyncArray(
 //}
 
 // синхронизация host-nmc и nmc-nmc
+//void* halSyncAddr(
 void* halSyncAddr(
 					 void *outAddress, // Sended array address (can be NULL)
 					 int  processor){
@@ -215,7 +217,7 @@ void* halSyncAddr(
 		return 0;
 
 	void* inAddress;
-
+	// если запуск был на хосте
 	if (procNo == -1) {		// if host  <-> processoor sync
 		SyncBuf& syncro = sharedMemory->hostSyncBuff[processor];
 
@@ -232,7 +234,9 @@ void* halSyncAddr(
 		}
 		inAddress = syncro.syncAddr1;
 		syncro.readCounter[1]++;
+	
 	}
+	// если запуск был на таржете
 	else
 	{
 		//if (procNo == 0)
@@ -271,10 +275,34 @@ void* halSyncAddr(
 
 		}
 	}
-	void* ownAddress = halMapAddrFrom(inAddress, procNo);
+	//void* ownAddress = halMapAddrFrom(inAddress, procNo);
+	void* ownAddress = halMapAddrFrom(inAddress, processor);
 	return ownAddress;
 }
 
+void* halHostSyncAddr(void* outAddress) {
+	if (openSharedMemory() == 0)
+		return 0;
+
+	void* inAddress;
+
+	if (procNo != -1) {		// if it is not host
+		SyncBuf& syncro = sharedMemory->hostSyncBuff[procNo];
+
+		while (syncro.writeCounter[1] > syncro.readCounter[1])
+		{
+		}
+		syncro.syncAddr1 = outAddress;
+		syncro.writeCounter[1]++;
+
+		while (syncro.readCounter[0] == syncro.writeCounter[0])
+		{
+		}
+		inAddress = syncro.syncAddr0;
+		syncro.readCounter[0]++;
+	}
+	void* ownAddress = halMapAddrFrom(inAddress, procNo);
+}
 
 extern "C" {
 void halFree(void* p){
@@ -410,18 +438,20 @@ extern "C" {
 	}
 
 	
-	int halReadMemBlock (int* dstHostAddr, unsigned srcBoardAddr, unsigned size32, unsigned processor=0)
+	int halReadMemBlock (int* dstHostAddr, size_t srcBoardAddr, unsigned size32, unsigned processor=0)
 	{
 		//CopyMemory((PVOID)dstHostAddr, (char*)(halMapAddrFrom((void*)srcBoardAddr,processor), size32 * 4);
-		memcpy(dstHostAddr, (char*)(halMapAddrFrom((void*)srcBoardAddr,processor)), size32 * 4);
+		//memcpy(dstHostAddr, (char*)(halMapAddrFrom((void*)srcBoardAddr,processor)), size32 * 4);
+		memcpy(dstHostAddr, (void*)srcBoardAddr, size32 * 4);
 
 		return 0;
 
 	}
 
-	int halWriteMemBlock(unsigned long* srcHostAddr, unsigned dstBoardAddr, unsigned size32, unsigned processor=0){
+	int halWriteMemBlock(unsigned long* srcHostAddr, size_t dstBoardAddr, unsigned size32, unsigned processor=0){
 		//CopyMemory((char*)(halMapAddrFrom((void*)dstBoardAddr,processor ), (PVOID)srcHostAddr,  size32 * 4);
-		memcpy(halMapAddrFrom((void*)dstBoardAddr, processor),srcHostAddr, size32 * 4);
+		//memcpy(halMapAddrFrom((void*)dstBoardAddr, processor),srcHostAddr, size32 * 4);
+		memcpy((void*)dstBoardAddr,srcHostAddr, size32 * 4);
 	return 0;
 	}
 
