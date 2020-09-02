@@ -96,9 +96,11 @@ class csection:
 		self.addr=addr
 		self.size=sizes
 
+address_list=[]
 
 if os.path.isfile(mapfile):
 	f = open(mapfile, 'r')
+	 #с помощью данного списка исключаем повторы адресов 
 	sections=[]
 	for line in f:
 		#section = csection()
@@ -135,6 +137,7 @@ if os.path.isfile(mapfile):
 		if match:
 			funcname=match[1]
 			funcaddr=match[2]
+			
 			#print(funcname,funcaddr)
 		else:
 			continue
@@ -173,8 +176,15 @@ if os.path.isfile(mapfile):
 				matched=True
 				break
 		
+		
 		align = ('                          ')[:16-len(funcname)]
 		outfuncname= (funcname+" "*max_funcname_length)[:max_funcname_length]
+		if funcaddr in address_list:
+			print("\t//FUNCTION(",funcname,",",align,"\""+outfuncname+"\");// ",funcaddr," [",sect_name,"]")
+			continue
+
+		address_list.append(funcaddr)
+		
 		if matched:
 			print("\tNONCFUNC(",funcname,",",align,"\""+outfuncname+"\");// ",funcaddr," [",sect_name,"]")
 		else:				
@@ -186,4 +196,6 @@ if os.path.isfile(mapfile):
 print('') 
 print('PROFILE_END();')
 print('end ".text_nmprofiler";')
+
+
 	

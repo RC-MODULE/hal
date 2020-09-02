@@ -30,7 +30,7 @@ SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
 
 
-$(TARGET): $(SRC_CPP) $(SRC_ASM) Makefile 
+$(TARGET): $(SRC_CPP) $(SRC_ASM) Makefile proflist_generated.asm
 	$(CC)  $(SRC_CPP) $(SRC_ASM) $(CC_FLAGS) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc -Wl,-c$(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -fno-threadsafe-statics  -fno-exceptions -o $(TARGET) -Wl,-Map=$(MAP) 
 	
 #	2>&1|errecho
@@ -74,8 +74,10 @@ erase:
 profile:	
 	python $(ROOT)/script/profiler.py > proflist_generated.asm
 	$(MAKE)
+#sleep 1s
+	$(OS_RM) $(TARGET)
 	python $(ROOT)/script/profiler-gcc.py $(MAP) > proflist_generated.asm
-	
+
 	
 -include $(ROOT)/clean.mk	
 

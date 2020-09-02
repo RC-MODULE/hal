@@ -4,6 +4,7 @@
 #include "stopwatch.h"
 #include "nmprofiler.h"
 #include <malloc.h>
+#include "hal.h"
 
 volatile int g=1;
 extern "C"{
@@ -47,6 +48,10 @@ STOPWATCH_CREATE(tmr_cos,"tmr_cos");			//  tmr_cos.
 int  main(){
 	
 	PROFILER_START();
+	volatile void *a=halMapAddrTo(0,0);
+	
+	volatile void *b=halMapAddrFrom(0,0);
+	
 	
 	int *p=(int*)malloc(100);
 	int *p1=(int*)malloc(100);
@@ -79,7 +84,7 @@ int  main(){
 	
 	PROFILER_PRINT2TBL();				//  std 
 	STOPWATCH_PRINT2TBL();			
-	
+	return (int)a;
 	return 10;
 
 }

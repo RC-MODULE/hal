@@ -18,7 +18,7 @@ TARGET   = $(PROJECT).abs
 CFG      = mc12101brd-nmpu0.cfg
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include 
 LIB_DIRS = -L"$(MC12101)/lib"     -L$(ROOT)/lib
-LIBS     = mc12101lib_nm.lib hal-mc12101.lib libc4.lib libint_6407.lib
+LIBS     = mc12101lib_nm_legacy.lib hal-mc12101.lib libc4.lib libint_6407.lib
 
 SRC_DIRS =./ ..
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
@@ -48,6 +48,7 @@ vs2015:
 profile:	
 	python $(ROOT)/script/profiler.py > proflist_generated.asm
 	$(MAKE)
+	$(OS_RM) $(TARGET)
 	python $(ROOT)/script/profiler.py $(MAP) > proflist_generated.asm
 
 	

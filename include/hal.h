@@ -65,10 +65,12 @@
 		int 	flag1;
 		int		readCounter[2];
 		int		writeCounter[2];
-		int		sync0;
-		int		sync1;
+		int     sync0;
+		int     sync1;
 		int 	handshake[5];
 		int 	ringBufferDMA;
+		void*	syncAddr0;
+		void*	syncAddr1;
 	} ;
 
 #ifdef __cplusplus

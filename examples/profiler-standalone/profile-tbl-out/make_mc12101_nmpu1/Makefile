@@ -23,7 +23,7 @@ PATH:=$(MC12101)/bin;$(PATH)
 TARGET   = main1.abs
 INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include 
 LIB_DIRS = -L"$(MC12101)/lib"     -L$(ROOT)/lib
-LIBS     = mc12101lib_nm.lib hal-mc12101.lib  libc4f.lib libc4.lib libint_6407.lib
+LIBS     = mc12101lib_nm_legacy.lib hal-mc12101.lib  libc4f.lib libc4.lib libint_6407.lib
 CFG      = mc12101brd-nmpu1.cfg
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,..))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,.))
@@ -56,7 +56,7 @@ profile:
 	python $(ROOT)/script/profiler.py > proflist_generated.asm
 	$(MAKE)
 	python $(ROOT)/script/profiler.py $(MAP) > proflist_generated.asm
-	
+	$(OS_RM) $(TARGET)
 	
 -include $(ROOT)/clean.mk	
 

@@ -74,6 +74,7 @@ erase:
 profile:	
 	python $(ROOT)/script/profiler.py > proflist_generated.asm
 	$(MAKE)
+	$(OS_RM) $(TARGET)
 	python $(ROOT)/script/profiler-gcc.py $(MAP) > proflist_generated.asm
 	
 	

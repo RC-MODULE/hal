@@ -22,7 +22,7 @@ AS       = asm
 CC_FLAGS = -nmc4_float -O2 -nm2ms 
 AS_FLAGS = -nmc4 -nm2ms  $(INC_DIRS) -split_sir
 
-LIBS     = mc12101lib_nm.lib libc4.lib libc4f.lib nmpp-nmc4.lib hal-mc12101.lib cppnew4.lib libint_6407.lib
+LIBS     = mc12101lib_nm_legacy.lib libc4.lib libc4f.lib nmpp-nmc4.lib hal-mc12101.lib cppnew4.lib libint_6407.lib
 CFG      = mc12101brd-nmpu0.cfg
 HEAPS 	 = -heap=118384 -heap1=18384 -heap2=18384 -heap3=25000
 

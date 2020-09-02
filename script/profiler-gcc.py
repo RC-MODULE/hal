@@ -88,6 +88,7 @@ print('begin ".text_nmprofiler\"')
 print("PROFILE_BEGIN(",max_funcname_length,");")
 print('')
 
+address_list=[]
 if os.path.isfile(mapfile):
 	f = open(mapfile, 'r')
 	
@@ -169,6 +170,11 @@ if os.path.isfile(mapfile):
 		
 		align = ('                          ')[:16-len(outfuncname)]
 		outfuncname= (outfuncname+" "*max_funcname_length)[:max_funcname_length]
+
+		if funcaddr in address_list:
+			print("\t//FUNCTION(",funcname,",",align,"\""+outfuncname+"\");// ",funcaddr," [",section,"]")
+			continue
+		address_list.append(funcaddr)
 
 		if matched:
 			print("\tNONCFUNC(",funcname,",",align,"\""+outfuncname+"\");// ",funcaddr," [",section,"]")

@@ -23,8 +23,8 @@ struct SharedMemory {
 	SharedMemory* procOwnAddr[MAX_COUNT_PROCESSORS];						// адрес под которым каждый процессора видит SharedMemory 
 	SyncBuf		 hostSyncBuff[MAX_COUNT_PROCESSORS];						// структура для синхронизация с хостом - nmc
 	SyncBuf		 procSyncBuff[MAX_COUNT_PROCESSORS][MAX_COUNT_PROCESSORS];	// nmc-nmc межпроцессорная синхронизция (ипользуется половина)
-	int			 hostMapDiff [MAX_COUNT_PROCESSORS];						// смещение для пересчета адресов при их пересылке между процессором и хостом 
-	int			 procMapDiff [MAX_COUNT_PROCESSORS][MAX_COUNT_PROCESSORS];	// смещения для пересчета адресов при их пересылке между процессорами
+	long long 	 hostMapDiff [MAX_COUNT_PROCESSORS];						// смещение для пересчета адресов при их пересылке между процессором и хостом 
+	long long	 procMapDiff [MAX_COUNT_PROCESSORS][MAX_COUNT_PROCESSORS];	// смещения для пересчета адресов при их пересылке между процессорами
 	Heap<0x8200000> heap;													// общая разделяемая куча
 	// (256*1024*1024*2+4*1024*1024*2)/4 = 8200000
 };
@@ -90,7 +90,7 @@ SharedMemory* openSharedMemory() {
 			}
 		}
 		catch (int err) {
-			printf("Could not map view of file (%d).\n (%d).\n", err);
+			printf("Could not map view of file (%d).\n ", err);
 			return 0;
 		}
 
@@ -198,12 +198,80 @@ int halHostSyncArray(
 //	return sync;
 //}
 
+//void* halSyncAddr(
+//					 void *outAddress, // Sended array address (can be NULL)
+//					 int  procNo)
+//{
+//	void *inAddress=(void*)halSync((int)outAddress,procNo);
+//	void* ownAddress=halMapAddrFrom(inAddress, procNo);
+//	return ownAddress;
+//}
+
+// синхронизация host-nmc и nmc-nmc
 void* halSyncAddr(
 					 void *outAddress, // Sended array address (can be NULL)
-					 int  procNo)
-{
-	void *inAddress=(void*)halSync((int)outAddress,procNo);
-	void* ownAddress=halMapAddrFrom(inAddress, procNo);
+					 int  processor){
+	if (openSharedMemory() == 0)
+		return 0;
+
+	void* inAddress;
+
+	if (procNo == -1) {		// if host  <-> processoor sync
+		SyncBuf& syncro = sharedMemory->hostSyncBuff[processor];
+
+		while (syncro.writeCounter[0]>syncro.readCounter[0])
+		{
+			::Sleep(100);
+		}
+		syncro.syncAddr0 = outAddress;
+		syncro.writeCounter[0]++;
+
+		while (syncro.readCounter[1] == syncro.writeCounter[1])
+		{
+			::Sleep(100);
+		}
+		inAddress = syncro.syncAddr1;
+		syncro.readCounter[1]++;
+	}
+	else
+	{
+		//if (procNo == 0)
+		if (procNo < processor) {
+			SyncBuf& syncro = sharedMemory->procSyncBuff[procNo][processor];
+
+			while (syncro.writeCounter[0] > syncro.readCounter[0])
+			{
+				::Sleep(100);
+			}
+			syncro.syncAddr0 = outAddress;
+			syncro.writeCounter[0]++;
+
+			while (syncro.readCounter[1] == syncro.writeCounter[1])
+			{
+				::Sleep(100);
+			}
+			inAddress = syncro.syncAddr1;
+			syncro.readCounter[1]++;
+		}
+		//else if (procNo == 1)
+		else {
+			SyncBuf& syncro = sharedMemory->procSyncBuff[processor][procNo];
+
+			while (syncro.writeCounter[1] > syncro.readCounter[1])
+			{
+			}
+			syncro.syncAddr1 = outAddress;
+			syncro.writeCounter[1]++;
+
+			while (syncro.readCounter[0] == syncro.writeCounter[0])
+			{
+			}
+			inAddress = syncro.syncAddr0;
+			syncro.readCounter[0]++;
+
+		}
+	}
+	void* ownAddress = halMapAddrFrom(inAddress, procNo);
 	return ownAddress;
 }
 
@@ -230,7 +298,7 @@ int halDisconnect(int* shared){
 //}
 
 void* halMapAddrTo(const void* ownAddress, int toProccessor) {
-	int diff;
+	long long diff;
 	if (procNo == -1)
 		diff = sharedMemory->hostMapDiff[toProccessor];
 	else 
@@ -239,7 +307,7 @@ void* halMapAddrTo(const void* ownAddress, int toProccessor) {
 	return extAddress;
 }
 void* halMapAddrFrom(const void* extAddress, int fromProccessor) {
-	int diff;
+	long long diff;
 	if (procNo==-1)
 		diff = sharedMemory->hostMapDiff[fromProccessor];
 	else 

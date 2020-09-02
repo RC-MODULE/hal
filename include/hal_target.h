@@ -17,6 +17,11 @@
 
 #include <stdlib.h>
 
+#ifdef _WIN64
+#define NMC_ADDR long long 
+#else 
+#define NMC_ADDR long 
+#endif
 
 
 extern "C"
