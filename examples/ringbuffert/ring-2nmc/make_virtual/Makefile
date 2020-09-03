@@ -9,8 +9,8 @@ HEAP ?= -heap=6384 -heap1=16384 -heap2=16384 -heap3=16384
 .SUFFIXES:
 
 
-TARGET0   = board-nmpu0
-TARGET1   = board-nmpu1
+TARGET0   = board-nmpu0-x86d
+TARGET1   = board-nmpu1-x86d
 #HOST      = board-host
 
 VS ?=vs2015
@@ -39,10 +39,10 @@ run:
 	$(MAKE) -j4 runtarget0  runtarget1 
 
 runtarget0: 
-	bin\debug\$(TARGET0)
+	bin\x86\debug\$(TARGET0)
 	
 runtarget1: 
-	bin\debug\$(TARGET1)
+	bin\x86\debug\$(TARGET1)
 	
 
 include $(ROOT)/clean.mk

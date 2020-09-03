@@ -33,6 +33,7 @@ DISABLE_PRINTF();
 	halSetProcessorNo(1);
 	
 	int sharedSize32 =halHostSync(0x10006407);			// Handshake with host/Get shared buffer size
+	    sharedSize32 =halHostSync(0x10006408);			// Handshake with host/Get shared buffer size
 	int sync=halSync(101,0);							// sync with proc 0
 
 	//---------- memory allocation ---------------------

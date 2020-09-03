@@ -28,11 +28,8 @@ ALL:
 run: 
 	$(MAKE) -f Makefile0 
 	$(MAKE) -f Makefile1 
-	mc12101reset
 	mc12101run $(TARGET0) $(TARGET1) 
 
-reset:
-	mc12101reset
 
 run0:
 	$(MAKE) -f Makefile0 run

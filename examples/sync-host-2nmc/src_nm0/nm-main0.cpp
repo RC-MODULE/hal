@@ -38,7 +38,9 @@ int a[1000];
 	unsigned  sync;
 	halSetProcessorNo(0);							// Set processor number 
 	int  sharedSize32=halHostSync(0x00006407);		// Handshake with host /get buffer size
+	     sharedSize32=halHostSync(0x00006408);		// Handshake with host /get buffer size
 	sync=halSync(100,1);							// Handshake with with proc 1
+	
 
 	//---------- memory allocation ---------------------
 	//halSetActiveHeap(0);

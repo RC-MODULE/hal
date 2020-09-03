@@ -16,6 +16,8 @@ int main(){
 	
 	//------------- handshakes --------------------------------------------------
 	sync        =halSync(size, 0);						// receive handshake (0x6406) / send size
+	sync		=halSync(size, 0);						// receive handshake (0x6406) / send size
+	sync		=halSync(size, 1);						// receive handshake (0x6406) / send size
 	sync        =halSync(size, 1);						// receive handshake (0x6406) / send size
 
 

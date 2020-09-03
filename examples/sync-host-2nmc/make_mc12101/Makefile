@@ -24,7 +24,7 @@ PATH:=$(MC12101)/bin;$(PATH)
 ALL: $(TARGET0) $(TARGET1) vs2015
 
 run: $(TARGET0) $(TARGET1) 
-	bin\debug\$(HOST)
+	bin\x86\debug\$(HOST)
 
 $(TARGET0) nmc0:
 	$(MAKE) -f Makefile0 
