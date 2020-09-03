@@ -2,15 +2,15 @@
 //TCHAR sMallocRegestryName[]=TEXT(REGISTRY_BUFFER_MAPPNING_NAME);
 //TCHAR sSharedMemName[]     =TEXT(SYNC_BUFFER_MAPPING_NAME);
 
-#define CONST_BUFFER_MAPPING_NAME "Global\\FileMappingObject" 
-#define BUFFER_REGISTRY_MAPPNING_NAME "Global\\RegistryFileMappingObject" 
-#define CONST_REGISTRY_MAPPING_NAME "Global\\RegistryFileMappingObject_" 
+#define CONST_BUFFER_MAPPING_NAME "Local\\FileMappingObject" 
+#define BUFFER_REGISTRY_MAPPNING_NAME "Local\\RegistryFileMappingObject" 
+#define CONST_REGISTRY_MAPPING_NAME "Local\\RegistryFileMappingObject_" 
 #define BUFFER_REGISTRY_MAX_SIZE 100
-#define SYNC_BUFFER_MAPPING_NAME "Global\\SyncFileMappingObject"
+#define SYNC_BUFFER_MAPPING_NAME "Local\\SyncFileMappingObject"
 #define SYNC_BUF_SIZE 64*1024
 #define MAX_COUNT_PROCESSORS 8
 #define HOST_CONNECT_TIMEOUT 1000
-#define SHARED_MEMORY_MAPPING_NAME "Global\\SharedMemoryMappingObject"
+#define SHARED_MEMORY_MAPPING_NAME "Local\\SharedMemoryMappingObject"
 
 TCHAR* createName(TCHAR* baseName, int index0, int index2);
 /*
