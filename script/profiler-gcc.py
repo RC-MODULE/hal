@@ -27,6 +27,9 @@ section_blacklist={
 
 #black list of funcname RegExp patterns. Matched functions will be blocked
 function_blacklist={
+'FDiv',
+'FCmp',
+'ConvI32toF',
 '^vec_',
 '__[a-zA-W]',
 '_print_32x',
