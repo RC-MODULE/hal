@@ -308,6 +308,11 @@ int main()
 		unsigned	summary;				///< суммарное накопленное время (в тактах)
 		unsigned	funcname[MAX_FUNCNAME_LENGTH];///< имя функции для отображения в статистике (может не свпадать с реальным именем)
 		unsigned	stopwatch;				///< последний замер времени (значение таймер t1)
+		unsigned long long 	timer_ret_pswr;	///<  (значение таймер t1)
+		
+		unsigned	size_summary;			///< накопленный обработанный размер данных в попугаях
+		unsigned	dummy;					///< последний замер времени (значение таймер t1)
+		
 	};
 	
 	
@@ -329,6 +334,9 @@ int main()
 //	void nmprofiler_list();
 //	void nmprofiler_last();
 
+	extern unsigned nmprofiler_size_current;
+	#define PROFILER_SIZE(size) nmprofiler_size_current=size;
+	
 	//! Функция возвращает указатель на первую структуру профилирования в связном списке 
 	#define halProfilerHead nmprofiler_head
 	//ProfilerData* halProfilerHead();
@@ -365,6 +373,9 @@ int main()
 #endif	
 	
 #define NMPROFILER_TBL "%-12u| %-12u| %-12u| %08X| %-20s\n"
+//#define NMPROFILER_TBL "%-12u| %-12u| %-12u| %-4f| %08X| %-20s\n"
+//#define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\"	addr=\"%08X\"	name=\"%s\"/>\n"
+//#define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\"	perelement=\"%f\" addr=\"%08X\"	name=\"%s\"/>\n"
 #define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\"	addr=\"%08X\"	name=\"%s\"/>\n"
 
 //! \}

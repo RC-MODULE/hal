@@ -47,6 +47,9 @@ STOPWATCH_CREATE(tmr_cos,"tmr_cos");			//  tmr_cos.
 
 int  main(){
 	
+	//float d=4.4;
+	//printf("%f \n",d);
+	
 	PROFILER_START();
 	volatile void *a=halMapAddrTo(0,0);
 	

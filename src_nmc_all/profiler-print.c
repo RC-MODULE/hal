@@ -18,7 +18,11 @@ extern "C"{
 // \param prof указатель структуру профилирования 
 // \param format формат вывода аналогичный printf 
 INSECTION(".text_nmprofiler") void nmprofiler_printf(ProfilerData* prof, char* format){
-	printf(format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) , prof->funcaddr, prof->funcname);
+	float perelement = 0;
+	if (prof->size_summary)
+		perelement=float(prof->summary)/prof->size_summary;
+	//printf(format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) , perelement, prof->funcaddr, prof->funcname);
+	printf(format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) ,  prof->funcaddr, prof->funcname);
 }	
 
 // Функция форматрирует в результат профилирования одной функции в dststr
@@ -27,7 +31,11 @@ INSECTION(".text_nmprofiler") void nmprofiler_printf(ProfilerData* prof, char* f
 INSECTION(".text_nmprofiler") void nmprofiler_sprintf(char* dststr, ProfilerData* prof, char* format, char* full_func_name){
 	if (full_func_name==0)
 		full_func_name=(char*)prof->funcname;
-	sprintf(dststr, format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) , prof->funcaddr, full_func_name);
+	float perelement = 0;
+	if (prof->size_summary)
+		perelement=prof->summary/prof->size_summary;
+	//sprintf(dststr, format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) , perelement, prof->funcaddr, full_func_name);
+	sprintf(dststr, format, prof->summary, prof->calls,  prof->summary/(prof->calls+(prof->calls==0)) ,  prof->funcaddr, full_func_name);
 }	
 
 
@@ -60,8 +68,8 @@ INSECTION(".text_nmprofiler") void  nmprofiler_print2tbl(ProfilerData* head)
 	printf("%d\n",(int)head);
 	printf("SUMMARY     | CALLS       | AVERAGE     | ADDRESS | FUNCTION \n");
 	printf("------------+-------------+-------------+---------+----------\n");
-	
 	while (head){
+		//printf("** ");
 		nmprofiler_printf(head,NMPROFILER_TBL);
 		head=nmprofiler_next(head);
 	};

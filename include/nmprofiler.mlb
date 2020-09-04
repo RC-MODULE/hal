@@ -37,6 +37,7 @@ const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 	extern _nmprofiler_tail_addr	:word;
 	extern _nmprofiler_namesize		:word;
 	extern _nmprofiler_delay		:word;
+	extern _nmprofiler_size_current	:word;
 	own    next_init:label;
 	//global _nmprofiler_enable:	label;
 	//global _nmprofiler_disable: 	label;
@@ -105,21 +106,22 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 	delayed goto next_init;				// идем в конец текущего макроса PROFILE_FUNC - на начало следуещего макроса PROFILE_FUNC
 		gr7 = profiler_data;			// запоминаем последний tail для деструктора PROFILE_END
 		
-	//---------------------------- структура данных для профирования функции -----------------------------------
-	// sizeof = 8+MAX_FUNCNAME_LEN
+	//---------------------------- структура данных для профилирования функции -----------------------------------
+	// sizeof = 10+MAX_FUNCNAME_LEN
 	<profiler_data>
 		//own _timer_next	: word=next_init+12;		// указатель на следующую структуру данных profile_data в списке 
-		own _timer_next		: word=12+26+34+8+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
+		own _timer_next		: word=12+26+34+10+10+MAX_FUNCNAME_LEN+2;	 // смещение до следующей структуры и 0 если конец
 		own _timer_funcaddr : word=funcname;			// адрес профилируемой функции
 		own _timer_calls	: word=0;					// кол-во вызовов
-		own _timer_summary	: word=0;					// сумарное накопленное время функции
+		own _timer_summary	: word=0;					// суммарное накопленное время функции
 		//--------------------------------------------------------------------------------------------------------
 		own _funcname		: word[MAX_FUNCNAME_LEN]=funcinfo;	// имя профилируемой функции
-		own _funcname_end	: word=0;					// символ заврешения строки (для обрезанных имен)
+		own _funcname_end	: word=0;					// символ завершения строки (для обрезанных имен)
 		//--------------------------------------------------------------------------------------------------------------
-		own _timer_stopwatch: word=0;					// текущее время в момент вызова проф. функии 
+		own _timer_stopwatch: word=0;					// текущее время в момент вызова проф. функции 
 		own _timer_ret_pswr	: long;						// тут сохраняем контекст возврата
-		
+		own _size_summary	: word=0;					// тут сохраняем суммарное количество данных
+		own _dummy			: word=0;					// reserved
 	
 	//=============== замерщик (пуск) ===================================================
 	// sizeof =26
@@ -139,15 +141,32 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		ar5= sp-disp;						// ar5 - указывает на адрес возврата retaddr и pswr у профилируемой функции из которой пришли
 		ar0,gr0 = [ar5];	
 		nul;
-		[_timer_ret_pswr]=ar0,gr0;			// сохранияем контекст возврата
+		[_timer_ret_pswr]=ar0,gr0;			// сохраняем контекст возврата
 		ar0 = timer_return;
+		
+		gr7 = [_size_summary];									// считываем накопленный размер
+		gr0 = [_nmprofiler_size_current];						// считываем текущий размер
+		gr7+= gr0 noflags;
+		nul;
+		[_size_summary] = gr7  with gr0= false noflags;			// сохраняем новый размер
+		[_nmprofiler_size_current] = gr0;						// обнуляем чтоб не портил чужие суммы
+		
+		
 		delayed call _clock;				// засекаем время (пуск)
 			[ar5] = ar0,gr0;				// подменяем в стеке адрес возврата из проф функции на timer_return (замерщик времени - стоп)
 			gr0 = gr7 noflags;				// сохраняем gr7 (clock - портит gr7)
 		
 		[_timer_stopwatch]=gr7;				// сохраняем время
+		
+		
+		
+		
 		pop ar5,gr5 with gr7=gr0 noflags;	// восстанавливаем gr7
 		pop ar0,gr0;
+		
+		
+		
+		
 		
 		// выполняем исходный стартовый код профилируемой функции
 		<timer_replaced>					// место для хранения 4 команд заголовка проф. функции
@@ -159,7 +178,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 			
 		
 	//=============== замерщик (стоп) ===================================================
-	// sizeof =34
+	// sizeof =34+10
 	<timer_return>												// сюда мы переходим после return из профилируемой функции
 		push ar1,gr1;											// sp+=2 : отступаем стек, сюда мы потом подставим реальную(сохраненную) точку возврата из проф. функции
 		push ar0,gr0;	
@@ -184,6 +203,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		gr7 = [_timer_calls]     with gr0+= gr7 noflags;		// добавляем текущий замер времени
 		[_timer_summary]=gr0     with gr7++ noflags;			// сохраняем суммарное время | увеличиваем счетчик вызовов
 		[_timer_calls]=gr7;										// сохраняем счетчик вызовов
+		
 		<timer_skip>
 		gr7 = ar0;
 		nul;
@@ -191,6 +211,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		[sp-4] = ar0,gr0;
 		pop ar0,gr0;
 	delayed return;
+		nul;
 		nul;
 		nul;
 	<next_init>

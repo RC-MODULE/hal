@@ -161,15 +161,21 @@ int  profiler_readfunc(int addr, ProfilerData* prof, int processor){
 
 
 void  profiler_print2tbl(ProfilerData* head){
-	char format[]="%-12u| %-12u| %-12u| %08X| %s\n";
-	printf("SUMMARY     | CALLS       | AVERAGE     | ADDRESS | FUNCTION \n");
-	printf("------------+-------------+-------------+---------+----------\n");
+	char format[]="%-12u| %-12u| %-12u| %-8f| %08X| %s\n";
+	printf("SUMMARY     | CALLS       | AVERAGE     | ELEMENT  | ADDRESS | FUNCTION \n");
+	printf("------------+-------------+-------------+----------+----------\n");
 	ProfilerData* profile=head;
 	while(profile){
 		
+		float perelement = 0;
+		if (profile->size_summary)
+			perelement=float(profile->summary)/ profile->size_summary;
+
+
 		printf(format,	profile->summary, 
 						profile->calls,  
 						profile->summary/(profile->calls+(profile->calls==0)), 
+						perelement,
 						profile->funcaddr,
 						profile->funcname);
 		profile= (ProfilerData*)(int(profile)+(int)profile->next);
@@ -181,7 +187,9 @@ void  profiler_print2tbl(ProfilerData* head){
 int  profiler_count(unsigned head_addr, int processor) {
 	int count = 0;
 	int next_field=777;
+	unsigned  arr[1000];
 	while (next_field) {
+		//halReadMemBlock(arr, head_addr, 1000, processor);
 		if (halReadMemBlock(&next_field, head_addr, 1, processor) != 0)
 			return 0;
 		head_addr += next_field;
@@ -231,7 +239,8 @@ void halProfilerPrint2tbl(char* mapfile, int processor){
 	delete profile;
 }
 
-#define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\"	addr=\"%08X\"	name=\"%s\"/>\n"
+//#define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\"	addr=\"%08X\"	name=\"%s\"/>\n"
+#define NMPROFILER_XML "  <prof summary=\"%-12u\"	calls=\"%-12u\"	average=\"%-12u\" perelement=\"%-8f\"	addr=\"%08X\"	name=\"%s\"/>\n"
 void halProfilerPrint2xml(char* gccmapfile, int processor, char* xml) {
 	char str[256];
 	FILE* f = fopen(xml, "w");
@@ -244,7 +253,7 @@ void halProfilerPrint2xml(char* gccmapfile, int processor, char* xml) {
 	if (head_addr[processor] == 0) {
 		//head_addr = map_symbol2address(mapfile, "_nmprofiler_head_addr"); 
 		head_addr[processor] = map_symbol2address(gccmapfile, "profileList");
-		head_addr[processor] += 12;
+		head_addr[processor] += 12; // sizeof =12  (initcode)
 		profiler_size[processor] = profiler_count(head_addr[processor], processor);
 	}
 
@@ -268,7 +277,15 @@ void halProfilerPrint2xml(char* gccmapfile, int processor, char* xml) {
 		//	fullname);
 		//sprintf(str,NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
 		//sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, fullname);
-		sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
+		//sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
+		
+		float perelement = 0;
+		if (profile[i].size_summary)
+			//perelement=float(profile[i].summary)/profile[i].size_summary;
+			perelement=float(profile[i].summary)/profile[i].size_summary;
+
+		sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), perelement, profile[i].funcaddr, profile[i].funcname);
+		//sprintf(str, NMPROFILER_XML, profile[i].summary, profile[i].calls, profile[i].summary / (profile[i].calls + (profile[i].calls == 0)), profile[i].funcaddr, profile[i].funcname);
 		fputs(str, f);
 	}
 	fputs("</profiling>\n",f);

@@ -17,7 +17,7 @@ PROJECT  = main
 TARGET   = $(PROJECT)
 CC       = nmc-g++
 AS       = nmc-gcc
-CC_FLAGS = -std=c++11 -O1 -Wall -mnmc4-float  -mmas
+CC_FLAGS = -std=c++11 -O0 -Wall -mnmc4-float  -mmas
 PROJECT  = main
 TARGET   =$(PROJECT)
 INC_DIRS = -I$(ROOT)/include
