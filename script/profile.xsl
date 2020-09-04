@@ -9,6 +9,7 @@
 			<td align="center"><strong>Summary</strong></td>
 			<td align="center"><strong>Calls</strong></td>
 		    <td align="center"><strong>Average</strong></td>
+			<td align="center"><strong>PerElement</strong></td>
 			<td align="center"><strong>Address</strong></td>
 			<td align="center"><strong>Function</strong></td>
 		  </tr>
@@ -32,6 +33,7 @@
 		<td><xsl:value-of select="@summary"/></td>
 		<td><xsl:value-of select="@calls"/></td>
 		<td><xsl:value-of select="@average"/></td>
+		<td><xsl:value-of select="@perelement"/></td>
 		<td><xsl:value-of select="@addr"/></td>
 		<td><xsl:value-of select="@name"/></td>
 	  </tr>
