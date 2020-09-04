@@ -110,7 +110,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 	// sizeof = 10+MAX_FUNCNAME_LEN
 	<profiler_data>
 		//own _timer_next	: word=next_init+12;		// указатель на следующую структуру данных profile_data в списке 
-		own _timer_next		: word=12+26+34+10+10+MAX_FUNCNAME_LEN+2;	 // смещение до следующей структуры и 0 если конец
+		own _timer_next		: word=12+26+34+10+10+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
 		own _timer_funcaddr : word=funcname;			// адрес профилируемой функции
 		own _timer_calls	: word=0;					// кол-во вызовов
 		own _timer_summary	: word=0;					// суммарное накопленное время функции
@@ -209,11 +209,11 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		nul;
 		ar0,gr0 = [_timer_ret_pswr];							// восстанавливаем контекст возврата
 		[sp-4] = ar0,gr0;
-		pop ar0,gr0;
-	delayed return;
-		nul;
-		nul;
-		nul;
+			pop ar0,gr0;
+		delayed return;
+			nul;
+			nul;
+		//nul;
 	<next_init>
 //.wait;
 end PROFILE_FUNC_BASE;
