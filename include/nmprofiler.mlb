@@ -110,7 +110,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 	// sizeof = 10+MAX_FUNCNAME_LEN
 	<profiler_data>
 		//own _timer_next	: word=next_init+12;		// указатель на следующую структуру данных profile_data в списке 
-		own _timer_next		: word=12+26+34+10+10+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
+		own _timer_next		: word=12+26+34+14+10+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
 		own _timer_funcaddr : word=funcname;			// адрес профилируемой функции
 		own _timer_calls	: word=0;					// кол-во вызовов
 		own _timer_summary	: word=0;					// суммарное накопленное время функции
@@ -144,13 +144,30 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		[_timer_ret_pswr]=ar0,gr0;			// сохраняем контекст возврата
 		ar0 = timer_return;
 		
-		gr7 = [_size_summary];									// считываем накопленный размер
-		gr0 = [_nmprofiler_size_current];						// считываем текущий размер
-		gr7+= gr0 noflags;
+		push ar5,gr5;
 		nul;
-		[_size_summary] = gr7  with gr0= false noflags;			// сохраняем новый размер
-		[_nmprofiler_size_current] = gr0;						// обнуляем чтоб не портил чужие суммы
+		ar5 = [_size_summary];									// считываем накопленный размер
+		//gr0 = [_nmprofiler_size_current];						// считываем текущий размер
+		gr5 = [_nmprofiler_size_current];						// считываем текущий размер
+		ar5+=gr5;
+		nul;
+		//[_size_summary] = gr7  with gr0= false noflags;			// сохраняем новый размер
+		[_size_summary] = ar5  with gr5= false noflags;			// сохраняем новый размер
+		//[_nmprofiler_size_current] = gr0;						// обнуляем чтоб не портил чужие суммы
+		[_nmprofiler_size_current] = gr5;						// обнуляем чтоб не портил чужие суммы
+		pop ar5,gr5;
+		nul;
 		
+		//nul;
+		//nul;
+		//nul;
+		//nul;
+		//nul;
+		//nul;
+		//nul;
+		//nul;
+		//nul;
+		//nul;
 		
 		delayed call _clock;				// засекаем время (пуск)
 			[ar5] = ar0,gr0;				// подменяем в стеке адрес возврата из проф функции на timer_return (замерщик времени - стоп)
