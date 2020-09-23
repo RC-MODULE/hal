@@ -36,7 +36,7 @@ begin ".text_nmprofiler"
 	global _nmprofiler_namesize: 	word= 0;
 	global _nmprofiler_head_addr:	word= 0;
 	global _nmprofiler_tail_addr: 	word= 0;
-	global _nmprofiler_delay: 		word= -17;	
+	global _nmprofiler_delay: 		word= -3;	
 	global _nmprofiler_check: 		word= 0600DBEEFh; 
 	global _nmprofiler_shared:		word= 0600DBEEFh; 
 	global _nmprofiler_infosize:  	word= 0;

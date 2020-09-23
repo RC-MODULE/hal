@@ -215,7 +215,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		[_nmprofiler_enabled]=gr0;								// запрещаем дальнейшее профилирование
 		gr0 = [_nmprofiler_delay];
 	.endif;
-		gr0 = [_timer_stopwatch] with gr7-= gr0 noflags;		// считываем время вызова / коррекция gr7
+		gr0 = [_timer_stopwatch] with gr7+= gr0 noflags;		// считываем время вызова / коррекция gr7
 		gr0 = [_timer_summary]   with gr7 = gr7 - gr0 noflags;	// считываем накопленное время | вычисляем время работы функции
 		gr7 = [_timer_calls]     with gr0+= gr7 noflags;		// добавляем текущий замер времени
 		[_timer_summary]=gr0     with gr7++ noflags;			// сохраняем суммарное время | увеличиваем счетчик вызовов
@@ -253,6 +253,7 @@ macro NONCFUNC(funcname,funcinfo)
 end   NONCFUNC;
 
 
-	
+// замер стоит 94-97 тактов. 	
+// кэш должен быть включен
 
 
