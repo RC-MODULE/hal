@@ -33,7 +33,11 @@ int halSync(int val,int processor=0){
 	LOCK();
 	int ret;
 	if (activeSingleProc1)	processor = 1;
-	PL_Sync(access[processor],val,&ret);
+	int err=PL_Sync(access[processor],val,&ret);
+	if (err){
+		printf("########  ERROR in PL_Sync , %d, %d\n",err,processor);
+		while (1);
+	}
 	UNLOCK();
 	return ret;
 };
@@ -132,6 +136,10 @@ int halReadMemBlock (const void* dstHostAddr, size_t srcBoardAddr, unsigned size
 	LOCK();
 	if (activeSingleProc1)	processor = 1;
 	int ret=PL_ReadMemBlock(access[processor], (PL_Word*)dstHostAddr, srcBoardAddr, size32);
+	if (ret){
+		printf("########  ERROR in PL_ReadMemBlock , %d, %d\n",ret,processor);
+		while (1);
+	}
 	UNLOCK();
 	return ret;
 }
@@ -140,6 +148,10 @@ int halWriteMemBlock(const void* srcHostAddr, size_t dstBoardAddr, unsigned size
 	LOCK();
 	if (activeSingleProc1)	processor = 1;
 	int ret=PL_WriteMemBlock(access[processor], (PL_Word*)srcHostAddr, dstBoardAddr, size32);
+	if (ret){
+		printf("########  ERROR in PL_WriteMemBlock , %d, %d\n",ret,processor);
+		while (1);
+	}
 	UNLOCK();
 	return ret;
 }
