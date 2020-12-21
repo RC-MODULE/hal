@@ -39,8 +39,10 @@ template <class T, int SIZE> struct HalRingBufferData{
 	volatile unsigned 	bufferId;			///
 	volatile unsigned 	head;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код MASTER уже записал в	буфер входных данных [заполняется MASTER]
 	volatile unsigned	tail;				///<  сколько элементов ОТ НАЧАЛА ПОТОКА код SLAVE  уже прочитал (обработал) 			 [заполняется SLAVE]
+	volatile unsigned 	size;
+	volatile unsigned 	size1;
 	volatile unsigned   auxtail[4]; 		///<  additional tails
-	volatile unsigned   service[8]; 		///<  service words for alignment address of data at 16-word boundary (neceassary for dma)
+	volatile unsigned   service[6]; 		///<  service words for alignment address of data at 16-word boundary (neceassary for dma)
 	
 	//bool 		headLocked;
 	//bool		tailLocked;
@@ -61,6 +63,8 @@ template <class T, int SIZE> struct HalRingBufferData{
 		bufferId = 0x600DB00F;
 		head=0;
 		tail=0;
+		size=SIZE;
+		size1=SIZE-1;
 		//#endif
 	}
 	~HalRingBufferData(){

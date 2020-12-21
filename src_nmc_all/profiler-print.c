@@ -65,11 +65,11 @@ INSECTION(".text_nmprofiler") void  nmprofiler_print2tbl(ProfilerData* head)
 {
 	if (head==0)
 		head=nmprofiler_head();
-	printf("%d\n",(int)head);
+	//printf("%d\n",(int)head);
 	printf("SUMMARY     | CALLS       | AVERAGE     | ADDRESS | FUNCTION \n");
 	printf("------------+-------------+-------------+---------+----------\n");
 	while (head){
-		//printf("** ");
+		//printf("dsip:%d\n",head->next);
 		nmprofiler_printf(head,NMPROFILER_TBL);
 		head=nmprofiler_next(head);
 	};

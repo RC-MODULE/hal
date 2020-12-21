@@ -301,6 +301,13 @@ int main()
 	
 	void nmprofiler_init();
 	
+	struct TraceData{
+		unsigned 	time;
+		unsigned 	func;
+		unsigned 	dir;
+		unsigned 	counter;
+	};
+	
 	struct ProfilerData {
 		unsigned 	next;					///< смещение до следующей структуры
 		unsigned	funcaddr;				///< адрес функции

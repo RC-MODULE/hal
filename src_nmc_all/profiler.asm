@@ -43,6 +43,11 @@ begin ".text_nmprofiler"
 	global _nmprofiler_enabled:		word= 1;
 	global _nmprofiler_size_current	:word=0;
 	
+	global _nmprofiler_log_data_ptr	:word;
+	global _nmprofiler_log_cnt1_ptr :word;
+	global _nmprofiler_log_head_ptr :word;
+	global _nmprofiler_log_tail_ptr	:word;
+
 	
 	
 global _nmprofiler_enable:label;

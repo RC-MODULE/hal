@@ -21,7 +21,15 @@
 // Конструктор. Макрос инициализации профилирования . Должен идти первым. 
 // MAXFUNCLEN - кол-во символов до которого будет урезаться имя функции при записи в таблицу профилирования
 // sizeof = 16
-macro PROFILE_BEGIN(MAXFUNCLEN)
+macro PROFILE_FUNC_BASE_DUMMY()
+	  <dummy_profile_start>
+	  PROFILE_FUNC_BASE(extern,__main,"__main",6,0,TRACING,0);
+	  <dummy_profile_end>
+end PROFILE_FUNC_BASE_DUMMY;	  
+	  
+	  
+macro PROFILE_BEGIN(MAXFUNCLEN,USE_TRACING)
+const TRACING=USE_TRACING;
 const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 //begin ".text_nmprofiler"
 	
@@ -38,6 +46,8 @@ const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 	extern _nmprofiler_namesize		:word;
 	extern _nmprofiler_delay		:word;
 	extern _nmprofiler_size_current	:word;
+	extern _nmprofiler_trace		:label;
+	
 	own    next_init:label;
 	//global _nmprofiler_enable:	label;
 	//global _nmprofiler_disable: 	label;
@@ -54,8 +64,10 @@ const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 	gr0 = MAXFUNCLEN+5;
 	[_nmprofiler_infosize] =gr0;
 	[_nmprofiler_head_addr]=ar0;
+	PROFILE_FUNC_BASE_DUMMY(); // пустышка для измерения длины макроса
 	<next_init>
 	<profileList>
+
 end  PROFILE_BEGIN;
 
 // Деструктор
@@ -81,9 +93,9 @@ macro PROFILE_END() 			// On enter: gr7=profiler
 	
 end PROFILE_END;		
 	
-	
+
 // disp =12	
-macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
+macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master, tracing, len_text)
 //.branch;
 	ext funcname				:label; // указатель на профилируемую функцию
 	own timer_return			:label;
@@ -92,26 +104,34 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 	own timer_skip				:label;
 	own next_init				:label;	
 	own initcode				:label;
+	own initcode2				:label;
 	own profiler_data			:label;
 	
 
 	//=============== инициализатор,  здесь осуществляем подмену кода =============================================
 	// sizeof =12
-	<initcode>								// должен быть длинной 12 слов
+		
+	<initcode>							// должен быть длинной 12 слов
 	ar0 = funcname;						// адрес данных профилируемой функции
 	gr1 = timer_enter;					// вставляем goto на timer_enter в начала прфилируемой функции
 	delayed call inject_goto;
 		gr0 = timer_replaced;			// адрес куда сохраняем замещаемый код
 	
+
+
 	delayed goto next_init;				// идем в конец текущего макроса PROFILE_FUNC - на начало следуещего макроса PROFILE_FUNC
 		gr7 = profiler_data;			// запоминаем последний tail для деструктора PROFILE_END
-		
+	
 	//---------------------------- структура данных для профилирования функции -----------------------------------
 	// sizeof = 10+MAX_FUNCNAME_LEN
 	<profiler_data>
 		//own _timer_next	: word=next_init+12;		// указатель на следующую структуру данных profile_data в списке 
-		own _timer_next		: word=12+26+34+14+10+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
+		//own _timer_next		: word=12+26+34+14+10+MAX_FUNCNAME_LEN;	 // смещение до следующей структуры и 0 если конец
+		//own _timer_next		: word=0BABADEDAh;	 		// якорь для определения размера макроса
+		//own _timer_funcaddr : word=len_text;			// адрес профилируемой функции
+		own _timer_next		: word=len_text;	 // смещение до следующей структуры и 0 если конец
 		own _timer_funcaddr : word=funcname;			// адрес профилируемой функции
+		
 		own _timer_calls	: word=0;					// кол-во вызовов
 		own _timer_summary	: word=0;					// суммарное накопленное время функции
 		//--------------------------------------------------------------------------------------------------------
@@ -175,8 +195,25 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		
 		[_timer_stopwatch]=gr7;				// сохраняем время
 		
+	.if tracing!=0;
+		push ar0,gr0;
+		push ar1,gr1;
 		
+		gr0 = [_nmprofiler_trace+5];  	// size-1
+		gr1 = [_nmprofiler_trace+2];	// head
+		ar0 = _nmprofiler_trace+16 with gr0=gr1 and gr0; // data
+		ar1 = funcname with gr0<<=2;
+		ar0+= gr0;
+		[ar0++]= gr7;					// пишем время
+		[ar0++]= ar1 with gr0=false;	// пишем адрес функции
+		[ar0++]= gr0 ;					// пишем вход(0) или выход(-1)  ;head++
+		[ar0++]= gr1 with gr1++;
+		[_nmprofiler_trace+2] = gr1;	// обновляем head
 		
+		pop ar1,gr1;
+		pop ar0,gr0;
+	
+	.endif;	
 		
 		pop ar5,gr5 with gr7=gr0 noflags;	// восстанавливаем gr7
 		pop ar0,gr0;
@@ -203,6 +240,27 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master)
 		nul;
 		delayed call _clock;									// засекаем время (стоп) в gr7
 			gr0 = [_nmprofiler_enabled];
+			
+	.if tracing!=0;
+		push ar0,gr0;
+		push ar1,gr1;
+		
+		gr0 = [_nmprofiler_trace+5];  	// maxCountMinus1
+		gr1 = [_nmprofiler_trace+2];	// head
+		ar0 = _nmprofiler_trace+16 with gr0=gr1 and gr0; // data
+		ar1 = funcname with gr0<<=2;
+		ar0+= gr0;
+		[ar0++]= gr7;					// пишем время
+		[ar0++]= ar1 with gr0=true;		// пишем адрес функции
+		[ar0++]= gr0;					// пишем вход(0) или выход(-1)  
+		[ar0++]= gr1 with gr1++;		// пишем head  head++
+		[_nmprofiler_trace+2] = gr1;	// обновляем head
+		
+		pop ar1,gr1;
+		pop ar0,gr0;
+	
+	.endif;	
+				
 	.if master==0; // обычная функция профилирования
 		with gr0;												
 		nul;
@@ -239,17 +297,17 @@ end PROFILE_FUNC_BASE;
 
 // макрос профилирования функции со стандартным С-вызывом  (стандартное соглашение о передачи параметров через стек)
 macro FUNCTION(funcname,funcinfo)
-	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,0);
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,0,TRACING,dummy_profile_end-dummy_profile_start);
 end   FUNCTION;
 
 // макрос разрещающий профилирование только в дочерних функциях
 macro PROFILE_MASTER_FUNC(funcname,funcinfo)
-	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,1);
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,1,TRACING,dummy_profile_end-dummy_profile_start);
 end   PROFILE_MASTER_FUNC;
 
 // макрос профилирования функции с нестандартным вызовом функций  (внутреннее соглашение о передаче параметров . MUL32, DIV32...)
 macro NONCFUNC(funcname,funcinfo)
-	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,8,0);
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,8,0,TRACING,dummy_profile_end-dummy_profile_start);
 end   NONCFUNC;
 
 
