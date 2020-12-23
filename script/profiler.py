@@ -87,7 +87,7 @@ print('// This is automaticly generated asm-file by profiler-gcc.py' );
 print('//****************************************************************************************')
 print('import from "nmprofiler.mlb";')
 print('begin ".text_nmprofiler\"')
-print("PROFILE_BEGIN(",max_funcname_length,");")
+print("PROFILE_BEGIN(",max_funcname_length,",0);")
 print('')
 
 class csection:
