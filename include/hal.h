@@ -82,7 +82,7 @@
     *     \defgroup hal HAL функции 
     */
 	
-#endif 	
+#endif 	//HAL_H_INCLUDED
 
 int			halGet_8s (const nm8s*  pVec, int nIndex);
 int			halGet_16s(const nm16s* pVec, int nIndex);

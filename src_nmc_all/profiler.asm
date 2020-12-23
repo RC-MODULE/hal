@@ -40,8 +40,10 @@ begin ".text_nmprofiler"
 	global _nmprofiler_check: 		word= 0600DBEEFh; 
 	global _nmprofiler_shared:		word= 0600DBEEFh; 
 	global _nmprofiler_infosize:  	word= 0;
-	global _nmprofiler_enabled:		word= 1;
-	global _nmprofiler_size_current	:word=0;
+	global _nmprofiler_enabled:		word= -1;
+	global _nmprofiler_depth:		word= -16;
+	global _nmprofiler_size_current:word=0;
+	global _nmprofiler_gr7			:word;
 	
 	global _nmprofiler_log_data_ptr	:word;
 	global _nmprofiler_log_cnt1_ptr :word;
@@ -49,7 +51,17 @@ begin ".text_nmprofiler"
 	global _nmprofiler_log_tail_ptr	:word;
 
 	
-	
+global _nmprofiler_set_depth:label;
+<_nmprofiler_set_depth>
+	ar5 = sp-2;
+	gr7 = [--ar5];
+	gr7 = -gr7;
+	gr7 --;
+	delayed return;
+		[_nmprofiler_depth]=gr7;
+
+
+	return;
 global _nmprofiler_enable:label;
 <_nmprofiler_enable>
 	delayed return;

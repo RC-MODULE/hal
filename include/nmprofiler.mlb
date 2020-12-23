@@ -47,6 +47,8 @@ const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 	extern _nmprofiler_delay		:word;
 	extern _nmprofiler_size_current	:word;
 	extern _nmprofiler_trace		:label;
+	extern _nmprofiler_depth		:word;
+	extern _nmprofiler_gr7			:word;
 	
 	own    next_init:label;
 	//global _nmprofiler_enable:	label;
@@ -95,13 +97,14 @@ end PROFILE_END;
 	
 
 // disp =12	
-macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master, tracing, len_text)
+macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, limit_depth, tracing, len_text)
 //.branch;
 	ext funcname				:label; // указатель на профилируемую функцию
 	own timer_return			:label;
 	own timer_enter				:label;
 	own timer_replaced			:label;
-	own timer_skip				:label;
+	own timer_skip_enter		:label;
+	own timer_skip_return 		:label;
 	own next_init				:label;	
 	own initcode				:label;
 	own initcode2				:label;
@@ -131,7 +134,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master, tracing, len_text
 		//own _timer_funcaddr : word=len_text;			// адрес профилируемой функции
 		own _timer_next		: word=len_text;	 // смещение до следующей структуры и 0 если конец
 		own _timer_funcaddr : word=funcname;			// адрес профилируемой функции
-		
+
 		own _timer_calls	: word=0;					// кол-во вызовов
 		own _timer_summary	: word=0;					// суммарное накопленное время функции
 		//--------------------------------------------------------------------------------------------------------
@@ -149,77 +152,58 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master, tracing, len_text
 	
 		// сохраняем контекст возврата и подменяем точку возврата на timer_return (замерщик времени - стоп)
 		push ar0,gr0;
-		push ar5,gr5 with gr5=true noflags;	// gr5 =-1
-	.if master==0;
-		nul;
-		nul;
-	.endif;
-	.if master!=0;
-		[_nmprofiler_enabled]=gr5;			// разрешаем профилирование во всех подвызовах
-	.endif;
-	
-		ar5= sp-disp;						// ar5 - указывает на адрес возврата retaddr и pswr у профилируемой функции из которой пришли
-		ar0,gr0 = [ar5];	
-		nul;
-		[_timer_ret_pswr]=ar0,gr0;			// сохраняем контекст возврата
-		ar0 = timer_return;
+		push ar5,gr5;	
 		
-		push ar5,gr5;
+	//.if limit_depth!=0;						// если есть ограничение по глубине профилирования
+		gr0 = [_nmprofiler_depth];				// уровню глубины в 1 функцию соотв число -2 
+		gr5 = [_nmprofiler_enabled] with gr0++;	// увеличиваем счетчик глубины профилирования
+		[_nmprofiler_depth] = gr0   with gr0 A>>=31;
+	//.endif; 
+	//.if limit_depth==0;							// нет ограничений
+	//	gr5 = [_nmprofiler_enabled] with gr0 = true; 	//  ; - любая глубина
+	//.endif;
+		
+		ar5 = sp-disp   with gr5 = gr0 and gr5;	// ar5 - указывает на адрес возврата retaddr и pswr у профилируемой функции из которой пришли; gr5 = нужно ли профилировать
+		ar0,gr0 = [ar5];						// читаем оригинальный контекст возврата
 		nul;
+		[_timer_ret_pswr] = ar0,gr0;			// сохраняем оригинальный контекст возврата
+		ar0 = timer_return with gr5;			// устанавливаем адрес возврата на свой timer_return
+		if =0 delayed goto timer_skip_enter;	// пропускаем замерщик если профилирование запрещено или функция не верхнего уровня
+			[ar5] = ar0,gr0 ;					// подменяем в стеке адрес возврата из проф функции на свой timer_return (замерщик времени - стоп)
+			gr0=gr7;							// сохраняем gr7 для посл восстановления
+		
 		ar5 = [_size_summary];									// считываем накопленный размер
-		//gr0 = [_nmprofiler_size_current];						// считываем текущий размер
 		gr5 = [_nmprofiler_size_current];						// считываем текущий размер
-		ar5+=gr5;
+		ar5+= gr5;
 		nul;
-		//[_size_summary] = gr7  with gr0= false noflags;			// сохраняем новый размер
 		[_size_summary] = ar5  with gr5= false noflags;			// сохраняем новый размер
-		//[_nmprofiler_size_current] = gr0;						// обнуляем чтоб не портил чужие суммы
 		[_nmprofiler_size_current] = gr5;						// обнуляем чтоб не портил чужие суммы
-		pop ar5,gr5;
-		nul;
 		
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		//nul;
-		
-		delayed call _clock;				// засекаем время (пуск)
-			[ar5] = ar0,gr0;				// подменяем в стеке адрес возврата из проф функции на timer_return (замерщик времени - стоп)
-			gr0 = gr7 noflags;				// сохраняем gr7 (clock - портит gr7)
-		
-		[_timer_stopwatch]=gr7;				// сохраняем время
 		
 	.if tracing!=0;
-		push ar0,gr0;
-		push ar1,gr1;
-		
 		gr0 = [_nmprofiler_trace+5];  	// size-1
-		gr1 = [_nmprofiler_trace+2];	// head
-		ar0 = _nmprofiler_trace+16 with gr0=gr1 and gr0; // data
-		ar1 = funcname with gr0<<=2;
+		gr5 = [_nmprofiler_trace+2];	// head
+		ar0 = _nmprofiler_trace+16 with gr0=gr5 and gr0; // data
+		ar5 = funcname with gr0<<=2;
 		ar0+= gr0;
-		[ar0++]= gr7;					// пишем время
-		[ar0++]= ar1 with gr0=false;	// пишем адрес функции
-		[ar0++]= gr0 ;					// пишем вход(0) или выход(-1)  ;head++
-		[ar0++]= gr1 with gr1++;
-		[_nmprofiler_trace+2] = gr1;	// обновляем head
-		
-		pop ar1,gr1;
-		pop ar0,gr0;
+		[ar0++]= ar5 with gr0=false;	// пишем адрес функции
+		[ar0++]= gr5 with gr5++;		// пишем счетчик входа (head)   ;head++
+		[ar0++]= gr0 ;					// пишем вход(0) или выход(-1) 
+		[_nmprofiler_trace+2] = gr5;	// обновляем head
+	.endif;	
 	
+		delayed call _clock;				// засекаем время (пуск)
+			gr0 = gr7 noflags;				// сохраняем gr7 (clock - возвращает через gr7)
+			nul;
+		
+		[_timer_stopwatch]=gr7;				// сохраняем время в профайл функции
+	.if tracing!=0;
+		[ar0++]= gr7;						// сохраняем время в трасу 
 	.endif;	
 		
+		<timer_skip_enter>
 		pop ar5,gr5 with gr7=gr0 noflags;	// восстанавливаем gr7
 		pop ar0,gr0;
-		
-		
-		
 		
 		
 		// выполняем исходный стартовый код профилируемой функции
@@ -234,61 +218,49 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, master, tracing, len_text
 	//=============== замерщик (стоп) ===================================================
 	// sizeof =34+10
 	<timer_return>												// сюда мы переходим после return из профилируемой функции
-		push ar1,gr1;											// sp+=2 : отступаем стек, сюда мы потом подставим реальную(сохраненную) точку возврата из проф. функции
+		push ar0,gr0;											// sp+=2 : отступаем стек, сюда мы потом подставим реальную(сохраненную) точку возврата из проф. функции
 		push ar0,gr0;	
-		ar0 = gr7;												// сохраняем gr7 
-		nul;
-		delayed call _clock;									// засекаем время (стоп) в gr7
-			gr0 = [_nmprofiler_enabled];
+		push ar5,gr5;	
+		gr0 = [_nmprofiler_depth]  ;
+		gr5 = [_nmprofiler_enabled];		
+		
+		ar0 = gr7 	with gr7 = gr0 A>>31;						// сохраняем gr7 для восстановления после clock
+		gr7 = ar0	with gr5 = gr5 and gr7;
+		if =0 delayed goto timer_skip_return with gr0--;		// если не разрешено профилирование или - выход ; уменьшаем глубину
+			[_nmprofiler_depth]= gr0;							// сохраняем глубину
 			
-	.if tracing!=0;
-		push ar0,gr0;
-		push ar1,gr1;
-		
-		gr0 = [_nmprofiler_trace+5];  	// maxCountMinus1
-		gr1 = [_nmprofiler_trace+2];	// head
-		ar0 = _nmprofiler_trace+16 with gr0=gr1 and gr0; // data
-		ar1 = funcname with gr0<<=2;
-		ar0+= gr0;
-		[ar0++]= gr7;					// пишем время
-		[ar0++]= ar1 with gr0=true;		// пишем адрес функции
-		[ar0++]= gr0;					// пишем вход(0) или выход(-1)  
-		[ar0++]= gr1 with gr1++;		// пишем head  head++
-		[_nmprofiler_trace+2] = gr1;	// обновляем head
-		
-		pop ar1,gr1;
-		pop ar0,gr0;
 	
+		delayed call _clock;									// засекаем время (стоп) в gr7
+			[_nmprofiler_gr7]=gr7;								// сохраняем gr7;
+		
+	.if tracing!=0;
+		gr0 = [_nmprofiler_trace+5];  	// size-1
+		gr5 = [_nmprofiler_trace+2];	// head
+		ar0 = _nmprofiler_trace+16 with gr0=gr5 and gr0; // data
+		ar5 = funcname with gr0<<=2;
+		ar0+= gr0;
+		[ar0++]= ar5 with gr0=true;		// пишем адрес функции; gr0-выход
+		[ar0++]= gr5 with gr5++;		// пишем счетчик входа (head)   ;head++
+		[ar0++]= gr0 ;					// пишем вход(0) или выход(-1) 
+		[ar0++]= gr7 ;					// пишем время
+		[_nmprofiler_trace+2] = gr5;	// обновляем head
 	.endif;	
-				
-	.if master==0; // обычная функция профилирования
-		with gr0;												
-		nul;
-		if =0 delayed goto timer_skip;							// если не разрешено профилирование - выход
-			gr0 = [_nmprofiler_delay];
-	.endif;
-	.if master!=0;												// if master (запрещает профилирование вне себя)
-		gr0 = false noflags;
-		nul;
-		[_nmprofiler_enabled]=gr0;								// запрещаем дальнейшее профилирование
-		gr0 = [_nmprofiler_delay];
-	.endif;
+			
+		gr0 = [_nmprofiler_delay];			
 		gr0 = [_timer_stopwatch] with gr7+= gr0 noflags;		// считываем время вызова / коррекция gr7
 		gr0 = [_timer_summary]   with gr7 = gr7 - gr0 noflags;	// считываем накопленное время | вычисляем время работы функции
 		gr7 = [_timer_calls]     with gr0+= gr7 noflags;		// добавляем текущий замер времени
 		[_timer_summary]=gr0     with gr7++ noflags;			// сохраняем суммарное время | увеличиваем счетчик вызовов
-		[_timer_calls]=gr7;										// сохраняем счетчик вызовов
+		[_timer_calls]=gr7		 with gr7=gr5;					// сохраняем счетчик вызовов 
 		
-		<timer_skip>
-		gr7 = ar0;
-		nul;
+		gr7 = [_nmprofiler_gr7];											// восстанавливаем gr7;
+		<timer_skip_return>
 		ar0,gr0 = [_timer_ret_pswr];							// восстанавливаем контекст возврата
-		[sp-4] = ar0,gr0;
-			pop ar0,gr0;
-		delayed return;
-			nul;
-			nul;
-		//nul;
+		[sp-6] = ar0,gr0;
+		pop ar5,gr5;
+		pop ar0,gr0;
+		return;
+		
 	<next_init>
 //.wait;
 end PROFILE_FUNC_BASE;
@@ -301,9 +273,9 @@ macro FUNCTION(funcname,funcinfo)
 end   FUNCTION;
 
 // макрос разрещающий профилирование только в дочерних функциях
-macro PROFILE_MASTER_FUNC(funcname,funcinfo)
+macro PROFILE_DEPTH_FUNC(funcname,funcinfo)
 	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,1,TRACING,dummy_profile_end-dummy_profile_start);
-end   PROFILE_MASTER_FUNC;
+end   PROFILE_DEPTH_FUNC;
 
 // макрос профилирования функции с нестандартным вызовом функций  (внутреннее соглашение о передаче параметров . MUL32, DIV32...)
 macro NONCFUNC(funcname,funcinfo)

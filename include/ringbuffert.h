@@ -1,4 +1,4 @@
-﻿#ifndef HAL_RINGBUFFERT_INCLUDED
+#ifndef HAL_RINGBUFFERT_INCLUDED
 #define HAL_RINGBUFFERT_INCLUDED
 
 #include "stdlib.h"
@@ -461,4 +461,4 @@ template <class T, int SIZE> struct HalRingBufferDataDMA{
 
 
 
-#endif
+#endif //HAL_RINGBUFFERT_INCLUDED

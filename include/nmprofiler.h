@@ -302,10 +302,10 @@ int main()
 	void nmprofiler_init();
 	
 	struct TraceData{
-		unsigned 	time;
 		unsigned 	func;
-		unsigned 	dir;
 		unsigned 	counter;
+		unsigned 	dir;
+		unsigned 	time;
 	};
 	
 	struct ProfilerData {
@@ -377,6 +377,7 @@ int main()
 	void nmprofiler_disable();
 	int  nmprofiler_count();
 	void nmprofiler_copy(ProfilerData* dst);
+	void nmprofiler_set_depth(int depth);
 #endif	
 	
 #define NMPROFILER_TBL "%-12u| %-12u| %-12u| %08X| %-20s\n"
@@ -399,6 +400,12 @@ int main()
 	
 	//! макрос инициализации профайлера
 	#define PROFILER_START()		nmprofiler_init();
+	
+	//! макрос инициализации профайлера
+	#define PROFILER_RESUME()			nmprofiler_enable();
+	
+	//! макрос инициализации профайлера
+	#define PROFILER_STOP()			nmprofiler_disable();
 	
 	//! макрос вывода значения таймеров через stdout в виде таблицы 
 	#define PROFILER_PRINT2TBL()	nmprofiler_print2tbl();
