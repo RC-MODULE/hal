@@ -41,7 +41,7 @@ begin ".text_nmprofiler"
 	global _nmprofiler_shared:		word= 0600DBEEFh; 
 	global _nmprofiler_infosize:  	word= 0;
 	global _nmprofiler_enabled:		word= -1;
-	global _nmprofiler_depth:		word= -16;
+	global _nmprofiler_depth:		word= -64;
 	global _nmprofiler_size_current:word=0;
 	global _nmprofiler_gr7			:word;
 	
