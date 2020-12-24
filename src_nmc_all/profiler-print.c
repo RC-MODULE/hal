@@ -106,7 +106,7 @@ INSECTION(".text_nmprofiler") void  nmprofiler_trace2tbl(int max_depth)
 	
 	for(;trace.tail<trace.head;trace.tail++){
 		TraceData& item=trace.data[trace.size1&trace.tail];
-		printf("[%d]\tt:%x\t",trace.tail,item.time);
+		printf("[%d]\tt:%d  \t",trace.tail,item.time);
 		printf("sp:%x\t",item.sp);
 		//printf("[%d]",item.depth+max_depth+1);
 		int max=item.depth+max_depth>0?item.depth+max_depth:0;
