@@ -92,5 +92,30 @@ INSECTION(".text_nmprofiler") void  nmprofiler_print2xml(ProfilerData* head)
 	printf("</profiling>\n");
 }
 
-
+//! Функция выводит результаты профилирования в stdout в xml-формате по списку начиная с head. Для форматированного отображения xml-файла прилагается xsl-преобразование: profile.xsl.
+//! \param head указатель на первую структуру в списке.
 };
+
+
+extern "C" HalRingBufferData<TraceData,1024> nmprofiler_trace;
+INSECTION(".text_nmprofiler") void  nmprofiler_trace2tbl(int max_depth)
+{
+	
+	HalRingBufferData<TraceData,1024>& trace=*((HalRingBufferData<TraceData,1024>*)&nmprofiler_trace);
+	//HalRingBufferData<TraceData,0>& trace=nmprofiler_trace;
+	
+	for(;trace.tail<trace.head;trace.tail++){
+		TraceData& item=trace.data[trace.size1&trace.tail];
+		printf("[%d]\tt:%x\t",trace.tail,item.time);
+		printf("sp:%x\t",item.sp);
+		//printf("[%d]",item.depth+max_depth+1);
+		int max=item.depth+max_depth>0?item.depth+max_depth:0;
+		for(int i=0; i<max; i++)
+			printf("  ");
+		printf(":%x\n",item.func);
+	}
+
+}
+
+
+

@@ -1,39 +1,63 @@
 ROOT=../../../..
--include $(ROOT)/global.mk
+
 # BUILD AND RUN MAKEFILE
 # This makefile builds simple nmc-application containing single cpp-file  
 # Rule 'run' executes the application on MC12101 board 
 
 
+-include nmc4vars_win.mk
 
+.SUFFIXES:
 
 ifndef MC12101
 $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK might not have installed correctly. )
 endif 
 
-PATH:=$(MC12101)/bin;$(PATH)
-
-PROJECT	 = main
-TARGET   = $(PROJECT).abs
-CFG      = mc12101brd-nmpu0.cfg
-INC_DIRS = -I"$(MC12101)/include" -I$(ROOT)/include 
-LIB_DIRS = -L"$(MC12101)/lib"     -L$(ROOT)/lib
-LIBS     = mc12101lib_nm_legacy.lib hal-mc12101.lib libc4.lib libint_6407.lib
-
-SRC_DIRS =./ ..
+PROJECT  = main
+TARGET   = $(PROJECT)
+CC       = nmc-g++
+AS       = nmc-gcc
+CC_FLAGS = -std=c++11 -O0 -Wall -mnmc4-float  -mmas
+PROJECT  = main
+TARGET   =$(PROJECT)
+INC_DIRS = -I$(ROOT)/include
+LIB_DIRS = -L"$(NMCGCC)/lib" -L"$(NMCGCC)/nmc/lib/nmc4"  -L"$(ROOT)/lib"
+LIBS     = -lhal-mc12101
+MAP      = $(PROJECT).map
+CFG      =  mc12101brd-nmpu0.cfg
+SRC_DIRS = .. ./
 SRC_CPP  = $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 SRC_ASM  = $(wildcard $(addsuffix /*.asm,$(SRC_DIRS)))
 
-HEAPS     = -heap=14384 -heap1=16384 -heap2=16384 -heap3=16384
-FLAGS	 = -nmc4 -g -O0 
-MAP      = $(PROJECT).map
 
-$(TARGET): $(SRC_CPP) $(SRC_ASM)  $(CFG)  Makefile 
-	nmcc $(SRC_CPP) $(SRC_ASM) $(FLAGS) $(HEAPS) -c$(CFG) -o$(TARGET) -m$(MAP)  $(INC_DIRS) $(LIB_DIRS) $(LIBS) | errecho
+$(TARGET): $(SRC_CPP) Makefile
+	$(CC)  $(SRC_CPP) $(SRC_ASM) $(CC_FLAGS) $(INC_DIRS) $(LIB_DIRS) $(LIBS) -lc -Wl,-c$(CFG) -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -fno-threadsafe-statics  -fno-exceptions -o $(TARGET) -Wl,-Map=$(MAP) 
+	
+#	2>&1|errecho
 
-run: $(TARGET) 
-	mc12101run -v $(TARGET) 
+PATH:=$(MC12101)/bin;$(PATH)
 
+
+
+nmc4vars_win.mk:
+	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
+	
+SRC_DIRS += .
+
+-include $(ROOT)/global.mk
+# BUILD AND RUN MAKEFILE
+# This makefile builds simple nmc-application containing single cpp-file  
+# Rule 'run' executes the application on MC5103 board 
+
+
+
+ifeq ($(OS),Windows_NT)
+  SHELL = cmd
+endif
+
+run: $(TARGET)
+	mc12101run $(TARGET)
+	
 rund:
 	-$(MAKE) run
 	pause
@@ -44,13 +68,16 @@ vs2005:
 vs2015:
 	premake5 vs2015
 
-
+erase:
+	mc12101erase
+	
 profile:	
 	python $(ROOT)/script/profiler.py > proflist_generated.asm
 	$(MAKE)
 	$(OS_RM) $(TARGET)
 	python $(ROOT)/script/profiler.py $(MAP) > proflist_generated.asm
-
+	
 	
 -include $(ROOT)/clean.mk	
-	SRC_DIRS += .
+
+	

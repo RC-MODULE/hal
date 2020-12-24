@@ -145,7 +145,7 @@ static inline int printf_h( const char* format,...)
     rpcr.nm_io_debug = (int)buf;
     int r= vsprintf( buf, format, argptr);
     rpcr.nm_io_debug = 0;
-    completeMessage( NMSYNC_SERVICE_PRINTF, r );
+    completeMessage( NMSYNC_SERVICE_PRINTF, r+1 );
     va_end( argptr );
     return r;
 }

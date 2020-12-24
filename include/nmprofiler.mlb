@@ -186,9 +186,11 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, limit_depth, tracing, len
 		ar0 = _nmprofiler_trace+16 with gr0=gr5 and gr0; // data
 		ar5 = funcname with gr0<<=2;
 		ar0+= gr0;
-		[ar0++]= ar5 with gr0=false;	// пишем адрес функции
-		[ar0++]= gr5 with gr5++;		// пишем счетчик входа (head)   ;head++
-		[ar0++]= gr0 ;					// пишем вход(0) или выход(-1) 
+		[ar0++]= ar5;					// пишем адрес функции
+		gr0 = [_nmprofiler_depth];
+		ar5 = sp-disp;					// 
+		[ar0++]= gr0 with gr0=false;	// пишем глубину
+		[ar0++]= ar5 with gr5++;		// сохраняем sp  ;head++
 		[_nmprofiler_trace+2] = gr5;	// обновляем head
 	.endif;	
 	
@@ -239,10 +241,12 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, limit_depth, tracing, len
 		ar0 = _nmprofiler_trace+16 with gr0=gr5 and gr0; // data
 		ar5 = funcname with gr0<<=2;
 		ar0+= gr0;
-		[ar0++]= ar5 with gr0=true;		// пишем адрес функции; gr0-выход
-		[ar0++]= gr5 with gr5++;		// пишем счетчик входа (head)   ;head++
-		[ar0++]= gr0 ;					// пишем вход(0) или выход(-1) 
-		[ar0++]= gr7 ;					// пишем время
+		gr0 = [_nmprofiler_depth];
+		[ar0++]= ar5 with gr0++;		// пишем адрес функции; коррекция глубины
+		[ar0++]= gr0;					// пишем глубину   
+		ar5 = sp-6;
+		[ar0++]= ar5 ;					// пишем sp
+		[ar0++]= gr7 with gr5++;		// пишем время ; head ++
 		[_nmprofiler_trace+2] = gr5;	// обновляем head
 	.endif;	
 			

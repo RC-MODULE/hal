@@ -1,32 +1,30 @@
 
+-- use %. to define .
+max_funcname_length = 16
+exclude_section_prefix ={ '%.text%.',"%.data","%.nobits","%.bss","%.rodata","%.init","%.fini","%.heap","%.rpc_","%.text_nmprofiler", "%.text_hal", "%.text_nmvcore" }
 
-exclude_section_prefix ={ '%.text%.', ".text_nmprofiler" }
-include_section = { }
+
+
+-- exclude_section_prefix ={  }
+include_section = { '.text' }
 nonstd_name = {
 "UDiv32",
 "IDiv32",
 "LShift32",
-"LShift64",
 "Mul32Ex",
-"Mul64",
 "ARShift32",
 "DAdd",
 "DFrExp",
 "DResult",
 "DCmp",
 "DDiv",
-"IDiv64",
-"UDiv64",
 "DMul",
 "ConvDtoI32",
 "ConvI32toD",
 "UMod32",
 "IMod32",
-"UMod64",
-"IMod64",
 "Mul32",
 "RShift32",
-"RShift64",
 "ConvU32toD"
 }
 
@@ -62,11 +60,7 @@ exclude_name = {
 "_ClearInterrupt"              ,
 "_LibintSetFPCCR"              ,
 "_stopwatch_head"              ,
-"_nmprofiler_printf"           ,
-"_nmprofiler_sprintf"          ,
-"_nmprofiler_print2tbl"        ,
-"_nmprofiler_print2xml"        ,
-"_printf"                      ,
+"_pr1intf"                      ,
 "_puts_"                       ,
 "_puts"                        ,
 "FPIEEE_Signal"                ,
@@ -78,19 +72,25 @@ exclude_name = {
 "_semi_fclose"                 ,
 "_semi_fwrite"                 ,
 "_semi_fread"                  ,
-"_semi_fseek"                  
+"_semi_fseek"                  ,
+"__Z6dummy_v"				   ,
+"__Z13beginMessage_v"			,
+"__Z16completeMessage_15NM_IO_ServiceIDi",
+"__main"						,
+"__exit"
+
 }
 
 
 
 
 -----------------------------------------------------------------------------------
-
+exclude_section_prefix[#exclude_section_prefix+1] = "____dummy____"
  
- list = {}
- func = {}
- section = "null"
- -- count = 0;
+list = {}
+func = {}
+section = "null"
+-- count = 0;
  
  
  
@@ -100,9 +100,15 @@ exclude_name = {
 	end
 	for i=1,#table do
 		--print(table[i],val);
-		if table[i] == val then 
-			return true
-		end
+		--if table[i] == val then 
+		--	return true
+		--end
+		indx,last=string.find(val,table[i]);
+		if (indx<>nul) then
+		if indx==1 then
+		     return true
+        end
+	  end
 	end
 	return false
 end
@@ -120,52 +126,88 @@ end
    return false
 end
  
- 
- 	
+local function file_exists(filename)
+    local file = io.open(filename, "r")
+    if (file) then
+        -- Obviously close the file if it did successfully open.
+        file:close()
+        return true
+    end
+    return false
+end 
+
+local function space_wagon( n)
+	local str=""
+	for i = 1 , n do
+		str=str.." ";
+	end
+	return str
+end
+
+
+
+
 print('//****************************************************************************************')
-print('// This is automaticly generated asm-file by profiler.lua' );
+print('// This is automaticly generated asm-file by profiler-gcc.lua' );
 print('//****************************************************************************************')
-print('import from "d:/git/hal/include/nmprofiler.mlb";')
+print('import from "nmprofiler.mlb";')
 print('begin ".text_nmprofiler\"')
-print('PROFILE_BEGIN(16);')
+print("PROFILE_BEGIN("..max_funcname_length..");")
 print('')
 	
--- print(arg[1])	
+-- print(arg[1])
+prevaddr = ""
 if #arg==1 then
+if file_exists(arg[1]) then
 	for line in io.lines(arg[1]) do 
-		idx=string.find(line,"^%.text[%.%a_%d]*%s?");
+		-- search of section ------------------------------------
+		-- idx=string.find(line,"^%.text[%.%a_%d]*%s?");
+		idx=string.find(line,"^%s?%.[%.%a_%d]*%s?");
 		if idx<>nil then
-			section=string.sub(line,string.find(line,"%.text[%.%a_%d]*"));
+			section=string.sub(line,string.find(line,"%.[%.%a_%d]*"));
 		end
-
-		idx=string.find(line,"^%s+0x%x+%s+[_%a]%a[_%a%d]+$");
+		-- search of function ------------------------------------
+		idx=string.find(line,"^%s+0x%x+%s+[_%a][_%a%d]+$");
 		if idx<>nil then
-			
-			
+			prevaddr=func.addr;
 			idx0,idx1=string.find(line,"0x%x+"); -- find address
 			func.addr=string.sub(line,idx0,idx1); -- extract address
 			func.name=string.sub(line, string.find(line,"[_%a%d]+",idx1+1)); -- extract name
 			func.sect=section;
+			
 			-- count= count+1;
 			if not contains_prefix(exclude_section_prefix, func.sect) then
 				if contains(include_section, func.sect) then
 					if not contains(exclude_name, func.name) then
+						len = string.len(func.name);
+						sss=space_wagon(max_funcname_length-len);
+						comment="";
+						if (func.addr==prevaddr) then
+							comment='//';
+						end
+
 						if contains(nonstd_name, func.name) then
-							print("PROFILE_NONSTD_FUNC("..func.name..",\""..func.name.."\");");
+							print(comment.."NONCFUNC("..func.name..","..sss.."\""..func.name..sss.."\");// "..func.addr.." ["..func.sect.."]");
 							--print(count,func.addr,func.name,func.sect);
 							--print("\""..func.name.."\",");
 						else
-							print("PROFILE_FUNC("..func.name..",\""..func.name.."\");");
+							print(comment.."FUNCTION("..func.name..","..sss.."\""..func.name..sss.."\");// "..func.addr.." ["..func.sect.."]");
 							--print("\""..func.name.."\",");
 							--print(count,func.addr,func.name,func.sect);
 						end
+						
+						--print("\""..func.name.."\",");
+						--print(count,func.addr,func.name,func.sect);
 					end
 				end
 			end
 		end
 	end
- end 
+end
+end 
  
 print('') 
 print('PROFILE_END();')
 print('end ".text_nmprofiler";')
+
+

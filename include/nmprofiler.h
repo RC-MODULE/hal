@@ -303,8 +303,8 @@ int main()
 	
 	struct TraceData{
 		unsigned 	func;
-		unsigned 	counter;
-		unsigned 	dir;
+		unsigned 	depth;
+		unsigned 	sp;
 		unsigned 	time;
 	};
 	
@@ -419,6 +419,14 @@ int main()
 	#define STOPWATCH_PRINT2XML()
 #endif 
 
+#include "ringbuffert.h"
+
+//INSECTION(".text_nmprofiler") 
+
+#define PROFILER_TRACE(size) extern "C" {	HalRingBufferData<TraceData,size> nmprofiler_trace;}
+
+
+void  nmprofiler_trace2tbl(int max_depth);
 
 
 #endif 

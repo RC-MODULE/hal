@@ -46,10 +46,14 @@ STOPWATCH_CREATE(tmr_all,"tmr_all");			//  tmr_all.
 STOPWATCH_CREATE(tmr_sin,"tmr_sin");			//  tmr_sin.	
 STOPWATCH_CREATE(tmr_cos,"tmr_cos");			//  tmr_cos.
 
-extern "C"{
-	HalRingBufferData<TraceData,1024> nmprofiler_trace;
-}
 
+
+//extern "C"{
+//	HalRingBufferData<TraceData,1024> nmprofiler_trace;
+//}
+
+
+PROFILER_TRACE(1024);
 
 
 
@@ -59,15 +63,16 @@ int  main(){
 	//float d=4.4;
 	//printf("%f \n",d);
 	printf("head=%d\n",nmprofiler_trace.head);
+	int max_depth=1;
+	nmprofiler_set_depth(max_depth);
 	PROFILER_START();
 	
 	
 	volatile void *a=halMapAddrTo(0,0);
 	
 	volatile void *b=halMapAddrFrom(0,0);
-	nmprofiler_set_depth(10);
 	mysin();
-	PROFILER_STOP();						//  tmr_all.
+	
 	
 	int *p=(int*)malloc(100);
 	int *p1=(int*)malloc(100);
@@ -100,11 +105,8 @@ int  main(){
 	
 	PROFILER_PRINT2TBL();				//  std 
 	STOPWATCH_PRINT2TBL();			
-	for(;nmprofiler_trace.tail<nmprofiler_trace.head;nmprofiler_trace.tail++){
-		TraceData* item=nmprofiler_trace.ptrTail();
-		printf("t:%x\tfunc:%x\tdir:%d\thead:%d\n",item->time, item->func, item->dir, item->counter);
-	}
 	
+	nmprofiler_trace2tbl( max_depth);
 	return (int)a;
 	return 10;
 
