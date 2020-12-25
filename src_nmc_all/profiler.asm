@@ -294,8 +294,9 @@ return;
 // ar0 = funcname;  		Имя профилируемой функции
 // gr0 = timer_replaced		здесь будем хранить исходные 4 инструкции профилируемой функции
 // gr1 = master_enter;		адрес замерщика времени (пуск)
+// не сохраняет регистры ar0,gr0,ar1,gr1,ar2,gr2
 global inject_goto:label;
-<inject_goto>	
+<inject_goto>
 	// копируем 4 команды из заголовка профилируемой функции в таймер-функцию	
 	//timer_replaced:label;
 	call nmprofiler_check_jump_cop4; // проверяем что в 4 подменяемых командах нет переходов

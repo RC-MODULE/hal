@@ -23,7 +23,7 @@
 // sizeof = 16
 macro PROFILE_FUNC_BASE_DUMMY()
 	  <dummy_profile_start>
-	  PROFILE_FUNC_BASE(extern,__main,"__main",6,0,TRACING,0);
+	  PROFILE_FUNC_BASE(extern,__main,"__main",6,TRACING,0);
 	  <dummy_profile_end>
 end PROFILE_FUNC_BASE_DUMMY;	  
 	  
@@ -38,12 +38,12 @@ const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 	global _halProfilerEnable		:label;
 	extern _clock					:label; 
 	extern  inject_goto				:label;
-	extern	profiler_check_jump_cop4:label; // функция проверяет наличия перехода в первых 4 командах (для таких функций профилирование невозможно)
+	//extern	profiler_check_jump_cop4:label; // функция проверяет наличия перехода в первых 4 командах (для таких функций профилирование невозможно)
 	extern _nmprofiler_enabled		:word;
 	extern _nmprofiler_infosize		:word;
 	extern _nmprofiler_head_addr	:word;
 	extern _nmprofiler_tail_addr	:word;
-	extern _nmprofiler_namesize		:word;
+	//extern _nmprofiler_namesize		:word;
 	extern _nmprofiler_delay		:word;
 	extern _nmprofiler_size_current	:word;
 	extern _nmprofiler_trace		:label;
@@ -51,17 +51,12 @@ const MAX_FUNCNAME_LEN=MAXFUNCLEN;
 	extern _nmprofiler_gr7			:word;
 	
 	own    next_init:label;
-	//global _nmprofiler_enable:	label;
-	//global _nmprofiler_disable: 	label;
-	//global _nmprofiler_last : 	label;
-
-	//[_nmprofiler_head]=gr7; // never used , only to force address assignment for  _nmprofiler_first if map-file
-	//[_nmprofiler_check]=gr7;
 	
 	<_halProfilerEnable>
 	<_nmprofiler_init>
 	push ar0,gr0;
 	push ar1,gr1;
+	push ar2,gr2;					// нужно для inject_goto
 	ar0 = next_init+12 with	gr7 = false;	// gr7 =0
 	gr0 = MAXFUNCLEN+5;
 	[_nmprofiler_infosize] =gr0;
@@ -79,15 +74,16 @@ macro PROFILE_END() 			// On enter: gr7=profiler
 	if =0 goto reset_head_addr;	// если нет ни одной функции обнуляем _nmprofiler_head_addr
 	gr0=false;			// gr0=0;
 	[gr7]=gr0;			// [_timer_next]=0;
+	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;
 	return ;
 
 	<reset_head_addr>
+	pop ar2,gr2;
 	pop ar1,gr1;
 	pop ar0,gr0;
 	delayed return;
-		nul;
 		[_nmprofiler_head_addr]=gr7;
 	goto profileList;
 			
@@ -97,7 +93,7 @@ end PROFILE_END;
 	
 
 // disp =12	
-macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, limit_depth, tracing, len_text)
+macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, tracing, len_text)
 //.branch;
 	ext funcname				:label; // указатель на профилируемую функцию
 	own timer_return			:label;
@@ -117,7 +113,7 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, limit_depth, tracing, len
 	<initcode>							// должен быть длинной 12 слов
 	ar0 = funcname;						// адрес данных профилируемой функции
 	gr1 = timer_enter;					// вставляем goto на timer_enter в начала прфилируемой функции
-	delayed call inject_goto;
+	delayed call inject_goto;			// не сохраняет регистры ar0,gr0,ar1,gr1,ar2,gr2;
 		gr0 = timer_replaced;			// адрес куда сохраняем замещаемый код
 	
 
@@ -154,14 +150,9 @@ macro PROFILE_FUNC_BASE(ext, funcname, funcinfo, disp, limit_depth, tracing, len
 		push ar0,gr0;
 		push ar5,gr5;	
 		
-	//.if limit_depth!=0;						// если есть ограничение по глубине профилирования
 		gr0 = [_nmprofiler_depth];				// уровню глубины в 1 функцию соотв число -2 
 		gr5 = [_nmprofiler_enabled] with gr0++;	// увеличиваем счетчик глубины профилирования
 		[_nmprofiler_depth] = gr0   with gr0 A>>=31;
-	//.endif; 
-	//.if limit_depth==0;							// нет ограничений
-	//	gr5 = [_nmprofiler_enabled] with gr0 = true; 	//  ; - любая глубина
-	//.endif;
 		
 		ar5 = sp-disp   with gr5 = gr0 and gr5;	// ar5 - указывает на адрес возврата retaddr и pswr у профилируемой функции из которой пришли; gr5 = нужно ли профилировать
 		ar0,gr0 = [ar5];						// читаем оригинальный контекст возврата
@@ -273,17 +264,17 @@ end PROFILE_FUNC_BASE;
 
 // макрос профилирования функции со стандартным С-вызывом  (стандартное соглашение о передачи параметров через стек)
 macro FUNCTION(funcname,funcinfo)
-	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,0,TRACING,dummy_profile_end-dummy_profile_start);
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,TRACING,dummy_profile_end-dummy_profile_start);
 end   FUNCTION;
 
 // макрос разрещающий профилирование только в дочерних функциях
 macro PROFILE_DEPTH_FUNC(funcname,funcinfo)
-	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,1,TRACING,dummy_profile_end-dummy_profile_start);
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,6,TRACING,dummy_profile_end-dummy_profile_start);
 end   PROFILE_DEPTH_FUNC;
 
 // макрос профилирования функции с нестандартным вызовом функций  (внутреннее соглашение о передаче параметров . MUL32, DIV32...)
 macro NONCFUNC(funcname,funcinfo)
-	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,8,0,TRACING,dummy_profile_end-dummy_profile_start);
+	  PROFILE_FUNC_BASE(extern,funcname,funcinfo,8,TRACING,dummy_profile_end-dummy_profile_start);
 end   NONCFUNC;
 
 
