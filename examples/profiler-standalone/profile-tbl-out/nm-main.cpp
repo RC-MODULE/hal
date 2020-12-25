@@ -63,7 +63,7 @@ int  main(){
 	//float d=4.4;
 	//printf("%f \n",d);
 	printf("head=%d\n",nmprofiler_trace.head);
-	int max_depth=1;
+	int max_depth=4;
 	nmprofiler_set_depth(max_depth);
 	PROFILER_START();
 	
