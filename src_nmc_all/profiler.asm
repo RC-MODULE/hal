@@ -281,8 +281,8 @@ global _nmprofiler_copy:label;
 	[ar4] = gr0;
 	<nmprofiler_copy_finish>
 	pop ar6,gr6;
-	pop ar4,gr4;
 	pop ar5,gr5;
+	pop ar4,gr4;
 	pop ar0,gr0;
 return;
 	
