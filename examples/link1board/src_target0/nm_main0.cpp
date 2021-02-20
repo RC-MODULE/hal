@@ -1,9 +1,7 @@
 #include "hal.h"
 #include "section-hal.h"
-#include "hal_target.h"
-#include "stdio.h"
+//#include "stdio.h"
 #include "link.h"
-#include "nmpp.h"
 #include "led.h"
 
 #define LINK_PORT 2

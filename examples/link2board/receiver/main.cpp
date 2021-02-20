@@ -3,31 +3,31 @@
 #include "hal.h"
 #include "link.h"
 #include "section-hal.h"
-#include "nmpp.h"
 
 #define SIZE 16384
-#define PORT 1
+#define PORT 0
 
-INSECTION(".data_imu3") int src[SIZE + 2];
+INSECTION(".data_imu3") int dst[SIZE + 0xF];
 
 
 int main()
 {
-	halLinkInit(PORT, LINK_OUTPUT);
+	halLinkInit(PORT, LINK_INPUT);
 	unsigned int crc = 0;
-	//printf("src=0x%x\n", src);
+	//printf("dst=0x%x\n", dst);
 	for(int i=0;i< SIZE;i++){
-		src[i] = i;
-	}
-	
+		dst[i] = 0xCDCDCDCD;
+	}	
+
 	int cnt = 1;
 	for(int size = 2; size <= SIZE; size+=2){
 		halLed(cnt++);
-		halLinkStart(src, size, PORT);
+		halLinkStart(dst, size, PORT);
 		while(halLinkIsCompleted(PORT) == 0);
-		nmppsCrcAcc_32s(src, size, &crc);
+		//nmppsCrcAcc_32s(dst, size, &crc);
 	}
-	halLed(((int*)0x40001C0A)[0]);
+	//halLed(((int*)0x4000181A)[0]);
 	printf("crc=0x%x\n", crc);
 	return 0;
+	
 }
