@@ -2,6 +2,7 @@
 #include <time.h>
 #include <string>
 #include "nmprofiler.h"
+#include "hal_host.h"
 //#include "profiler_nmcout.h"
 
 typedef int (*tReadMemBlock)(void* host_dst, unsigned nmc_addr, unsigned size32);

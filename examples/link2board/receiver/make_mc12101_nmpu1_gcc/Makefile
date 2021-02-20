@@ -1,3 +1,4 @@
+ROOT = ../../../..
 ###########################################################################################
 # (RC)Module 7/8/2015
 #
@@ -46,25 +47,22 @@
 #============== PROJECT & BUILD CONFIGURATION ==========
 #
 
-ROOT             = ../../..
 include $(ROOT)/global.mk
 include 		 nmc4vars_win.mk
 #-------------- target & input dirs -------------------
-PROJECT          = main0
+PROJECT          = main1
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I$(HAL)/include -I$(ROOT)/include
-SRC_DIRS         = ../src_target0 .
-LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(HAL)/lib"
+INC_DIRS         = -I$(ROOT)/include -I$(ROOT)/src_1879vm6ya -I..
+SRC_DIRS 		 = ..
+LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(HAL)/lib"
 TMP_DIR          = Release
 #-------------- RELEASE/ALL config -------------------
-CC 				 = nmc-g++
+CC 		 = nmc-g++
 AS               = nmc-gcc 				 
-AS_FLAGS    	 = -c -mmas -x assembler -mnmc4-float
+AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-float $(INC_DIRS)
 LIBS             = -lhal-mc12101
-LINKER_FLAGS     = -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscript-nmc0.ld" -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
-#LINKER_FLAGS    += -Wl,--section-start,.heap4=0x8000,--defsym,__HEAP_4_END=0x200000
-
+LINKER_FLAGS     =   -Xlinker -Map=.main0.map $(LIB_DIRS) "-Wl,-cmc12101brd-nmpu1.cfg"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -73,7 +71,8 @@ LINKER_FLAGS     = -Xlinker -Map=.main0.map $(LIB_DIRS) -save-temps "-Wl,-Tldscr
 ALL_CPP =$(wildcard $(addsuffix /*.cpp, $(SRC_DIRS)))
 ALL_ASM =$(wildcard $(addsuffix /*.asm, $(SRC_DIRS)))
 ALL_C   =$(wildcard $(addsuffix /*.c, $(SRC_DIRS)))
-ALL_H   =$(wildcard $(addsuffix /*.h, $(INC_DIRS)))
+ALL_H   =$(wildcard $(addsuffix /*.h, $(HEADER_DIRS)))
+ALL_ASI =$(wildcard $(addsuffix /*.asi, $(HEADER_DIRS)))
 
 VPATH   = $(SRC_DIRS)
 
@@ -96,56 +95,28 @@ all:  $(TARGET)
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
 
-#generate nmc-dumps
-DUMPS 		= $(addprefix $(TMP_DIR)/dumps/, $(notdir $(patsubst %.o,%.dump,$(OBJECTS))))
-dumps: $(TMP_DIR)/dumps
-	$(MAKE) -f Makefile0 $(DUMPS)
-
-$(TMP_DIR)/dumps:
-	mkdir $(TMP_DIR)\dumps
-	
-$(TMP_DIR)/dumps/%.dump: $(TMP_DIR)/%.o
-	nmc-objdump $< -S -r -t >> $@
-	
-	
+run: $(TARGET)
+	mc12101run $(TARGET) -p -b0
 	
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) $(ALL_H) nmc4vars_win.mk Makefile0
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
 	copy "$(NMC_GCC_TOOLPATH)\nmc4-ide\include\nmc4vars_win.mk" nmc4vars_win.mk
 
-$(OUT_DIR):
+$(OUT_DIR): 
 	-mkdir "$(@)"
 	
 $(TMP_DIR)/%.o: %.asm 
-	$(AS) $(AS_FLAGS) $(<) -o$(@) $(INC_DIRS)
+	$(AS) $(AS_FLAGS) $(<) -o$(@)
 	
 $(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2  -fno-builtin-printf
 
 $(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2 -fno-builtin-printf
-	
-proflist:
-	lua53 $(HAL)/script/profiler-gcc.lua .main0.map > proflist_generated0.asm 
-
-#========================== Visual Studio  ===================
-export ALL_CPP ALL_ASM ALL_C ALL_H
-
-PROVIDER = host-x86
-
-$(PROVIDER).vcxproj :	premake5.lua 
-	premake5 vs2015
-
-$(PROVIDER).vcproj :	premake5.lua 
-	premake5 vs2005
-
-vs2015:   $(PROVIDER).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROVIDER).vcxproj
-#	"$(VS140COMNTOOLS)vsvars32" && msbuild $(PROJECT).vcxproj /p:Configuration=Release
-
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) -O2  -fno-builtin-printf
+	 
 include $(ROOT)/clean.mk
