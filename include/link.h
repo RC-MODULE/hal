@@ -1,11 +1,3 @@
-#define DMA_BUSY  1
-#define DMA_ERROR 2
-#define DMA_READY 0 
-#define DMA_OK    0 
-
-#ifndef MAX_CHAIN_BUF_SIZE
-#define MAX_CHAIN_BUF_SIZE 256
-#endif 
 
 #define LINK_OUTPUT 0
 #define LINK_INPUT 1
