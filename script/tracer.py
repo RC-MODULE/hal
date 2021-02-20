@@ -3,8 +3,7 @@ import os
 import sys
 
 def argv_input():
-	out_file_name = 'out.txt'
-	result = {'out': 'out.txt'}
+	result = {'out': 'trace.dasm', 'trace': 'trace.bin', 'dump': 'main.dasm'}
 	for i in range (1, len(sys.argv)):
 		argv = sys.argv[i]
 		param = re.findall('(dump|trace|out)=(.*)', argv)
@@ -14,9 +13,7 @@ def argv_input():
 			elif param[0][0] == 'trace':
 				result['trace'] = param[0][1]
 			elif param[0][0] == 'out':
-				result['out'] = param[0][1]			
-			else:		
-				print('error')
+				result['out'] = param[0][1]		
 		else:
 			print('error')
 	return result
