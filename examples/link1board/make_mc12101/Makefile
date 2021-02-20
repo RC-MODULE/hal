@@ -12,44 +12,21 @@ $(warning *** WARNING: 'MC12101' environment variable is not defined! Board SDK 
 endif 
 
 BOARD    = mc12101
-HOST     = $(BOARD)-x86
 
 TARGET0  = main0.abs
 TARGET1  = main1.abs
 
 VS ?= vs2015 
 #PATH:=$(MC12101)/bin;$(PATH)
-all: $(TARGET0) $(TARGET1)  $(HOST)
+all: $(TARGET0) $(TARGET1) 
 
 nm0 $(TARGET0): 
 	$(MAKE) -f Makefile0 
 
 nm1 $(TARGET1):
 	$(MAKE) -f Makefile1
-	
-host $(HOST): $(VS)
 
-proflist: proflist0 proflist1
-proflist0:
-	$(MAKE) -f Makefile0 proflist
-proflist1:
-	$(MAKE) -f Makefile1 proflist
-	
-	
-vs2005: $(HOST).vcproj 
-	"$(VS80COMNTOOLS)vsvars32" && vcbuild $(HOST).vcproj
-
-vs2015:	$(HOST).vcxproj
-	"$(VS140COMNTOOLS)vsvars32" && msbuild $(HOST).vcxproj /p:Configuration=Debug
-
-$(HOST).vcproj:
-	premake5 vs2005
-
-$(HOST).vcxproj:
-	premake5 vs2015
-
-
-run: $(TARGET0) $(TARGET1) $(HOST)
-	bin\debug\$(HOST)
+run: $(TARGET0) $(TARGET1)
+	mc12101run $(TARGET0) $(TARGET1)
 	
 include $(ROOT)/clean.mk
