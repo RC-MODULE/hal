@@ -103,14 +103,6 @@ def get_commands_list(addr_list, dump_dict):
 	return out_list
 
 names = argv_input()
-#names = console_input()
-try:
-	dump_file = open(names['dump'], 'r')
-	trace_file = open(names['trace'], 'rb')
-	out_file = open(names['out'], 'w')	
-except IOError as e:
-	print(e)
-	sys.exit()	
 	
 dump_dict = get_dump_dict(names['dump'])
 trace_list = get_trace_list(names['trace'])
