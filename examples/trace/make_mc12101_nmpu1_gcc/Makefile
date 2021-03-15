@@ -102,7 +102,7 @@ dump:
 	nmc-objdump -D $(PROJECT).abs > $(PROJECT).dasm
 
 trace:
-	python $(ROOT)/script/tracer.py trace=trace.bin dump=$(PROJECT).dasm out=trace.dasm
+	python $(ROOT)/script/tracer.py trace=trace.bin dump=$(PROJECT).dasm > trace.dasm
 
 run: $(TARGET)
 	mc12101run $(TARGET) --recv_file_name=trace.bin --recv_sect=".trace.buf" --recv_size=800 -p
