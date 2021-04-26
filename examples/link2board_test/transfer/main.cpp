@@ -25,7 +25,7 @@ int main()
 
 	int cnt = 1;
 	//for(int size = 2; size <= SIZE; size+=2){
-		//halLed(cnt++);
+		halLed(cnt++);
 		halLinkStart(src, SIZE, PORT, LINK_OUTPUT);
 		while(halLinkIsCompleted(PORT, LINK_OUTPUT) == 0);
 		halSleep(10);
