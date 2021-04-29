@@ -2,6 +2,8 @@ import re
 import os
 import sys
 
+
+#input functions
 def argv_input():
 	result = {'out': 'trace.dasm', 'trace': 'trace.bin', 'dump': 'main.dasm'}
 	for i in range (1, len(sys.argv)):
@@ -31,25 +33,29 @@ def console_input():
 
 	return result
 
+
+
+#create dict of instructions
 def get_dump_dict(file_name):
 	dump_dict = {}
 	try:
 		dump_file = open(file_name, 'r')
 		#						address		  			label(if exist)	 (instr)
-		pattern = re.compile('([0-9a-fA-F]+):?(\s|\t)(\<[_a-zA-Z0-9]*\>)?(.*)')
+		pattern = re.compile('^\s*([0-9a-fA-F]+):?\s*(\<[_a-zA-Z0-9]*\>)?(.*)')
 		for d in dump_file:
 			line = re.findall(pattern, d)
 			if len(line) > 0:
 				dump_dict.setdefault(line[0][0], {})
 				key = line[0][0]
-				if line[0][2] != '':
-					dump_dict[key]['label'] = line[0][2]
-				dump_dict[key]['instr'] = line[0][3]
+				if line[0][1] != '':
+					dump_dict[key]['label'] = line[0][1]
+				dump_dict[key]['instr'] = line[0][2]
 		dump_file.close()
 	except IOError as e:
 		print("File " + file_name + " is not exist")
 	return dump_dict
 
+#read binary file of trace addr and create list
 def get_trace_list(binary_file_name):
 	result = []
 	try:
@@ -65,6 +71,7 @@ def get_trace_list(binary_file_name):
 		print("File " + binary_file_name + " is not exist")
 	return result
 
+#convert list of trace_addr to list of instructions
 def get_commands_list(addr_list, dump_dict):
 	out_list = []
 	for t in addr_list:
@@ -102,10 +109,12 @@ def get_commands_list(addr_list, dump_dict):
 			out_list.append('deadc0de' + '\n')
 	return out_list
 
-names = argv_input()
-	
-dump_dict = get_dump_dict(names['dump'])
-trace_list = get_trace_list(names['trace'])
-commands = get_commands_list(trace_list, dump_dict)
-for c in commands:
-	print(c)
+
+#run if script is called directly
+if __name__ == '__main__':
+	names = argv_input()	
+	dump_dict = get_dump_dict(names['dump'])
+	trace_list = get_trace_list(names['trace'])
+	commands = get_commands_list(trace_list, dump_dict)
+	for c in commands:
+		print(c)
