@@ -1,4 +1,4 @@
-ROOT = ../../..
+ROOT = ../../../..
 ###########################################################################################
 # (RC)Module 7/8/2015
 #
@@ -53,19 +53,20 @@ include 		 nmc4vars_win.mk
 PROJECT          = main
 OUT_DIR          = .
 TARGET           = $(OUT_DIR)/$(PROJECT).abs
-INC_DIRS         = -I$(ROOT)/include -I$(ROOT)/src_1879vm6ya -I..
+INC_DIRS         = -I$(ROOT)/include -I$(ROOT)/src_1879vm6ya -I$(ROOT)/make_mc12101 -I$(ROOT)/src_printf_nmgcc
+#SRC_DIRS 		 = .. $(ROOT)/src_1879vm6ya $(ROOT)/src_printf_nmgcc $(ROOT)/src_nmc_all $(ROOT)/src_ringbuffer
 SRC_DIRS 		 = ..
-LIB_DIRS         = -L "$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L"$(HAL)/lib"
+LIB_DIRS         = -L"$(NMC_GCC_TOOLPATH)/nmc4-ide/lib" -L$(ROOT)/lib
 TMP_DIR          = Release
+MAP 			 = main.map
+CFG 			 = mc12101brd.cfg
 #-------------- RELEASE/ALL config -------------------
-CC 		 = nmc-g++
-CC_FLAGS	 	 = 
+CC 		 		 = nmc-g++
+CC_FLAGS		 = -O2  -fno-builtin-printf
 AS               = nmc-gcc 				 
 AS_FLAGS    	 = -c -mmas -x assembler -Wa,-split_sir -mnmc4-float $(INC_DIRS)
-LIBS             = -lhal-mc12101
-CFG  			 = mc12101brd.lds
-MAP  			 = $(PROJECT).map
-LINKER_FLAGS     =   -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-T$(CFG)"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
+LIBS 			 = -lhal-mc12101
+LINKER_FLAGS     =   -Xlinker -Map=$(MAP) $(LIB_DIRS) "-Wl,-c$(CFG)"  -Wl,--whole-archive -lmc12101 -Wl,--no-whole-archive -o$(TARGET)
 #=================== SOURCE & OBJECTS COLLECTION ===========================
 
 .SUFFIXES:
@@ -89,28 +90,25 @@ OBJECTS     = $(addprefix $(TMP_DIR)/, $(OBJECTS_C) $(OBJECTS_CPP)  $(OBJECTS_AS
 .PHONY:all  clean skip
 
 .DEFAULT_GOAL=default
-default: all
+default: $(TARGET) 
 
 #$(TMP_DIR) $(OUT_DIR)  $(TARGET)
 
-all:  $(TARGET) dump
+all:  $(TARGET)
 	
 #	$(MAKE) -j4 DEBUG=y
 #	$(MAKE) -j4
 
-dump:
-	nmc-objdump -D $(PROJECT).abs > $(PROJECT).dasm
+run0: $(TARGET)
+	mc12101run $(TARGET)
 
-trace:
-	python $(ROOT)/script/tracer.py trace=trace.bin dump=$(PROJECT).dasm > trace.dasm
-
-run: $(TARGET)
-	mc12101run $(TARGET) --recv_file_name=trace.bin --recv_sect=".trace.buf" --recv_size=800 -p
+run1: $(TARGET)
+	mc12101run $(TARGET) -p
 	
 $(TMP_DIR):
 	-mkdir "$(@)"
 
-$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile
+$(TARGET): $(TMP_DIR) $(OBJECTS) nmc4vars_win.mk Makefile $(CFG)
 	$(CC) $(LINKER_FLAGS) $(OBJECTS) $(LIBS)
 
 nmc4vars_win.mk:
@@ -123,9 +121,9 @@ $(TMP_DIR)/%.o: %.asm
 	$(AS) $(AS_FLAGS) $(<) -o$(@)
 	
 $(TMP_DIR)/%.o: %.cpp 
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) $(CC_FLAGS)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 
 $(TMP_DIR)/%.o: %.c
-	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS) $(CC_FLAGS)
+	$(CC) $(CC_FLAGS) -c $(<) -o$(@) $(INC_DIRS)
 	 
 include $(ROOT)/clean.mk

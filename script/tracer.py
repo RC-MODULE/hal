@@ -2,6 +2,8 @@ import re
 import os
 import sys
 
+
+#input functions
 def argv_input():
 	result = {'out': 'trace.dasm', 'trace': 'trace.bin', 'dump': 'main.dasm'}
 	for i in range (1, len(sys.argv)):
@@ -31,37 +33,64 @@ def console_input():
 
 	return result
 
-def get_dump_dict(dump_file):
+
+
+#create dict of instructions
+def get_dump_dict(file_name):
 	dump_dict = {}
-	#						address		  			label(if exist)	 (instr)
-	pattern = re.compile('([0-9a-fA-F]+):?(\s|\t)(\<[_a-zA-Z0-9]*\>)?(.*)')
-	for d in dump_file:
-		line = re.findall(pattern, d)
-		if len(line) > 0:
-			dump_dict.setdefault(line[0][0], {})
-			key = line[0][0]
-			if line[0][2] != '':
-				dump_dict[key]['label'] = line[0][2]
-			dump_dict[key]['instr'] = line[0][3]
+	try:
+		dump_file = open(file_name, 'r')
+		#						address		  			label(if exist)	 (instr)
+		pattern = re.compile('^\s*([0-9a-fA-F]+):?\s*(\<[_a-zA-Z0-9]*\>)?(.*)')
+		for d in dump_file:
+			line = re.findall(pattern, d)
+			if len(line) > 0:
+				dump_dict.setdefault(line[0][0], {})
+				key = line[0][0]
+				if line[0][1] != '':
+					dump_dict[key]['label'] = line[0][1]
+				dump_dict[key]['instr'] = line[0][2]
+		dump_file.close()
+	except IOError as e:
+		print("File " + file_name + " is not exist")
 	return dump_dict
 
-def read_txt(trace_file, dump_dict, out_file):
-	for t in trace_file:
-		result = re.findall('(0*(\w+))\s+(\w+)', t)
+#read binary file of trace addr and create list
+def get_trace_list(binary_file_name):
+	result = []
+	try:
+		trace_file = open(binary_file_name, 'rb')
+		while True:
+			t = trace_file.read(8)
+			if not t: break
+			addr = '{:02x}{:02x}{:02x}{:02x}'.format(t[3], t[2], t[1], t[0])
+			pswr = '{:02x}{:02x}{:02x}{:02x}'.format(t[7], t[6], t[5], t[4])
+			result.append([addr,pswr])
+		trace_file.close()
+	except IOError as e:
+		print("File " + binary_file_name + " is not exist")
+	return result
+
+#convert list of trace_addr to list of instructions
+def get_commands_list(addr_list, dump_dict):
+	out_list = []
+	for t in addr_list:
+		result = re.findall('(0*(\w+)).*', t[0])
 		key = result[0][1]
 		label_key = result[0][0]
-		#print(key + ' ' + label_key)
 		if key != 'deadc0de' and key != 'c0dec0de':
 			if dump_dict.get(key) != None:
 				#метка
 				if dump_dict.get(label_key)!= None and dump_dict.get(label_key).get('label') != None:
-					out_file.write('\t' + dump_dict[label_key]['label'] + '\n')
+					out_list.append('\t' + dump_dict[label_key]['label'])
 				#четная инструкция
-				out_file.write(key + '\t\t' + dump_dict[key]['instr'] + '\n')
+				if key in dump_dict:
+					out_list.append(key + '\t\t' + dump_dict[key]['instr'])
 				#нечетная инструкция
 				sec = re.findall('0x(.*)',hex(int(key,16) + 1))
 				second_key = sec[0]
-				out_file.write(second_key + '\t\t' + dump_dict[second_key]['instr'] + '\n')
+				if second_key in dump_dict:
+					out_list.append(second_key + '\t\t' + dump_dict[second_key]['instr'])
 	
 	
 				#проверка на команду перехода
@@ -72,47 +101,20 @@ def read_txt(trace_file, dump_dict, out_file):
 					for i in range (2, 4):
 						add = re.findall('0x(.*)',hex(int(key,16) + i))
 						add_key = add[0]
-						out_file.write(add_key + '\t\t' + dump_dict[add_key]['instr'] + '\n')
+						if add_key in dump_dict:
+							out_list.append(add_key + '\t\t' + dump_dict[add_key]['instr'])
 			else:
-				out_file.write('error\n')
+				out_list.append('error\n')
 		else:
-			out_file.write('deadc0de' + '\n')
+			out_list.append('deadc0de' + '\n')
+	return out_list
 
-def read_bin(trace_file, dump_dict, out_file):
-	while True:
-		t = trace_file.read(8)
-		if not t: break
-		numbers = []
-		for i in range(8):
-			numbers.append(t[i])
-		out_file.write('{:02x}{:02x}{:02x}{:02x}'.format(numbers[3], numbers[2], numbers[1], numbers[0]) + ' ')
-		out_file.write('{:02x}{:02x}{:02x}{:02x}'.format(numbers[7], numbers[6], numbers[5], numbers[4]) + '\n')
 
-names = argv_input()
-#names = console_input()
-try:
-	dump_file = open(names['dump'], 'r')
-	trace_file = open(names['trace'], 'rb')
-	out_file = open(names['out'], 'w')	
-	#if re.match('.*\.bin$',names['trace']) != None
-	#	trace_file = open(names['trace'], 'rb')
-	#else
-	#	trace_file = open(names['trace'], 'r')
-except IOError as e:
-	print(e)
-	sys.exit()	
-	
-dump_dict = get_dump_dict(dump_file)
-dump_file.close()
-
-tempfile_name = "tracer_temp.txt"
-tempfile = open(tempfile_name, 'w')
-read_bin(trace_file, dump_dict, tempfile)
-tempfile.close()
-tempfile = open(tempfile_name, 'r')
-read_txt(tempfile, dump_dict, out_file)
-tempfile.close()
-os.remove(tempfile_name)
-
-trace_file.close()
-out_file.close()
+#run if script is called directly
+if __name__ == '__main__':
+	names = argv_input()	
+	dump_dict = get_dump_dict(names['dump'])
+	trace_list = get_trace_list(names['trace'])
+	commands = get_commands_list(trace_list, dump_dict)
+	for c in commands:
+		print(c)
