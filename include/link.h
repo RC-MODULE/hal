@@ -21,14 +21,8 @@ typedef void LinkCallback();
 
 	/**
 	 *  \brief Инициализация линка
-	 *  
-	 *  \param port [in] Номер линка (Для платы mc12101 принимает значения 0..2)
-	 *  \param direction [in] Указание направления порта(LINK_OUTPUT - если порт передающий, LINK_INPUT - если порт принимающий)
-	 *  
-	 *  \details Для платы mc12101 направление линков не устанавливается, а лишь указывается. Для изменения направления настройки по направлению,
-	 *  необходимо замкнуть соответствующие контакты (см.выше). Не касается LINK2
 	 */
-	void halLinkInit(int port, int direction);
+	void halLinkInit();
 	
 	/**
 	 *  \brief Запуск линка
@@ -37,7 +31,7 @@ typedef void LinkCallback();
 	 *  \param size32 [in] Размер в 32-разрядных словах (должно быть кратно 2)
 	 *  \param port [in] Номер линка
 	 */
-	void halLinkStart(void* vector, int size32, int port);
+	void halLinkStart(void* vector, int size32, int port, int direction);
 	
 	/**
 	 *  \brief Запуск двумерного линка
@@ -48,7 +42,7 @@ typedef void LinkCallback();
 	 *  \param stride [in] Смещение между строками матрицы в 32-р. словах  (должно быть кратно 2)
 	 *  \param port [in] Номер линка
 	 */
-	void halLinkStart2D(void* vector, int size32, int width, int stride, int port);
+	void halLinkStart2D(void* vector, int size32, int width, int stride, int port, int direction);
 	
 	/**
 	 *  \brief Проверка статуса завершения линка
@@ -56,7 +50,7 @@ typedef void LinkCallback();
 	 *  \param port [in] Номер линка
 	 *  \retval Возвращает 1 если передача или прием завершен и 0, если нет
 	 */
-	int halLinkIsCompleted(int port);
+	int halLinkIsCompleted(int port, int direction);
 	
 	/**
 	 * \brief Функция устанавливает функцию, которая вызовется после отработки ПДП (callBack).
@@ -68,8 +62,43 @@ typedef void LinkCallback();
 	 *  \retval Return description
 	 *  
 	 */
-	void halLinkSetCallback(LinkCallback callback, int port);
+	void halLinkSetCallback(LinkCallback callback, int port, int direction);
 	
+	/**
+	 * \brief      { function_description }
+	 *
+	 * \param[in]  port       The port
+	 * \param[in]  direction  The direction
+	 *
+	 * \return     { description_of_the_return_value }
+	 * \details Для передающей части
+	 * 			01h – Idle – бездействие,
+				02h – ReceiveWrite – приём и запись данных,
+				04h – UncompleteWrite – приём завершён, только запись,
+				08h – Complete – запись завершена,
+				1Ch – DataMiss – режим очистки буфера данных.
+
+				Для принимающей части
+				01h – Idle – бездействие,
+				02h – ReceiveWrite – приём и запись данных,
+				04h – UncompleteWrite – приём завершён, только запись,
+				08h – Complete – запись завершена,
+				1Ch – DataMiss – режим очистки буфера данных.
+	 */
+	int halLinkGetState(int port, int direction);
+
+
+
+
+	/**
+	 * \brief      Счётчик активных запросов для 
+	 *
+	 * \param[in]  port       The port
+	 * \param[in]  direction  The direction
+	 *
+	 * \return     { description_of_the_return_value }
+	 */
+	int halLinkGetActiveDataCounter(int port, int direction);
 
 #ifdef __cplusplus
 		};
