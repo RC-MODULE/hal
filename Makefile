@@ -12,5 +12,5 @@ else
 endif
 
 setenv:
-	$(OS_SET_ENV) NMPP "$(realpath ..)"
+	$(OS_SET_ENV) HAL "$(realpath ..)"
 	#setenv -ua HAL "$(realpath .)"
