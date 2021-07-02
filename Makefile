@@ -13,4 +13,4 @@ endif
 
 setenv:
 	$(OS_SET_ENV) HAL "$(realpath ..)"
-	#setenv -ua HAL "$(realpath .)"
+#setenv -ua HAL "$(realpath .)"
