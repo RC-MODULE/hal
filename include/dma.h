@@ -2,6 +2,7 @@
 #define DMA_ERROR 2
 #define DMA_READY 0 
 #define DMA_OK    0 
+#define DMA_MAX_SIZE    131070		///максимальный размер пересылаемых данных в 32-разрядных словах на mc12101
 
 #ifndef MAX_CHAIN_BUF_SIZE
 #define MAX_CHAIN_BUF_SIZE 256

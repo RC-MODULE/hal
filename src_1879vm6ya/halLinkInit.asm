@@ -136,6 +136,13 @@ global _halLinkInit: label;
 	gr7 = 3f00_0000h;
 	[4000_040Ah] = gr7		with gr7 = false;	//enable link interrupt
 	
+	gr7 = false;
+	[4000180Ah] = gr7;
+	[4000181Ah] = gr7;
+	[40001C0Ah] = gr7;
+	[40001C1Ah] = gr7;
+	[4000200Ah] = gr7;
+	[4000201Ah] = gr7;
 	
 	//enable extern interrupts
 	intr clear 40h;
