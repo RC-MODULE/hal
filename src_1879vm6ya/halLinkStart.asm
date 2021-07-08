@@ -21,7 +21,7 @@ global _halLinkStart: label;
 	[ar1 + 08h] = gr7	with gr7++;		//AddrMode
 	[ar1] = gr0			with gr7++;		//MainCounter, gr7 = 2
 	[ar1 + 02h] = ar0;		//Addr
-	gr7 = 3;
+	gr7 = 2;
 	[ar1 + 0Ch] = gr7	with gr7--;		//IntMask, gr7 = 1
 	gr7 = 1;
 	[ar1 + 0Ah] = gr7;			//start	
