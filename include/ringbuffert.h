@@ -80,7 +80,7 @@ template <class T, int SIZE> struct HalRingBufferData{
 	inline void init(){
 		sizeofInt = sizeof(int);
 		bufferId = 0x600DB00F;
-		for (int i=0; i<12; i++)
+		for (int i=0; i<6; i++)
 			service[i]=0xBABADEDA;
 		final[0]=0xBABADEDA;
 		final[1]=0xBABADEDA;
