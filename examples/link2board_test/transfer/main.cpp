@@ -1,35 +1,22 @@
-#include "stdio.h"
-#include "led.h"
-#include "hal.h"
 #include "link.h"
-#include "section-hal.h"
 
-#define SIZE 2
-#define PORT 0
+#define SIZE (640 * 480 * 3 / 4)
+#define SMALL_SIZE 0x8000
+#define PORT 1
 
-INSECTION(".data_imu3") int src[SIZE + 2];
-
+__attribute__((section(".data_imu1"))) int src[SMALL_SIZE];
 
 int main()
 {
-	halLinkInit();
-	//printf("src=0x%x\n", src);
-	for(int i=0;i< SIZE;i++){
-		src[i] = 0x12345678 + i;
+	halLinkInit(PORT, LINK_OUTPUT);
+	for(int i = 0; i < SIZE; i++){
+		src[i] = 0x55555555;
 	}
 	
-	printf("%p\n", src);
-	for (int i = 0; i < 4; i++)
-		printf("%8.8X ", src[i]);
-	printf("\n");
-
-	int cnt = 1;
-	//for(int size = 2; size <= SIZE; size+=2){
-		halLed(cnt++);
-		halLinkStart(src, SIZE, PORT, LINK_OUTPUT);
+	for(int i = 0; i < SIZE; i++){
+		int localSize = ((SIZE - i) < SMALL_SIZE) ? (SIZE - i): SMALL_SIZE;
+		halLinkStart(src, localSize, PORT, LINK_OUTPUT);
 		while(halLinkIsCompleted(PORT, LINK_OUTPUT) == 0);
-		halSleep(10);
-		//nmppsCrcAcc_32s(src, size, &crc);
-	//}
+	}
 	return 0;
 }
