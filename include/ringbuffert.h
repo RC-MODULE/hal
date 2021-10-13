@@ -4,6 +4,7 @@
 #include "stdlib.h"
 //#include "dma.h"
 #include "hal.h"
+#include <typeinfo>
 
 #include "stdio.h"
 //#include "memory.h"
@@ -147,7 +148,7 @@ public:
 
 	int check(){
 		if (pHead==0 || pTail==0 || ((int)data&1)|| ((sizeofBufferInt !=4) &&  (sizeofBufferInt !=1))   ){
-			printf("WTF!");
+			printf("classname=%s\n", typeid(T).name());
 			printf("pHead=%x\n",pHead); 
 			printf("pTail=%x\n",pTail);
 			printf("data=%x\n",data);
