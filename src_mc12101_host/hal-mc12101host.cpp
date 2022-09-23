@@ -61,7 +61,6 @@ int halOpen(char* absfile=0,...){
 	va_end(args);
 
 
-    PL_ResetBoard(board);
 	
 	unsigned boardCount,ok;
 	PL_Word Length = 0;
@@ -84,6 +83,7 @@ int halOpen(char* absfile=0,...){
 		TRACE( "ERROR: Can't open board 0 \n");
 		return  (1);
 	}
+    PL_ResetBoard(board);
 
 	if (strlen(abs[0])==0)
 		activeSingleProc1= true;
